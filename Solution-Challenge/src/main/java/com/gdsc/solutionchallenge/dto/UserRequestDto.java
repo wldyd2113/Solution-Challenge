@@ -1,7 +1,7 @@
 package com.gdsc.solutionchallenge.dto;
 
 import com.gdsc.solutionchallenge.domain.Authority;
-import com.gdsc.solutionchallenge.domain.Member;
+import com.gdsc.solutionchallenge.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,20 +11,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRequestDto {
+public class UserRequestDto {
 
     private String email;
     private String password;
 
-    public Member toMember(PasswordEncoder passwordEncoder){
-        return Member.builder()
+    public User toUser(PasswordEncoder passwordEncoder){
+        return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .authority(Authority.ROLE_USER)
                 .build();
     }
-    public Member toAdmin(PasswordEncoder passwordEncoder){
-        return Member.builder()
+    public User toAdmin(PasswordEncoder passwordEncoder){
+        return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .authority(Authority.ROLE_ADMIN)
