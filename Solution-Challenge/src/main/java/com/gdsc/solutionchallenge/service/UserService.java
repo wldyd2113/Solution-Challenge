@@ -1,11 +1,11 @@
 package com.gdsc.solutionchallenge.service;
 
-import com.gdsc.solutionchallenge.domain.Member;
-import com.gdsc.solutionchallenge.dto.MemberRequestDto;
-import com.gdsc.solutionchallenge.dto.MemberResponseDto;
+import com.gdsc.solutionchallenge.domain.User;
+import com.gdsc.solutionchallenge.dto.UserRequestDto;
+import com.gdsc.solutionchallenge.dto.UserResponseDto;
 import com.gdsc.solutionchallenge.dto.TokenDto;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
-import com.gdsc.solutionchallenge.repository.MemberRepository;
+import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,33 +15,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class UserService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
     @Transactional
-    public MemberResponseDto signup(MemberRequestDto memberRequestDto){
-        if(memberRepository.existsByEmail(memberRequestDto.getEmail())){
+    public UserResponseDto signup(UserRequestDto userRequestDto){
+        if(userRepository.existsByEmail(userRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
-        Member member = memberRequestDto.toMember(passwordEncoder);
-        return MemberResponseDto.of(memberRepository.save(member));
+        User user = userRequestDto.toUser(passwordEncoder);
+        return UserResponseDto.of(userRepository.save(user));
     }
     @Transactional
-    public MemberResponseDto adminSignup(MemberRequestDto memberRequestDto){
-        if(memberRepository.existsByEmail(memberRequestDto.getEmail())){
+    public UserResponseDto adminSignup(UserRequestDto userRequestDto){
+        if(userRepository.existsByEmail(userRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
-        Member member = memberRequestDto.toAdmin(passwordEncoder);
-        return MemberResponseDto.of(memberRepository.save(member));
+        User user = userRequestDto.toAdmin(passwordEncoder);
+        return UserResponseDto.of(userRepository.save(user));
     }
 
     @Transactional
-    public TokenDto login(MemberRequestDto memberRequestDto){
-        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+    public TokenDto login(UserRequestDto userRequestDto){
+        UsernamePasswordAuthenticationToken authenticationToken = userRequestDto.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 

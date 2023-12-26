@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "user_id")
     private Long id;
 
     private String email;
@@ -22,7 +22,7 @@ public class Member {
     private Authority authority;
 
     @Builder
-    public Member(String email, String password, Authority authority){
+    public User(String email, String password, Authority authority){
         this.email = email;
         this.password = password;
         this.authority = authority;
