@@ -37,6 +37,10 @@ public class TokenProvider {
     }
 
     public Token generateTokenDto(Authentication authentication){
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("인증되지 않은 사용자입니다.");
+        }
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
