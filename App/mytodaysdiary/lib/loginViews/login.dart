@@ -29,9 +29,21 @@ class _LoginpageState extends State<Loginpage> {
   void initState(){
     super.initState();
     _loadRemeber();
-    //_autoLoginCheck();
+    _autoLoginCheck();
   }
 
+    void _autoLoginCheck() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      try {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
+      } catch (e) {
+        print('Auto-login error: $e');
+      }
+    }
+  }
   //자동 로그인 설정
   void _setAutoLogin(String token) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -113,7 +125,8 @@ class _LoginpageState extends State<Loginpage> {
                   }
                   return null;
                 },
-            ),),
+            ),
+            ),
             SizedBox(
               width: 100,
             child: ElevatedButton(
@@ -144,7 +157,7 @@ class _LoginpageState extends State<Loginpage> {
                         'password': password,
                       },
                   );
-                  //서버에서 refreshToken, accessToken 가져오기
+                  //서버에서  accessToken 가져오기
                   final accessToken = response.data['accessToken'];
 
                   await storage.write(

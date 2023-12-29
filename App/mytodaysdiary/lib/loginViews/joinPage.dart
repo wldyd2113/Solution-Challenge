@@ -200,7 +200,7 @@ class _JoinPageState extends State<JoinPage> {
                         if (_formKey.currentState!.validate()) {
                           userProvider.email = _emailController.text;
                           userProvider.name = _nameController.text;
-                          userProvider.phone = int.tryParse(_phoneController.text) ?? 0; // Convert phone to int
+                          userProvider.phone = _phoneController.text;
                           userProvider.password = _passwordController.text;
 
                           // Additional checks for parsing age

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {
   String _email = ''; //id
-  String _name = ""; //이름
-  late int _phone; //전화번호
+  String _name = ''; //이름
+  String _phone = ''; //전화번호
   String _password = ''; //password
   late int _age ; //나이
   String _sex = ''; // 성별
   String _job = '';//직업
-  String _location = ''; //지역
+  String _location = ''; //나라
   String _language = ''; //언어
 
   String get email => _email;
   String get name => _name;
-  int get phone => _phone;
+  String get phone => _phone;
   int get age => _age;
   String get password => _password;
   String get sex => _sex;
@@ -29,7 +29,7 @@ class UserProvider extends ChangeNotifier {
       _name = input_name;
     notifyListeners();
   }
-    void set phone(int input_phone) {
+    void set phone(String input_phone) {
       _phone = input_phone;
     notifyListeners();
   }
