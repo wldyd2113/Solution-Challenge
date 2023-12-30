@@ -9,13 +9,15 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
-@RequiredArgsConstructor
-public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+@RequiredArgsConstructor //생성자 주입을 자동으로 생성
+public class  JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
     private final TokenProvider tokenProvider;
-
+    //// JwtSecurityConfig 클래스의 생성자에서 TokenProvider를 주입
     @Override
-    public void configure(HttpSecurity http){
+    public void configure(HttpSecurity http) {
         JwtFliter customFilter = new JwtFliter(tokenProvider);
+        //// JwtFilter 객체를 생성하고 TokenProvider를 주입하여 초기화
         http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+        // // HttpSecurity에 customFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
     }
 }

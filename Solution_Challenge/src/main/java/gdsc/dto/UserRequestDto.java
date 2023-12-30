@@ -15,18 +15,24 @@ public class UserRequestDto {
     private String email;
     private String password;
     private Integer age;
+    private String name;
     private String sex;
     private String location;
     private String language;
+    private String phone;
+    private String job;
 
     public User toUser(PasswordEncoder passwordEncoder){
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .age(age)
+                .name(name)
                 .sex(sex)
                 .location(location)
                 .language(language)
+                .phone(phone)
+                .job(job)
                 .role(Role.ROLE_USER)
                 .build();
     }
