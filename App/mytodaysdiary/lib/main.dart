@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
 import 'package:mytodaysdiary/DB/userProvider.dart';
-import 'package:mytodaysdiary/diaryViews/calendar.dart';
+import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Calendar()//Loginpage()
+      home: Loginpage()//Calendar()
     );
   }
 }

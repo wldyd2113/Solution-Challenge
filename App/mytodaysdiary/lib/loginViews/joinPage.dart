@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart';
 
 class JoinPage extends StatefulWidget {
@@ -222,6 +223,9 @@ class _JoinPageState extends State<JoinPage> {
                           userProvider.language = _languageController.text;
 
                           sendUserServer();
+                          Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => Loginpage()),
+                            );
                         }
                       },
                       child: Text("Join"),

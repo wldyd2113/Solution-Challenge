@@ -5,17 +5,26 @@ class UserProvider extends ChangeNotifier {
   String _name = ''; //이름
   String _phone = ''; //전화번호
   String _password = ''; //password
+  String _newpassword = ''; //password
   late int _age ; //나이
   String _sex = ''; // 성별
   String _job = '';//직업
   String _location = ''; //나라
   String _language = ''; //언어
 
+    void logout() {
+    email = '';
+    name = '';
+    // 기타 초기화 작업이 필요한 경우 여기에서 수행
+    notifyListeners();
+  }
+
   String get email => _email;
   String get name => _name;
   String get phone => _phone;
   int get age => _age;
   String get password => _password;
+  String get newpassword => _newpassword;
   String get sex => _sex;
   String get job => _job;
   String get location => _location;
@@ -42,6 +51,10 @@ class UserProvider extends ChangeNotifier {
 
     void set password(String input_password) {
       _password = input_password;
+      notifyListeners();
+  }
+    void set newpassword(String input_newpassword) {
+      _newpassword = input_newpassword;
       notifyListeners();
   }
     void set sex(String input_sex) {

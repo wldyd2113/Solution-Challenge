@@ -24,7 +24,6 @@ class _LoginpageState extends State<Loginpage> {
   final dio = Dio();
   bool remember = false;
   bool swithchValue = false;
-  //bool isToken = false;
   @override
   void initState(){
     super.initState();

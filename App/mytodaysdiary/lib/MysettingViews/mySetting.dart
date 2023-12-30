@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/MysettingViews/passwordChange.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
+import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart';
 
 class MySetting extends StatefulWidget {
@@ -15,6 +17,7 @@ class MySetting extends StatefulWidget {
 }
 
 class _MySettingState extends State<MySetting> {
+  XFile? _pickedFile;
   int _selectedIndex = 1;
   late String email = '';
   late String name = '';
@@ -27,7 +30,7 @@ class _MySettingState extends State<MySetting> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      final response = await http.get(Uri.parse('')); // TODO: 서버 주소 입력
+      final response = await http.get(Uri.parse('')); //  서버 주소 입력
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -50,8 +53,6 @@ class _MySettingState extends State<MySetting> {
     MySetting(),
   ];
 
-  File? _image;
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -62,17 +63,73 @@ class _MySettingState extends State<MySetting> {
     );
   }
 
-  Future _getImageFromGallery() async {
-    final imagePicker = ImagePicker();
-    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(25),
+        ),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () => _getCameraImage(),
+              child: const Text('Take a picture'),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              thickness: 3,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+              onPressed: () => _getPhotoLibraryImage(),
+              child: const Text('Importing from Library'),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
+  void _getCameraImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedFile = pickedFile;
+      });
+    } else {
+      if (kDebugMode) {
+        print('이미지 선택안함');
       }
-    });
+    }
+  }
+
+  void _getPhotoLibraryImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedFile = pickedFile;
+      });
+    } else {
+      if (kDebugMode) {
+        print('이미지 선택안함');
+      }
+    }
   }
 
   // 변경 비밀번호 버튼이 눌렸을 때 호출되는 메서드
@@ -87,6 +144,7 @@ class _MySettingState extends State<MySetting> {
 
   @override
   Widget build(BuildContext context) {
+    final _imageSize = MediaQuery.of(context).size.width / 4;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -98,27 +156,43 @@ class _MySettingState extends State<MySetting> {
                 style: TextStyle(fontSize: 30),
               ),
             ),
-            _image != null
-                ? Image.file(
-                    _image!,
-                    height: 100,
-                    width: 100,
-                  )
-                : Container(),
-            InkWell(
-              onTap: () {
-                _getImageFromGallery();
-              },
-              child: Container(
-                margin: EdgeInsets.all(60),
-                padding: EdgeInsets.all(50),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blue,
+            SizedBox(height: 20,),
+            if(_pickedFile == null)
+              Container(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.width,
+                  minWidth: MediaQuery.of(context).size.width,
                 ),
-                child: Text("My Photos"),
+                child: GestureDetector(
+                  onTap: (){
+                    _showBottomSheet();
+                  },
+                  child: Center(
+                    child: Icon(
+                      Icons.account_circle,
+                      size: _imageSize,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Center(
+                child: Container(
+                  width: _imageSize,
+                  height: _imageSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      width:2,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    image: DecorationImage(
+                      image: FileImage(File(_pickedFile!.path)),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
-            ),
             Container(
               child: Column(
                 children: <Widget>[
@@ -143,10 +217,28 @@ class _MySettingState extends State<MySetting> {
                       ),
                     ],
                   ),
+                                    Row(
+                    children: <Widget>[
+                      Text("The number of diaries I've recorded:"),
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      ElevatedButton(onPressed: (){
+                            Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => Loginpage()),
+                            );
+                      }, child: Text("LogOut"))
+                    ],
+                  ),
+                
+                
                 ],
+                
               ),
             )
           ],
+          
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
