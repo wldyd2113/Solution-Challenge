@@ -1,5 +1,6 @@
 package gdsc.controller;
 
+import gdsc.domain.User;
 import gdsc.dto.Token;
 import gdsc.dto.UserRequestDto;
 import gdsc.dto.UserResponseDto;
@@ -9,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,12 +44,26 @@ public class UserController {
             org.springframework.security.core.Authentication authentication = tokenProvider.getAuthentication(accessToken);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // 이제 userDetails에서 필요한 사용자 정보를 가져와서 사용할 수 있어
-            String username = userDetails.getUsername();
+            // userDetails에서 이메일을 가져와서 UserRepository를 통해 User 정보를 불러옴
+            String id = userDetails.getUsername();
+            Optional<User> optionalUser = userService.getUserById(Long.parseLong(id));
 
-            return ResponseEntity.ok("Hello " + username);
+            if (optionalUser.isPresent()) {
+                // user에서 필요한 정보를 가져와서 사용할 수 있어
+                String useremail = optionalUser.get().getEmail();
+                String username = optionalUser.get().getName();
+                Integer userage = optionalUser.get().getAge();
+                String userlocation = optionalUser.get().getLocation();
+                String userlanguage = optionalUser.get().getLanguage();
+                String userphone = optionalUser.get().getPhone();
+                String userjob = optionalUser.get().getJob();
+                String usersex = optionalUser.get().getSex();
+                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + "\nuser phone: " + userphone + "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
+            } else {
+                // 사용자 정보가 없을 경우 처리
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
         } else {
-            // 토큰이 유효하지 않으면 에러 응답을 보낼 수 있어
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
     }
