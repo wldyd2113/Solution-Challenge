@@ -20,6 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final MailService mailService;
 
     @Transactional
     public UserResponseDto signup(UserRequestDto userRequestDto){
@@ -65,24 +66,25 @@ public class UserService {
     @Transactional
     public String findPasswordByEmail(String email){
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("해다아흔 이메일의 사용자를 찾을 수 없습니다."));
-        String newPassword = makeRandomPassword();
-        user.setPassword(passwordEncoder.encode(newPassword));
+                .orElseThrow(() -> new RuntimeException("해당하는 이메일의 사용자를 찾을 수 없습니다."));
+        String temporaryPassword = mailService.sendPassword(email);
+        user.setPassword(passwordEncoder.encode(temporaryPassword));
         userRepository.save(user);
-        return newPassword;
+        return temporaryPassword;
     }
+
 
     @Transactional
     public String makeRandomPassword() {
         int length = 8;
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder newPassword = new StringBuilder();
+        StringBuilder temporaryPassword = new StringBuilder();
 
         for(int i = 0; i < length; i++){
             int index = (int) (Math.random() * characters.length());
-            newPassword.append(characters.charAt(index));
+            temporaryPassword.append(characters.charAt(index));
         }
-        return newPassword.toString();
+        return temporaryPassword.toString();
     }
 
     @Transactional
