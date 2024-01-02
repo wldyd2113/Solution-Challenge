@@ -48,5 +48,12 @@ public class UserController {
         return ResponseEntity.ok(userEmail);
     }
 
+    @GetMapping("/password/{email}")
+    public ResponseEntity<String> findPasswordByEmail(@PathVariable String email){
+        String userPassword = userService.findPasswordByEmail(email);
+        return ResponseEntity.ok(userPassword);
+    }
+
+
 
 }
