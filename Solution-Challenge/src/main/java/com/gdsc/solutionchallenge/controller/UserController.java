@@ -42,7 +42,11 @@ public class UserController {
         return ResponseEntity.ok("Hello Admin");
     }
 
-
+    @GetMapping("/email/{name}")
+    public ResponseEntity<String> findEmailByName(@PathVariable String name){
+        String userEmail = userService.findEmailByName(name);
+        return ResponseEntity.ok(userEmail);
+    }
 
 
 }

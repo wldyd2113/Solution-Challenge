@@ -54,5 +54,10 @@ public class UserService {
         return tokenDto;
     }
 
-    
+    @Transactional
+    public String findEmailByName(String name){
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("해당하는 이름의 사용자 찾을 수 없습니다."));
+        return user.getEmail();
+    }
 }
