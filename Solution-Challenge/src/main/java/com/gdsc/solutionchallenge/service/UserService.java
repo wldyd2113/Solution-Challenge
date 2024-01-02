@@ -1,15 +1,14 @@
 package com.gdsc.solutionchallenge.service;
 
 import com.gdsc.solutionchallenge.domain.User;
-import com.gdsc.solutionchallenge.dto.UserRequestDto;
-import com.gdsc.solutionchallenge.dto.UserResponseDto;
-import com.gdsc.solutionchallenge.dto.TokenDto;
+import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,12 @@ public class UserService {
         return UserResponseDto.of(userRepository.save(user));
     }
     @Transactional
+    public UserResponseDto googleSignup(UserRequestDto userRequestDto){
+        User user = userRequestDto.toGoogleUser();
+        return UserResponseDto.of(userRepository.save(user));
+    }
+
+    @Transactional
     public UserResponseDto adminSignup(UserRequestDto userRequestDto){
         if(userRepository.existsByEmail(userRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
@@ -48,5 +53,54 @@ public class UserService {
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
         return tokenDto;
+    }
+
+    @Transactional
+    public String findEmailByName(String name){
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("해당하는 이름의 사용자를 찾을 수 없습니다."));
+        return user.getEmail();
+    }
+
+    @Transactional
+    public String findPasswordByEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("해다아흔 이메일의 사용자를 찾을 수 없습니다."));
+        String newPassword = makeRandomPassword();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return newPassword;
+    }
+
+    @Transactional
+    public String makeRandomPassword() {
+        int length = 8;
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder newPassword = new StringBuilder();
+
+        for(int i = 0; i < length; i++){
+            int index = (int) (Math.random() * characters.length());
+            newPassword.append(characters.charAt(index));
+        }
+        return newPassword.toString();
+    }
+
+    @Transactional
+    public void changePassword(ChangePasswordDto changePasswordDto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        String currentPassword = changePasswordDto.getCurrentPassword();
+        String newPassword = changePasswordDto.getNewPassword();
+
+        User user = userRepository.findById(Long.valueOf(userEmail))
+                .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
+
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

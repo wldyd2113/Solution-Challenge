@@ -15,12 +15,38 @@ public class UserRequestDto {
 
     private String email;
     private String password;
+    private int phone;
+    private String gender;
+    private String language;
+    private int age;
+    private String country;
+    private String job;
+    private String name;
 
     public User toUser(PasswordEncoder passwordEncoder){
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .authority(Authority.ROLE_USER)
+                .phone(phone)
+                .age(age)
+                .country(country)
+                .gender(gender)
+                .job(job)
+                .language(language)
+                .name(name)
+                .build();
+    }
+    public User toGoogleUser(){
+        return User.builder()
+                .authority(Authority.ROLE_USER)
+                .phone(phone)
+                .age(age)
+                .country(country)
+                .gender(gender)
+                .job(job)
+                .language(language)
+                .name(name)
                 .build();
     }
     public User toAdmin(PasswordEncoder passwordEncoder){

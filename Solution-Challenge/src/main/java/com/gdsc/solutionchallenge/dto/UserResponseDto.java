@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto {
-    private String email;
+    private String name;
     public static UserResponseDto of(User user){
-        return new UserResponseDto(user.getEmail());
+        return new UserResponseDto(user.getName());
     }
 }

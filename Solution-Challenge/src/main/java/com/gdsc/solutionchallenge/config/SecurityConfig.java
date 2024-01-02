@@ -44,8 +44,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/user/login").permitAll()
-                        .requestMatchers("/user/signup/*").permitAll()
+                        .requestMatchers("/user/*", "/user/*/*").permitAll()
                         .requestMatchers("/mail/*").permitAll()
                         .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
