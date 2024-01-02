@@ -1,9 +1,7 @@
 package com.gdsc.solutionchallenge.service;
 
 import com.gdsc.solutionchallenge.domain.User;
-import com.gdsc.solutionchallenge.dto.UserRequestDto;
-import com.gdsc.solutionchallenge.dto.UserResponseDto;
-import com.gdsc.solutionchallenge.dto.TokenDto;
+import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +29,12 @@ public class UserService {
         return UserResponseDto.of(userRepository.save(user));
     }
     @Transactional
+    public UserResponseDto googleSignup(UserRequestDto userRequestDto){
+        User user = userRequestDto.toGoogleUser();
+        return UserResponseDto.of(userRepository.save(user));
+    }
+
+    @Transactional
     public UserResponseDto adminSignup(UserRequestDto userRequestDto){
         if(userRepository.existsByEmail(userRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
@@ -49,4 +53,6 @@ public class UserService {
 
         return tokenDto;
     }
+
+    
 }

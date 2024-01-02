@@ -1,8 +1,6 @@
 package com.gdsc.solutionchallenge.controller;
 
-import com.gdsc.solutionchallenge.dto.UserRequestDto;
-import com.gdsc.solutionchallenge.dto.UserResponseDto;
-import com.gdsc.solutionchallenge.dto.TokenDto;
+import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/signup/user")
+    @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto){
         return ResponseEntity.ok(userService.signup(userRequestDto));
+    }
+    @PostMapping("/googleSignup")
+    public ResponseEntity<UserResponseDto> googleSignup(@RequestBody UserRequestDto userRequestDto){
+        return ResponseEntity.ok(userService.googleSignup(userRequestDto));
     }
     @PostMapping("/signup/admin")
     public ResponseEntity<UserResponseDto> adminSignup(@RequestBody UserRequestDto userRequestDto){
@@ -28,12 +30,19 @@ public class UserController {
     public ResponseEntity<TokenDto> login(@RequestBody UserRequestDto userRequestDto){
         return ResponseEntity.ok(userService.login(userRequestDto));
     }
-    @GetMapping("/user")
+
+    @GetMapping
     public ResponseEntity<String> user(){
         return ResponseEntity.ok("Hello User");
     }
+
+
     @GetMapping("/admin")
     public ResponseEntity<String> admin(){
         return ResponseEntity.ok("Hello Admin");
     }
+
+
+
+
 }
