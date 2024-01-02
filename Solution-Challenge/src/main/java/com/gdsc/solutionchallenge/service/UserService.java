@@ -99,8 +99,8 @@ public class UserService {
         if(!passwordEncoder.matches(currentPassword, user.getPassword())){
             throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
         }
-
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+//        test
     }
 }
