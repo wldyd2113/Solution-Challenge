@@ -4,6 +4,7 @@ import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -53,6 +54,19 @@ public class UserController {
         String userPassword = userService.findPasswordByEmail(email);
         return ResponseEntity.ok(userPassword);
     }
+
+    @PostMapping("/password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+        try {
+            userService.changePassword(changePasswordDto);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
 
 
