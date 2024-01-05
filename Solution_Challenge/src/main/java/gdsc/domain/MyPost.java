@@ -14,8 +14,8 @@ public class MyPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MYPOST_ID")
     private Long myPostId;
-    @Column(name = "USER_NAME")
-    private String userName;
+ //   @Column(name = "USER_NAME")
+  //  private String userName;
     @Column(name = "MY_POST_TITLE")
     private String title;
     @Column(name = "MY_POST_BODY")
@@ -26,8 +26,8 @@ public class MyPost {
     private User user;
 
     @Builder
-    public MyPost(String userName, String title, String body, User user){
-        this.userName=userName;
+    public MyPost(/*String userName,*/ String title, String body, User user){
+   //     this.userName=userName;
         this.title=title;
         this.body=body;
         this.user=user;
@@ -35,7 +35,7 @@ public class MyPost {
 
     public MyPostResponseDto toDto(){
         MyPostResponseDto myPostResponseDto = MyPostResponseDto.builder()
-                .userName(this.getUserName())
+     //           .userName(this.getUserName())
                 .title(this.getTitle())
                 .body(this.getBody())
                 .build();
