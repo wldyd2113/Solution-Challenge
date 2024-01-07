@@ -26,27 +26,48 @@ class _MySettingState extends State<MySetting> {
     fontWeight: FontWeight.bold,
   );
 
-  Future<void> fetchData() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+Future<void> fetchData() async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    try {
-      final response = await http.get(Uri.parse('')); //  서버 주소 입력
+  try {
+    final response = await http.get(
+      Uri.parse('http://localhost:8080/user2'),
+      headers: {'Authorization': 'Bearer ${userProvider.accessToken}'},
+    );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print('Server Response: $data');
+
+      // 서버 응답 데이터의 예상 형식에 따라 필요한 로직 추가
+      if (data.containsKey('email') && data.containsKey('name')) {
         userProvider.email = data['email'];
         userProvider.name = data['name'];
+
         setState(() {
           email = userProvider.email;
           name = userProvider.name;
         });
+
+        print('Fetch data successful: $email, $name');
       } else {
-        print('Failed to load data: ${response.statusCode}');
+        print('Unexpected format in server response');
+        // 예상 형식이 아닌 경우 사용자에게 메시지 표시 등의 로직 추가
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
+      print('Failed to load data: ${response.statusCode}');
+      // 서버 응답이 200이 아닌 경우 사용자에게 메시지 표시 등의 로직 추가
     }
+  } catch (error) {
+    print('Error: $error');
+    // 에러 발생 시에 사용자에게 메시지 표시 등의 로직 추가
   }
+}
+
+
+
+
+
 
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
@@ -141,10 +162,16 @@ class _MySettingState extends State<MySetting> {
       },
     );
   }
+    @override
+  void initState() {
+    super.initState();
+    fetchData(); // initState에서 fetchData 호출
+  }
 
   @override
   Widget build(BuildContext context) {
     final _imageSize = MediaQuery.of(context).size.width / 4;
+
     return Scaffold(
       body: SafeArea(
         child: Column(

@@ -24,6 +24,55 @@ class _JoinPageState extends State<JoinPage> {
 
   final _formKey = GlobalKey<FormState>();
 
+      // 닉네임 중복 확인 다이얼로그
+    void _showNicknameDialog(String message) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Nickname Check'),
+            content: Text(message),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+        void _checkNicknameUniqueness() async {
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'nickname': _nameController.text,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          // 성공적으로 응답을 받으면 결과를 변수에 저장
+          String message = response.body;
+
+          // 결과에 따라 경고 다이얼로그 표시
+          _showNicknameDialog(message);
+        } else {
+          // 서버 응답이 실패인 경우 에러 메시지를 출력
+          print('서버 응답 에러: ${response.statusCode}');
+          print('에러 내용: ${response.body}');
+        }
+      } catch (error) {
+        // 예외가 발생한 경우 에러 메시지를 출력
+        print('에러 발생: $error');
+      }
+    }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -65,175 +114,294 @@ class _JoinPageState extends State<JoinPage> {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
         title: const Text("Join"),
         actions: <Widget>[],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty || !value.contains('@')) {
-                          return ("Please enter your email");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        hintText: 'Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Name");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _phoneController,
-                      decoration: const InputDecoration(
-                        hintText: 'Phone Number',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Phone Number");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Password',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.length <= 9) {
-                          return ("Password must be at least 9 characters");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _ageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Age',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Age");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _sexController,
-                      decoration: const InputDecoration(
-                        hintText: 'Sex',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Gender");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _jobController,
-                      decoration: const InputDecoration(
-                        hintText: 'Job',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Occupation");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        hintText: 'Location',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Location");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    TextFormField(
-                      controller: _languageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Language',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return ("Please enter your Language");
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 30.0)),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          userProvider.email = _emailController.text;
-                          userProvider.name = _nameController.text;
-                          userProvider.phone = _phoneController.text;
-                          userProvider.password = _passwordController.text;
-
-                          // Additional checks for parsing age
-                          String ageText = _ageController.text;
-                          if (ageText.isNotEmpty) {
-                            int? age = int.tryParse(ageText);
-                            if (age != null) {
-                              userProvider.age = age;
-                            } else {
-                              print('Invalid age format');
-                            }
-                          } else {
-                            print('Age is required');
-                          }
-
-                          userProvider.sex = _sexController.text;
-                          userProvider.job = _jobController.text;
-                          userProvider.location = _locationController.text;
-                          userProvider.language = _languageController.text;
-
-                          sendUserServer();
-                          Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => Loginpage()),
-                            );
-                        }
-                      },
-                      child: Text("Join"),
-                    ),
-                  ],
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '편지 공유에 필요해요!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF194062),
+                    fontSize: 36,
+                    fontFamily: 'Gowun Dodum',
+                    fontWeight: FontWeight.w400,
+                    height: 0,
+                  ),
                 ),
-              ),
-            ],
+                Container(
+                  width: 342,
+                  height: 600,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFECF4D6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text("Email"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                hintText: 'Email',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    !value.contains('@')) {
+                                  return ("Please enter your email");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          
+                          const Text("NickName"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                hintText: 'NickName',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your NickName");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                _checkNicknameUniqueness();
+                              },
+                              child: Text('Check',
+                              style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontFamily: 'Gowun Dodum',
+                              fontWeight: FontWeight.w400,),),
+                              style: ElevatedButton.styleFrom(
+                              primary:  Color(0xCC2D9596),
+                              elevation: 4, ),
+                            ),
+                          ),
+                          const Text("Phone Number"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _phoneController,
+                              decoration: InputDecoration(
+                                hintText: 'Phone Number',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Phone Number");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Password"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                hintText: 'Password',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.length <= 9) {
+                                  return ("Password must be at least 9 characters");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Age"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _ageController,
+                              decoration: InputDecoration(
+                                hintText: 'Age',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Age");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Sex"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _sexController,
+                              decoration: InputDecoration(
+                                hintText: 'Sex',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Gender");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Job"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _jobController,
+                              decoration: InputDecoration(
+                                hintText: 'Job',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Occupation");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Location"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _locationController,
+                              decoration: InputDecoration(
+                                hintText: 'Location',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Location");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Text("Language"),
+                          SizedBox(
+                            width: 300,
+                            child: TextFormField(
+                              controller: _languageController,
+                              decoration: InputDecoration(
+                                hintText: 'Language',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return ("Please enter your Language");
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 300,
+                  child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                userProvider.email = _emailController.text;
+                                userProvider.name = _nameController.text;
+                                userProvider.phone = _phoneController.text;
+                                userProvider.password =
+                                    _passwordController.text;
+
+                                String ageText = _ageController.text;
+                                if (ageText.isNotEmpty) {
+                                  int? age = int.tryParse(ageText);
+                                  if (age != null) {
+                                    userProvider.age = age;
+                                  } else {
+                                    print('Invalid age format');
+                                  }
+                                } else {
+                                  print('Age is required');
+                                }
+
+                                userProvider.sex = _sexController.text;
+                                userProvider.job = _jobController.text;
+                                userProvider.location =
+                                    _locationController.text;
+                                userProvider.language =
+                                    _languageController.text;
+
+                                sendUserServer();
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Loginpage(),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary:  Color(0xCC2D9596),
+                              elevation: 4, // 그림자 설정
+                            ),
+                            child: const Text("Join",
+                                style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,),
+                          ),
+                  ),
+                ),
+                
+              ],
+            ),
           ),
         ),
       ),

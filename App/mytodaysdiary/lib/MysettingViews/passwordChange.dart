@@ -100,7 +100,7 @@ class _PasswordChangeDialogState extends State<PasswordChangeDialog> {
                 // 비밀번호 변경 성공 후 다이얼로그 닫기
                 Navigator.of(context).pop();
               } else {
-                // 예시: 새로운 비밀번호와 확인 비밀번호가 일치하지 않음
+                // 새로운 비밀번호와 확인 비밀번호가 일치하지 않음
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('새로운 비밀번호와 확인 비밀번호가 일치하지 않습니다.')),
                 );

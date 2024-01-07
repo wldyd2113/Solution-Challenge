@@ -14,54 +14,113 @@ class _PwFindPageState extends State<PwFindPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
         title: Text('Password 찾기'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Center(
+        child: SingleChildScrollView(
+          child:Container(
+        width: 500,
+        height: 500,
+        decoration: ShapeDecoration(
+        color: const Color(0xFFECF4D6),
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
+                border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),),
                 labelText: '이메일',
               ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            SizedBox(
+              width: 300,
+            child: ElevatedButton(
               onPressed: () {
                 _sendVerificationEmail();
               },
-              child: Text('이메일로 인증 코드 받기'),
+              child: Text('이메일로 인증 코드 받기',
+              style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontFamily: 'Gowun Dodum',
+              fontWeight: FontWeight.w400,),
+              
+              ),
+              style: ElevatedButton.styleFrom(
+              primary:  Color(0xCC2D9596),
+              elevation: 4,)
             ),
-            SizedBox(height: 20),
+            ),
+            SizedBox(height: 10,),
             TextFormField(
               decoration: InputDecoration(
+                border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),),
                 labelText: '인증 코드',
               ),
               onChanged: (value) {
                 _verificationCode = value;
               },
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            SizedBox(height: 10,),
+            SizedBox(
+              width: 300,
+            child: ElevatedButton(
               onPressed: () {
                 _verifyEmail();
               },
-              child: Text('이메일 인증 확인'),
+              child: const Text('이메일 인증 확인',
+              style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontFamily: 'Gowun Dodum',
+              fontWeight: FontWeight.w400,),
+              ),
+              style: ElevatedButton.styleFrom(
+              primary:  Color(0xCC2D9596),
+              elevation: 4,),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            ),
+            SizedBox(height: 10,),
+            SizedBox(
+              width: 300,
+            child: ElevatedButton(
               onPressed: () {
                 _findPw();
               },
-              child: Text('비밀번호 찾기'),
+              child: const Text('비밀번호 찾기',
+              style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontFamily: 'Gowun Dodum',
+              fontWeight: FontWeight.w400,),
+              
+              ),
+
+              style: ElevatedButton.styleFrom(
+              primary:  Color(0xCC2D9596),
+              elevation: 4,),
+            ),
             ),
             SizedBox(height: 20),
-            Text('찾아진 비밀번호: $_foundPw'),
+            Text('찾아진 비밀번호: $_foundPw',
+                          style: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontFamily: 'Gowun Dodum',
+              fontWeight: FontWeight.w400,),),
           ],
         ),
+        ),
+      ),
       ),
     );
   }

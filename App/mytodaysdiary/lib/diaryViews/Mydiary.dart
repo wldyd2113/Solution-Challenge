@@ -51,30 +51,31 @@ class _MyDiaryState extends State<MyDiary> {
     }
   }
 
-  void sendUserServer() async {
-     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    try {
-      final response = await http.post(
-        Uri.parse(''),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'myDiary': diaryProvider.myDiary,
-          'snedDiart': diaryProvider.sendDiary,
-          'emotion': diaryProvider.emotion,
-        }),
-      );
+Future<void> sendUserServer() async {
+  final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+  try {
+    final response = await http.post(
+      Uri.parse(''),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'myDiary': diaryProvider.myDiary,
+        'snedDiart': diaryProvider.sendDiary,
+        'emotion': diaryProvider.emotion,
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        print('Success: ${response.body}');
-      } else {
-        print('Failed with status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
+    if (response.statusCode == 200) {
+      print('Success: ${response.body}');
+    } else {
+      print('Failed with status code: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Error: $error');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +155,7 @@ class _MyDiaryState extends State<MyDiary> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return ("Please enter your My day");
                           }
                           return null;
@@ -175,7 +176,7 @@ class _MyDiaryState extends State<MyDiary> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return ("Please enter");
                           }
                           return null;
@@ -187,10 +188,10 @@ class _MyDiaryState extends State<MyDiary> {
               ),
               Padding(padding: const EdgeInsets.symmetric(vertical: 30.0)),
               ElevatedButton(
-                onPressed: () {
-                  sendUserServer();
-                    Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => SendDiaryScreen())
+                onPressed: () async{
+                await sendUserServer();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => SendDiaryScreen())
                   );
                 },
                 child: Text("Finish"),

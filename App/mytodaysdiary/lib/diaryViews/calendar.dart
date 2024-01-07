@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/Mydiary.dart';
+import 'package:mytodaysdiary/diaryViews/RecordDiary.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -11,12 +12,7 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   int _selectedIndex = 0;
-  DateTime _selectedDate = DateTime.now(); // Track the selected date
-
-  static const TextStyle optionStyle = TextStyle(
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-  );
+  DateTime _selectedDate = DateTime.now();
 
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
@@ -33,6 +29,50 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
+void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+  setState(() {
+    _selectedDate = selectedDay;
+  });
+
+  if (selectedDay.isAfter(DateTime.now())) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('미래 날짜는 기록할 수 없습니다.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  } else if (selectedDay.isBefore(DateTime.now())) {
+    // 이전 날짜인 경우 RecordDiary 페이지로 이동
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => RecordDiary(selectedDate: selectedDay)),
+    );
+  } else {
+    // 현재 날짜인 경우 MyDiary 페이지로 이동
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => MyDiary()),
+    );
+  }
+}
+
+
+  void _onLeaveTodayPressed() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MyDiary(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,85 +82,54 @@ class _CalendarState extends State<Calendar> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              child: TableCalendar(
-                firstDay: DateTime.utc(2023, 12, 25),
-                lastDay: DateTime.utc(2030, 12, 25),
-                focusedDay: DateTime.now(),
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDate, day);
-                },
-                headerStyle: HeaderStyle(
-                  titleCentered: true,
-                  titleTextFormatter: (date, locale) =>
-                      DateFormat.yMMMMd(locale).format(date),
-                  formatButtonVisible: false,
-                  titleTextStyle: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.black,
-                  ),
-                  headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
-                  leftChevronIcon: const Icon(
-                    Icons.arrow_left,
-                    size: 40.0,
-                  ),
-                  rightChevronIcon: const Icon(
-                    Icons.arrow_right,
-                    size: 40.0,
-                  ),
-                ),
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDate = selectedDay;
-                  });
-
-                  // 미래날짜를 선택한 경우
-                  if (selectedDay.isAfter(DateTime.now())) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Future dates cannot be recorded..'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Ok'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    // Navigate to MyDiary screen
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => MyDiary()),
-                    );
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50.0),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 350,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => MyDiary()),
-                    );
+          child: Column(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.center,
+                child: TableCalendar(
+                  firstDay: DateTime.utc(2023, 12, 25),
+                  lastDay: DateTime.utc(2030, 12, 25),
+                  focusedDay: DateTime.now(),
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDate, day);
                   },
-                  child: Text('Leave ToDay'),
+                  headerStyle: HeaderStyle(
+                    titleCentered: true,
+                    titleTextFormatter: (date, locale) =>
+                        DateFormat.yMMMMd(locale).format(date),
+                    formatButtonVisible: false,
+                    titleTextStyle: const TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.black,
+                    ),
+                    headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
+                    leftChevronIcon: const Icon(
+                      Icons.arrow_left,
+                      size: 40.0,
+                    ),
+                    rightChevronIcon: const Icon(
+                      Icons.arrow_right,
+                      size: 40.0,
+                    ),
+                  ),
+                  onDaySelected: _onDaySelected,
                 ),
               ),
-            ),
-          ]),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 50.0),
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 350,
+                  child: ElevatedButton(
+                    onPressed: _onLeaveTodayPressed,
+                    child: Text('Leave Today'),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
