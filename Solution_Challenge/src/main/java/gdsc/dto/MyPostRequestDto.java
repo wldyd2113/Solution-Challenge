@@ -7,4 +7,5 @@ public class MyPostRequestDto {
 
     private String title;
     private String body;
+    private String emotion;
 }
