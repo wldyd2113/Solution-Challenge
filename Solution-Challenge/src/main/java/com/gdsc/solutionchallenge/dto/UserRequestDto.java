@@ -15,10 +15,10 @@ public class UserRequestDto {
     private String email;
     private String password;
     private int phone;
-    private String gender;
+    private String sex;
     private String language;
     private int age;
-    private String country;
+    private String location;
     private String job;
     private String name;
 
@@ -28,8 +28,8 @@ public class UserRequestDto {
                 .password(passwordEncoder.encode(password))
                 .phone(phone)
                 .age(age)
-                .country(country)
-                .gender(gender)
+                .location(location)
+                .sex(sex)
                 .job(job)
                 .language(language)
                 .name(name)
@@ -39,8 +39,8 @@ public class UserRequestDto {
         return User.builder()
                 .phone(phone)
                 .age(age)
-                .country(country)
-                .gender(gender)
+                .location(location)
+                .sex(sex)
                 .job(job)
                 .language(language)
                 .name(name)
