@@ -43,14 +43,10 @@
         @Column(name = "USER_LANGUAGE", nullable = false)
         private String language;
 
-        @Enumerated(EnumType.STRING)
-        private Authority authority;
-
         @Builder
-        public User(String email, String password, Authority authority, String name, int phone, String gender, String country, String job, int age, String language){
+        public User(String email, String password, String name, int phone, String gender, String country, String job, int age, String language){
             this.email = email;
             this.password = password;
-            this.authority = authority;
             this.age = age;
             this.job = job;
             this.phone = phone;

@@ -1,6 +1,5 @@
 package com.gdsc.solutionchallenge.dto;
 
-import com.gdsc.solutionchallenge.domain.Authority;
 import com.gdsc.solutionchallenge.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +26,6 @@ public class UserRequestDto {
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .authority(Authority.ROLE_USER)
                 .phone(phone)
                 .age(age)
                 .country(country)
@@ -39,7 +37,6 @@ public class UserRequestDto {
     }
     public User toGoogleUser(){
         return User.builder()
-                .authority(Authority.ROLE_USER)
                 .phone(phone)
                 .age(age)
                 .country(country)
@@ -53,7 +50,6 @@ public class UserRequestDto {
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .authority(Authority.ROLE_ADMIN)
                 .build();
     }
 
