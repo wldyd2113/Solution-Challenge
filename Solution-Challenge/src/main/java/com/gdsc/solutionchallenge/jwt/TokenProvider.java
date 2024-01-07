@@ -73,6 +73,8 @@ public class TokenProvider {
             log.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
+            log.info(e.getMessage());
+            System.out.println(new Date((new Date()).getTime() + ACCESS_TOKEN_EXPIRE_TIME));
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
