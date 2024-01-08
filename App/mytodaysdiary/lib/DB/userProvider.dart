@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {
-  String _email = '';
-  String _name = '';
-  String _phone = '';
-  String _password = '';
-  String _newpassword = '';
-  late int _age;
-  String _sex = '';
-  String _job = '';
-  String _location = '';
-  String _language = '';
-  String _accessToken = '';
+  String _email = ''; //이메일
+  String _name = ''; //닉네임
+  String _phone = ''; //전화번호
+  String _password = ''; //비밀번호
+  String _newpassword = '';//바뀐비밀번호
+  late int _age; //나이
+  String _sex = ''; //성별
+  String _job = ''; //직업
+  String _location = ''; //지역
+  String _language = ''; //언어
+  String _accessToken = '';//토큰값
   DateTime? tokenExpiration;
 
 

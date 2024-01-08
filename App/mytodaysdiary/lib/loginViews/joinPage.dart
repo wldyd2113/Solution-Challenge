@@ -47,7 +47,7 @@ class _JoinPageState extends State<JoinPage> {
         void _checkNicknameUniqueness() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
+          Uri.parse('http://localhost:8080/signup/user'), // 서버의 실제 엔드포인트로 수정
           headers: {
             'Content-Type': 'application/json',
           },
@@ -150,7 +150,15 @@ class _JoinPageState extends State<JoinPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          const Text("Email"),
+                          
+                          const Text("Email",
+                          style: TextStyle(  
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -172,7 +180,14 @@ class _JoinPageState extends State<JoinPage> {
                             ),
                           ),
                           
-                          const Text("NickName"),
+                          const Text("NickName",
+                          style: TextStyle(  
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -208,7 +223,13 @@ class _JoinPageState extends State<JoinPage> {
                               elevation: 4, ),
                             ),
                           ),
-                          const Text("Phone Number"),
+                          const Text("Phone Number",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -227,7 +248,13 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Password"),
+                          const Text("Password",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -247,7 +274,13 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Age"),
+                          const Text("Age",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -266,13 +299,19 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Sex"),
+                          const Text("Gender",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
                               controller: _sexController,
                               decoration: InputDecoration(
-                                hintText: 'Sex',
+                                hintText: 'Gender',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -285,7 +324,13 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Job"),
+                          const Text("Job",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -298,32 +343,44 @@ class _JoinPageState extends State<JoinPage> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Occupation");
+                                  return ("Please enter your Job");
                                 }
                                 return null;
                               },
                             ),
                           ),
-                          const Text("Location"),
+                          const Text("Country",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
                               controller: _locationController,
                               decoration: InputDecoration(
-                                hintText: 'Location',
+                                hintText: 'Country',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Location");
+                                  return ("Please enter your Country");
                                 }
                                 return null;
                               },
                             ),
                           ),
-                          const Text("Language"),
+                          const Text("Language",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 20,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          ),),
                           SizedBox(
                             width: 300,
                             child: TextFormField(

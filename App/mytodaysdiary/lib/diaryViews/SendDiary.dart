@@ -13,7 +13,7 @@ class SendDiaryScreen extends StatefulWidget {
 }
 
 class _SendDiaryScreenState extends State<SendDiaryScreen> {
-  late String country;
+  late String location;
   late String send;
   String result_cloud_google = '';
   final TextEditingController _receiverDiaryController = TextEditingController();
@@ -39,7 +39,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         final Map<String, dynamic> data = json.decode(response.body);
         userProvider.location = data['location'];
         setState(() {
-          country = userProvider.location;
+          location = userProvider.location;
         });
       } else {
         // 서버 응답이 실패일 경우 에러 처리
@@ -150,7 +150,7 @@ Future<void> getTranslation_google_cloud_translation() async {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                 //Text(country ?? 'Loading...'), // country가 null이면 'Loading...'을 표시
+                 //Text(location ?? 'Loading...'), // location가 null이면 'Loading...'을 표시
                 Text("폴란드에 사는 누군가의 하루가 도착했어요."),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                 // TextField에 서버에서 받아온 sendDiary를 설정
