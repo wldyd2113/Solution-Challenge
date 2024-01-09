@@ -33,7 +33,7 @@ public class JwtFliter extends OncePerRequestFilter {
         System.out.println("Received Token: " + jwt);
 
         // 추출된 토큰이 유효하고, 검증이 성공하면 해당 토큰으로부터 Authentication 객체를 생성하여 SecurityContextHolder에 설정합니다.
-        if (!(request.getRequestURI().equals("/signup/user") || request.getRequestURI().equals("/login"))) {
+        if (!(request.getRequestURI().equals("/signup") || request.getRequestURI().equals("/login"))) {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -59,9 +59,9 @@ public class SecurityConfig {
                 // HTTP 요청에 대한 인가 규칙을 설정합니다.
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // "/login"과 "/signup/**"에 대한 요청은 인증 없이 허용합니다.
-                        .requestMatchers("/login","/signup/**").permitAll()
+                        .requestMatchers("/login","/signup").permitAll()
                         // "/api/posts/**", "/user**", "/user2/**", "/error/**"에 대한 요청은 인증이 필요합니다.
-                        .requestMatchers("/api/posts/**","/user","/user2/**","/error/**").authenticated()
+                        .requestMatchers("/api/posts/**","/user","/user/info","/error/**").authenticated()
                         // 나머지 요청에 대해서도 인증이 필요합니다.
                         .anyRequest().authenticated()
                 )

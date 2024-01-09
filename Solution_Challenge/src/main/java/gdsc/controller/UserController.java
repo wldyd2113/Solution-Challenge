@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
 
-    @PostMapping("/signup/user")
+    @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.ok(userService.signup(userRequestDto));
     }
@@ -36,7 +36,7 @@ public class UserController {
         return ResponseEntity.ok("Hello User");
     }
 
-    @GetMapping("/user2")
+    @GetMapping("/user/info")
     public ResponseEntity<String> user(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
 
