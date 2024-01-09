@@ -12,6 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -52,6 +55,10 @@ public class UserService {
         User user = userRepository.findByName(name)
                 .orElseThrow(() -> new RuntimeException("해당하는 이름의 사용자를 찾을 수 없습니다."));
         return user.getEmail();
+    }
+    @Transactional
+    public Optional<User> getUserById(long id){
+        return userRepository.findUserById(id);
     }
 
     @Transactional
