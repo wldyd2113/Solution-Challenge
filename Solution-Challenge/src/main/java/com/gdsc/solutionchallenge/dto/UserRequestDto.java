@@ -1,5 +1,6 @@
 package com.gdsc.solutionchallenge.dto;
 
+import com.gdsc.solutionchallenge.domain.Role;
 import com.gdsc.solutionchallenge.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class UserRequestDto {
                 .sex(sex)
                 .job(job)
                 .language(language)
+                .role(Role.ROLE_USER)
                 .name(name)
                 .build();
     }
@@ -43,13 +45,8 @@ public class UserRequestDto {
                 .sex(sex)
                 .job(job)
                 .language(language)
+                .role(Role.ROLE_USER)
                 .name(name)
-                .build();
-    }
-    public User toAdmin(PasswordEncoder passwordEncoder){
-        return User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
                 .build();
     }
 

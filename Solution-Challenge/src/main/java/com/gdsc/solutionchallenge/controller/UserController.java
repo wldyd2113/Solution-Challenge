@@ -25,10 +25,6 @@ public class UserController {
     public ResponseEntity<UserResponseDto> googleSignup(@RequestBody UserRequestDto userRequestDto){
         return ResponseEntity.ok(userService.googleSignup(userRequestDto));
     }
-    @PostMapping("/signup/admin")   // 관리자 계정 쓸 일 없어서 없앨듯
-    public ResponseEntity<UserResponseDto> adminSignup(@RequestBody UserRequestDto userRequestDto){
-        return ResponseEntity.ok(userService.adminSignup(userRequestDto));
-    }
 
     @PostMapping("/login") // localhost:8080/user/login    로그인 ( 토큰 발급 )
     public ResponseEntity<TokenDto> login(@RequestBody UserRequestDto userRequestDto){

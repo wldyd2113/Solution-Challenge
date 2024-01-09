@@ -37,15 +37,6 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto adminSignup(UserRequestDto userRequestDto){
-        if(userRepository.existsByEmail(userRequestDto.getEmail())){
-            throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
-        }
-        User user = userRequestDto.toAdmin(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
-    }
-
-    @Transactional
     public TokenDto login(UserRequestDto userRequestDto){
         UsernamePasswordAuthenticationToken authenticationToken = userRequestDto.toAuthentication();
 
