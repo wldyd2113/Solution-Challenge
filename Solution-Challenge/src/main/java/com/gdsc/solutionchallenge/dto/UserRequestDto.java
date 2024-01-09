@@ -15,7 +15,6 @@ public class UserRequestDto {
 
     private String email;
     private String password;
-    private int phone;
     private String sex;
     private String language;
     private int age;
@@ -27,7 +26,6 @@ public class UserRequestDto {
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .phone(phone)
                 .age(age)
                 .location(location)
                 .sex(sex)
@@ -39,7 +37,6 @@ public class UserRequestDto {
     }
     public User toGoogleUser(){
         return User.builder()
-                .phone(phone)
                 .age(age)
                 .location(location)
                 .sex(sex)

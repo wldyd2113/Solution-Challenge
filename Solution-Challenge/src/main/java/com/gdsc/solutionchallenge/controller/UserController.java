@@ -1,13 +1,20 @@
 package com.gdsc.solutionchallenge.controller;
 
+import com.gdsc.solutionchallenge.domain.User;
 import com.gdsc.solutionchallenge.dto.*;
+import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.service.MailService;
 import com.gdsc.solutionchallenge.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 
 @RestController
@@ -15,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final MailService mailService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto){
@@ -63,9 +70,32 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/info")
+    public ResponseEntity<String> user(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        String accessToken = authorizationHeader.replace("Bearer ", "");
 
+        if (tokenProvider.validateToken(accessToken)) {
+            org.springframework.security.core.Authentication authentication = tokenProvider.getAuthentication(accessToken);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+            String id = userDetails.getUsername();
+            Optional<User> optionalUser = userService.getUserById(Long.parseLong(id));
 
-
+            if (optionalUser.isPresent()) {
+                String useremail = optionalUser.get().getEmail();
+                String username = optionalUser.get().getName();
+                int userage = optionalUser.get().getAge();
+                String userlocation = optionalUser.get().getLocation();
+                String userlanguage = optionalUser.get().getLanguage();
+                String userjob = optionalUser.get().getJob();
+                String usersex = optionalUser.get().getSex();
+                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
 
 }

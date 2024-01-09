@@ -25,9 +25,6 @@
         @Column(name = "USER_NAME", nullable = false)
         private String name;
 
-        @Column(name = "USER_PHONE", nullable = false)
-        private int phone;
-
         @Column(name = "USER_SEX", nullable = false)
         private String sex;
 
@@ -48,12 +45,11 @@
         private Role role;
 
         @Builder
-        public User(String email, String password, String name,Role role, int phone, String sex, String location, String job, int age, String language){
+        public User(String email, String password, String name,Role role, String sex, String location, String job, int age, String language){
             this.email = email;
             this.password = password;
             this.age = age;
             this.job = job;
-            this.phone = phone;
             this.location = location;
             this.language = language;
             this.name = name;
