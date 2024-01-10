@@ -54,10 +54,15 @@ public class JwtFliter extends OncePerRequestFilter {
 
     // HTTP 요청에서 Authorization 헤더로부터 토큰을 추출하는 메소드입니다.
     private String resolveToken(HttpServletRequest request) {
+        // 헤더에서 토큰을 추출하는 메서드
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        // Authorization 헤더에서 토큰 값을 가져옴
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length() + 1); // 수정된 부분
+            // 토큰 값이 비어있지 않고 Bearer 접두사로 시작하는 경우
+            return bearerToken.substring(7);
+            // Bearer 접두사를 제외한 실제 토큰 값을 반환
         }
         return null;
+        // 토큰이 없는 경우 null을 반환
     }
 }
