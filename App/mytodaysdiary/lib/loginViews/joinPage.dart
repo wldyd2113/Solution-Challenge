@@ -17,10 +17,11 @@ class _JoinPageState extends State<JoinPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _sexController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _languageController = TextEditingController();
+
+  String? _sex; // 추가: 선택된 성별을 저장하는 변수
 
   final _formKey = GlobalKey<FormState>();
 
@@ -308,21 +309,30 @@ class _JoinPageState extends State<JoinPage> {
                           ),),
                           SizedBox(
                             width: 300,
-                            child: TextFormField(
-                              controller: _sexController,
-                              decoration: InputDecoration(
-                                hintText: 'Gender',
+                            child: DropdownButtonFormField<String?>(
+                                decoration: InputDecoration(
+                                labelText: 'Gender',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
+                              onChanged: (String? gender) {
+                                _sex = gender;
+                              },
+                              items: [null, "M", "F", "T"].map<DropdownMenuItem<String?>>((String? sex) {
+                                return DropdownMenuItem<String?>(
+                                  value: sex,
+                                  child: Text({"M": "Male", "F": "Female", "T": "Transgender"}[sex] ?? "비공개"),
+                                );
+                              }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Gender");
+                                  return "Please enter your Gender";
                                 }
                                 return null;
                               },
                             ),
+
                           ),
                           const Text("Job",
                           style: TextStyle(
@@ -427,7 +437,7 @@ class _JoinPageState extends State<JoinPage> {
                                   print('Age is required');
                                 }
 
-                                userProvider.sex = _sexController.text;
+                                userProvider.sex = _sex ?? "";
                                 userProvider.job = _jobController.text;
                                 userProvider.location =
                                     _locationController.text;

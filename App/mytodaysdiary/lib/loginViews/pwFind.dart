@@ -132,7 +132,7 @@ class _PwFindPageState extends State<PwFindPage> {
     try {
       var response = await http.post(
         Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
+       
         body: jsonEncode({'email': email}),
       );
 

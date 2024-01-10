@@ -5,13 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/DB/tokenData.dart';
-import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/idFind.dart';
 import 'package:mytodaysdiary/loginViews/joinPage.dart';
 import 'package:mytodaysdiary/loginViews/pwFind.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginpage extends StatefulWidget {
@@ -33,40 +32,64 @@ class _LoginpageState extends State<Loginpage> {
     _loadRemember();
     _autoLoginCheck();
   }
+  Future<void> _handleSignIn() async {
+    try {
+      String email = _emailController.text;
+      String password = _passwordController.text;
+      final rawString = '$email:$password';
+
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      String token = stringToBase64.encode(rawString);
+
+      final response = await dio.post(
+        '$iosip',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+
+      print('Server Response: ${response.data}');
+      print('Response Format: ${response.headers.value('content-type')}');
+
+      final accessToken = response.data['accessToken'];
+
+      // 토큰 저장만 수행하고 자동 로그인 체크 여부와 관계없이 무조건 로그인 시도
+      await TokenStorage.saveToken(accessToken);
+
+      print('토큰이 성공적으로 저장되었습니다!');
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
+    } catch (e) {
+      if (e is DioError) {
+        print('DioError: ${e.response?.statusCode}, ${e.message}');
+        print('Response data: ${e.response?.data}');
+      } else {
+        print('Error: $e');
+      }
+    }
+  }
 
   void _autoLoginCheck() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+    String? token = await TokenStorage.getToken();
 
     if (token != null) {
       try {
-        Provider.of<UserProvider>(context, listen: false).accessToken = token;
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
+        // 토큰 저장만 수행하고 자동 로그인 체크 여부와 관계없이 무조건 로그인 시도
+        await TokenStorage.saveToken(token);
+
+        // 아래의 Navigator 코드는 _handleSignIn 안에서 이미 처리되므로 주석 처리
+        // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
       } catch (e) {
         print('Auto-login error: $e');
       }
     }
   }
 
-  void _setAutoLogin(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-  }
-
-  void _delAutoLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-  }
-
-  void _loadRemember() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      remember = prefs.getBool('rememberMe') ?? false;
-      if (remember) {
-        _emailController.text = prefs.getString('rememberedEmail') ?? '';
-      }
-    });
-  }
 
   void _saveRememberMeStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -76,6 +99,18 @@ class _LoginpageState extends State<Loginpage> {
     } else {
       prefs.remove('rememberedEmail');
     }
+  }
+
+
+
+  void _loadRemember() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      remember = prefs.getBool('rememberMe') ?? false;
+      if (remember) {
+        _emailController.text = prefs.getString('rememberedEmail') ?? '';
+      }
+    });
   }
 
   @override
@@ -168,55 +203,7 @@ class _LoginpageState extends State<Loginpage> {
                               const SnackBar(content: Text('Processing Data')),
                             );
                           }
-                          try {
-                            String email = _emailController.text;
-                            String password = _passwordController.text;
-                            final rawString = '$email:$password';
-
-                            Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                            String token = stringToBase64.encode(rawString);
-
-                            final response = await dio.post(
-                              '$iosip',
-                              options: Options(
-                                headers: {
-                                  'authorization': 'Basic $token',
-                                  'Content-Type': 'application/json',
-                                },
-                              ),
-                              data: {
-                                'email': email,
-                                'password': password,
-                              },
-                            );
-
-                            print('Server Response: ${response.data}');
-                            print('Response Format: ${response.headers.value('content-type')}');
-
-                            final accessToken = response.data['accessToken'];
-
-                            // 토큰을 UserProvider에 저장
-                            Provider.of<UserProvider>(context, listen: false).accessToken = accessToken;
-
-                            // 자동 로그인 여부에 따라 토큰 저장
-                            if (switchValue) {
-                              _setAutoLogin(accessToken);
-                            } else {
-                              _delAutoLogin();
-                            }
-
-                            // 이동할 페이지 (예: Calendar 페이지)
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
-                          } catch (e) {
-                            if(e is DioError){
-                            print('DioError: ${e.response?.statusCode}, ${e.message}');
-                            print('Response data: ${e.response?.data}');
-                            }
-                            else{
-
-                            }print('Error: $e');
-
-                          }
+                          _handleSignIn(); // 이 부분이 변경되었습니다.
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xCC2D9596),

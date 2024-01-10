@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
+import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/SendDiary.dart';
+import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:provider/provider.dart';
 
 
@@ -21,7 +24,22 @@ class _MyDiaryState extends State<MyDiary> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _myDiaryController = TextEditingController();
   final TextEditingController _receiverDiaryController = TextEditingController();
+  int _selectedIndex = 0;
 
+    final List<Widget> _widgetOptions = <Widget>[
+    Calendar(),
+    MySetting(),
+  ];
+    
+    void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _widgetOptions[index]),
+    );
+  }
   @override
   void initState() {
     isSelected = [happy, sad, angry, soso];
@@ -53,16 +71,20 @@ class _MyDiaryState extends State<MyDiary> {
 
 Future<void> sendUserServer() async {
   final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  
+
+
   try {
     final response = await http.post(
-      Uri.parse(''),
+      Uri.parse('http://localhost:8080/api/posts/save'),
       headers: {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
         'myDiary': diaryProvider.myDiary,
-        'snedDiart': diaryProvider.sendDiary,
         'emotion': diaryProvider.emotion,
+        'currentDate': DateTime.now().toString(),
       }),
     );
 
@@ -77,12 +99,15 @@ Future<void> sendUserServer() async {
 }
 
 
+
   @override
   Widget build(BuildContext context) {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFECF4D6),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFECF4D6),
         title: const Text("Diary"),
         actions: <Widget>[],
       ),
@@ -91,9 +116,7 @@ Future<void> sendUserServer() async {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Text(
+                  const Text(
                     "Feelings of The Day:",
                     style: TextStyle(fontSize: 13),
                   ),
@@ -134,13 +157,10 @@ Future<void> sendUserServer() async {
                     selectedBorderColor: Colors.transparent,
                     borderRadius: BorderRadius.circular(30),
                   ),
-                ],
-              ),
               Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
               Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("My day", style: TextStyle(fontSize: 20)),
@@ -199,6 +219,16 @@ Future<void> sendUserServer() async {
             ],
           ),
         ),
+      ),
+            bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF9AD0C2),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        onTap: _onItemTapped,
       ),
     );
   }

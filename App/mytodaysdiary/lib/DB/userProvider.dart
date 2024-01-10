@@ -11,9 +11,6 @@ class UserProvider extends ChangeNotifier {
   String _job = ''; //직업
   String _location = ''; //지역
   String _language = ''; //언어
-  String _accessToken = '';//토큰값
-  DateTime? tokenExpiration;
-
 
 
   String get email => _email;
@@ -26,12 +23,8 @@ class UserProvider extends ChangeNotifier {
   String get job => _job;
   String get location => _location;
   String get language => _language;
-  String get accessToken => _accessToken;
 
-  void set accessToken(String token) {
-    _accessToken = token;
-    notifyListeners();
-  }
+
 
   void set email(String input_email) {
     _email = input_email;
@@ -85,17 +78,6 @@ class UserProvider extends ChangeNotifier {
     void logout() {
     email = '';
     name = '';
-    accessToken = '';
     notifyListeners();
   }
-    bool isTokenExpired() {
-    // 토큰 만료 시간이 null인 경우, 만료된 것으로 간주
-    if (tokenExpiration == null) {
-      return true;
-    }
-
-    // 현재 시간과 비교
-    return DateTime.now().isAfter(tokenExpiration!);
-  }
-
 }

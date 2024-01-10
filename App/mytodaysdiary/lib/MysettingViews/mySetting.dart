@@ -5,11 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/MysettingViews/passwordChange.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
-import 'package:provider/provider.dart';
 
 class MySetting extends StatefulWidget {
   @override
@@ -21,50 +20,74 @@ class _MySettingState extends State<MySetting> {
   int _selectedIndex = 1;
   late String email = '';
   late String name = '';
+
   static const TextStyle optionStyle = TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,
   );
 
-Future<void> fetchData() async {
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
+    void decodeToken(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      print('토큰 구조가 잘못되었습니다.');
+      return;
+    }
 
-  try {
-    final response = await http.get(
-      Uri.parse('http://localhost:8080/user2'),
-      headers: {'Authorization': 'Bearer ${userProvider.accessToken}'},
-    );
+    final payload = parts[1];
+    final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
+    print('디코딩된 토큰 페이로드: $decoded');
+  }
+  Future<void> fetchData() async {
+    final token = await TokenStorage.getToken();
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      print('Server Response: $data');
+    if (token != null) {
+      decodeToken(token);
 
-      // 서버 응답 데이터의 예상 형식에 따라 필요한 로직 추가
-      if (data.containsKey('email') && data.containsKey('name')) {
-        userProvider.email = data['email'];
-        userProvider.name = data['name'];
+      try {
+        final getResponse = await http.get(
+          Uri.parse('http://localhost:8080/user2'),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
 
-        setState(() {
-          email = userProvider.email;
-          name = userProvider.name;
-        });
+        print('Server Response: ${getResponse.statusCode}');
+        print('Server Response Body: ${getResponse.body}');
 
-        print('Fetch data successful: $email, $name');
-      } else {
-        print('Unexpected format in server response');
-        // 예상 형식이 아닌 경우 사용자에게 메시지 표시 등의 로직 추가
+        if (getResponse.statusCode == 200) {
+          // 서버에서 일반 텍스트로 반환된 데이터를 직접 처리
+          final data = getResponse.body;
+
+          // 예제: 데이터 파싱
+          final nameIndex = data.indexOf('user name: ');
+          final emailIndex = data.indexOf('user email: ');
+
+          if (nameIndex != -1 && emailIndex != -1) {
+            final name = data.substring(nameIndex + 'user name: '.length, emailIndex).trim();
+            final email = data.substring(emailIndex + 'user email: '.length).trim();
+
+            setState(() {
+              this.name = name;
+              this.email = email;
+            });
+
+            print('데이터 가져오기 성공: $name, $email');
+          } else {
+            print('서버 응답 형식 예외처리: 기대하지 않은 형식');
+          }
+        } else if (getResponse.statusCode == 401) {
+          // ... (기존 코드)
+        } else {
+          print('데이터 로드 실패: ${getResponse.statusCode}');
+        }
+      } catch (error, stackTrace) {
+        print('에러: $error');
+        print('스택 트레이스: $stackTrace');
       }
     } else {
-      print('Failed to load data: ${response.statusCode}');
-      // 서버 응답이 200이 아닌 경우 사용자에게 메시지 표시 등의 로직 추가
+      print('토큰이 없습니다.');
     }
-  } catch (error) {
-    print('Error: $error');
-    // 에러 발생 시에 사용자에게 메시지 표시 등의 로직 추가
   }
-}
-
-
 
 
 
@@ -162,7 +185,8 @@ Future<void> fetchData() async {
       },
     );
   }
-    @override
+
+  @override
   void initState() {
     super.initState();
     fetchData(); // initState에서 fetchData 호출
@@ -244,33 +268,46 @@ Future<void> fetchData() async {
                       ),
                     ],
                   ),
-                                    Row(
+                  Row(
                     children: <Widget>[
                       Text("The number of diaries I've recorded:"),
                     ],
                   ),
                   Column(
                     children: <Widget>[
-                      ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => Loginpage()),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // 로그아웃 시 토큰을 삭제합니다.
+                          await TokenStorage.deleteToken();
+                          
+                          // 현재 선택된 인덱스에 따라 다른 페이지로 이동합니다.
+                          if (_selectedIndex == 0) {
+                            // 캘린더 페이지로 이동
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Calendar()),
                             );
-                      }, child: Text("LogOut"))
+                          } else if (_selectedIndex == 1) {
+                            // 로그인 페이지로 이동
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Loginpage()),
+                            );
+                          }
+                        },
+                        child: Text("LogOut"),
+                      ),
                     ],
                   ),
-                
-                
                 ],
-                
               ),
             )
           ],
-          
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
         ],
         currentIndex: _selectedIndex,
