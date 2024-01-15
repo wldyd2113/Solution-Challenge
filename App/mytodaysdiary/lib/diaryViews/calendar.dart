@@ -95,6 +95,7 @@ class _CalendarState extends State<Calendar> {
                 ),
                 alignment: Alignment.center,
                 child: Container(
+                  alignment: Alignment.topLeft,
                   width: 323,
                   height: 550.59,
                   decoration: ShapeDecoration(

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
+import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
+import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:provider/provider.dart';
 
 class RecordDiary extends StatefulWidget {
@@ -28,6 +30,22 @@ class _RecordDiaryState extends State<RecordDiary> {
   String selectedLanguage = 'en'; // 기본 언어 설정
 
   List<String> translationLanguages = ['en', 'ko', 'ja', 'zh', 'fr', 'es', 'de', 'it', 'th'];
+    int _selectedIndex = 0;
+
+    final List<Widget> _widgetOptions = <Widget>[
+    Calendar(),
+    MySetting(),
+  ];
+    
+    void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _widgetOptions[index]),
+    );
+  }
 
   @override
   void initState() {
@@ -110,80 +128,177 @@ class _RecordDiaryState extends State<RecordDiary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECF4D6),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFECF4D6),
         title: const Text("My Diary"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Column(
-              children: <Widget>[
-                Text("Selected Date: ${DateFormat.yMd().format(widget.selectedDate)}"),
-                Text("이전 나의 감정: ${_diaryProvider.emotion}"),
-                Text("My Diary"),
-                SizedBox(
-                  width: 350,
-                  child: TextField(
-                    controller: _myDiaryController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'My diary',
-                    ),
-                  ),
-                ),
-                Text("Send Diary"),
-                SizedBox(
-                  width: 350,
-                  child: TextField(
-                    controller: _sendDiaryController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Send diary',
-                    ),
-                  ),
-                ),
-                Text("Cheering Message"),
-                SizedBox(
-                  width: 350,
-                  child: TextField(
-                    controller: _cheeringmessageController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Cheeringmessage',
-                    ),
-                  ),
-                ),
-                // 번역 언어 선택 드롭다운
-                DropdownButton<String>(
-                  value: selectedLanguage,
-                  items: translationLanguages.map((String language) {
-                    return DropdownMenuItem<String>(
-                      value: language,
-                      child: Text(language),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        selectedLanguage = newValue;
-                      });
-                    }
-                  },
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    getTranslation_google_cloud_translation(selectedLanguage);
-                  },
-                  child: Text("Translation"),
-                ),
-              ],
+            child: Container(
+              alignment: Alignment.center,
+              width: 329,
+              height: 575.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFB19470),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ),
-        ),
+            ),
+            child:Container(
+              width: 323,
+              height: 545.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFD0D4C7),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              ),
+              ),
+              child: Container(
+                width: 290,
+                height: 520.11,
+                decoration: ShapeDecoration(
+                color: Color(0xFFFAFFEC),
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                ),
+                ),
+                child: Container(
+                  width: 280,
+                  height: 507,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(),
+                  child:SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      Text("Selected Date: ${DateFormat.yMd().format(widget.selectedDate)}"),
+                      Text("이전 나의 감정: ${_diaryProvider.emotion}"),
+                      Text("My Diary",
+                      style: TextStyle(
+                      color: Color(0xFF76453B),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
+                      SizedBox(height: 10,),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: _myDiaryController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: 'My diary',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Send Diary",
+                      style: TextStyle(
+                      color: Color(0xFF76453B),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
+                      SizedBox(height: 10,),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: _sendDiaryController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: 'Send diary',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Cheering Message",
+                      style: TextStyle(
+                      color: Color(0xFF76453B),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
+                      SizedBox(height: 10,),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: _cheeringmessageController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: 'Cheeringmessage',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // 번역 언어 선택 드롭다운
+                      DropdownButton<String>(
+                        value: selectedLanguage,
+                        items: translationLanguages.map((String language) {
+                          return DropdownMenuItem<String>(
+                            value: language,
+                            child: Text(language),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              selectedLanguage = newValue;
+                            });
+                          }
+                        },
+                      ),
+                      SizedBox(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          getTranslation_google_cloud_translation(selectedLanguage);
+                        },
+                        child: const Text("Translation",
+                                style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                primary: Color(0x996B3A2F),
+                                elevation: 4, )
+                      ),
+                      ),
+                    ],
+                  ),
+                  ),
+                  ),
+                ),
+              ),
+            ),
+            ),
+            ),
       ),
-    );
-  }
-}
+              bottomNavigationBar: BottomNavigationBar(
+                backgroundColor: const Color(0xFF9AD0C2),
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
+                  BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
+                ],
+                currentIndex: _selectedIndex,
+                selectedItemColor: Colors.white,
+                onTap: _onItemTapped,
+              ),
+            );
+          }
+        }

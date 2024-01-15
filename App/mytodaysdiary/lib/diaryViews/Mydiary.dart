@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
 import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
@@ -9,7 +10,7 @@ import 'package:mytodaysdiary/diaryViews/SendDiary.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:provider/provider.dart';
 
-
+//나만 볼수 있거나 누군가에게 전송할수 있는 페이지
 class MyDiary extends StatefulWidget {
   @override
   _MyDiaryState createState() => _MyDiaryState();
@@ -68,18 +69,20 @@ class _MyDiaryState extends State<MyDiary> {
         break;
     }
   }
-
+//서버로 현재 날짜와 일기 작성 감정 보냄
 Future<void> sendUserServer() async {
   final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
   final userProvider = Provider.of<UserProvider>(context, listen: false);
-  
 
+  // 저장된 토큰을 저장소에서 가져옵니다.
+  String? accessToken = await TokenStorage.getToken();
 
   try {
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/posts/save'),
+      Uri.parse('http://127.0.0.1:8080/api/posts/save'),
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken', // 헤더에 토큰을 포함
       },
       body: jsonEncode({
         'myDiary': diaryProvider.myDiary,
@@ -89,14 +92,15 @@ Future<void> sendUserServer() async {
     );
 
     if (response.statusCode == 200) {
-      print('Success: ${response.body}');
+      print('성공: ${response.body}');
     } else {
-      print('Failed with status code: ${response.statusCode}');
+      print('상태 코드 ${response.statusCode}로 실패했습니다.');
     }
   } catch (error) {
-    print('Error: $error');
+    print('에러: $error');
   }
 }
+
 
 
 
@@ -111,12 +115,64 @@ Future<void> sendUserServer() async {
         title: const Text("Diary"),
         actions: <Widget>[],
       ),
-      body: SafeArea(
+            body: SafeArea(
         child: SingleChildScrollView(
+          child: Center(
+            child:Container(
+              alignment: Alignment.center,
+              width: 329,
+              height: 575.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFB19470),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              ),
+              ),
+              child:Container(
+                alignment: Alignment.topLeft,
+                
+                width: 323,
+                height: 545.11,
+                decoration: ShapeDecoration(
+                color: Color(0xFFD0D4C7),
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                ),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                width: 317,
+              height: 530.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFFAFFEC),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              ),
+              ),
+              child :Container(
+                alignment: Alignment.centerRight,
+              width: 290,
+              height: 480,
+              decoration: ShapeDecoration(
+              color: Color(0xFFFFFFEC),
+              shape: RoundedRectangleBorder(
+              side: BorderSide(width: 1),
+              borderRadius: BorderRadius.circular(10),
+              ),
+              shadows: [
+              BoxShadow(
+              color: Color(0x3F000000),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+              spreadRadius: 0,
+              )
+              ],
+              ),
+                child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-                  const Text(
+                  Text(
                     "Feelings of The Day:",
                     style: TextStyle(fontSize: 13),
                   ),
@@ -163,17 +219,30 @@ Future<void> sendUserServer() async {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("My day", style: TextStyle(fontSize: 20)),
+                    Text("나의 하루", style: TextStyle(
+                        color: Color(0xFF76453B),
+                        fontSize: 20,
+                        fontFamily: 'Noto Sans',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                        ),
+                    ),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
                         controller: _myDiaryController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        decoration: const InputDecoration(
-                          hintText: 'My day',
-                          border: OutlineInputBorder(),
+                        decoration:  InputDecoration(
+                          hintText: '나의 하루',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                         ),
+                            onChanged: (value) {
+                            // 텍스트가 변경될 때마다 프로바이더에서 값을 업데이트
+                            diaryProvider.myDiary = value;
+                          },
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return ("Please enter your My day");
@@ -183,17 +252,26 @@ Future<void> sendUserServer() async {
                       ),
                     ),
                     Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    Text("My day that I want to tell someone about",
-                        style: TextStyle(fontSize: 15)),
+                    Text("누군가에게 들려주고픈 나의 하루",
+                        style: TextStyle(
+                        color: Color(0xFF76453B),
+                        fontSize: 18,
+                        fontFamily: 'Noto Sans',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                        ),
+                        ),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
                         controller: _receiverDiaryController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        decoration: const InputDecoration(
-                          hintText: 'My day',
-                          border: OutlineInputBorder(),
+                        decoration:  InputDecoration(
+                          hintText: '당신의 하루를 공유해주세요!',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -214,13 +292,31 @@ Future<void> sendUserServer() async {
                   MaterialPageRoute(builder: (_) => SendDiaryScreen())
                   );
                 },
-                child: Text("Finish"),
+                child: Text("Finish",
+                            style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Gowun Dodum',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
+                                ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                primary: Color(0x996B3A2F),
+                                elevation: 4, )
+                                
               ),
             ],
           ),
         ),
+            ),
       ),
-            bottomNavigationBar: BottomNavigationBar(
+          ),
+          ),
+        ),
+      ),
+      ),
+        bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF9AD0C2),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),

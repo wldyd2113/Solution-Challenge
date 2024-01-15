@@ -45,7 +45,7 @@ class _MySettingState extends State<MySetting> {
 
       try {
         final getResponse = await http.get(
-          Uri.parse('http://localhost:8080/user2'),
+          Uri.parse('http://localhost:8080/user/info'),
           headers: {
             'Authorization': 'Bearer $token',
           },
@@ -197,14 +197,22 @@ class _MySettingState extends State<MySetting> {
     final _imageSize = MediaQuery.of(context).size.width / 4;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFECF4D6),
       body: SafeArea(
+        child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Container(
               alignment: Alignment.center,
               child: Text(
                 "My Info",
-                style: TextStyle(fontSize: 30),
+                style: TextStyle(
+                color: Color(0xFF194062),
+                fontSize: 48,
+                fontFamily: 'Noto Sans',
+                fontWeight: FontWeight.w400,
+                height: 0,
+                ),
               ),
             ),
             SizedBox(height: 20,),
@@ -249,30 +257,71 @@ class _MySettingState extends State<MySetting> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Text("Name: $name"),
+                      Text("Name: $name",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
                     ],
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                   Row(
                     children: <Widget>[
-                      Text("Email: $email"),
+                      Text("Email: $email",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
                     ],
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                   Row(
                     children: <Widget>[
-                      Text("Password: "),
+                      Text("Password: ",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
                       ElevatedButton(
                         onPressed: onPressed,
-                        child: Text("Password Change"),
+                        child: Text("Password Change",
+                        style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                        ),
+                          style: ElevatedButton.styleFrom(
+                          primary: Color(0xCC2D9596),
+                          elevation: 4, )
                       ),
                     ],
                   ),
                   Row(
                     children: <Widget>[
-                      Text("The number of diaries I've recorded:"),
+                      Text("The number of diaries I've recorded:",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
                     ],
                   ),
+                  SizedBox(height: 10,),
                   Column(
                     children: <Widget>[
                       ElevatedButton(
@@ -295,7 +344,18 @@ class _MySettingState extends State<MySetting> {
                             );
                           }
                         },
-                        child: Text("LogOut"),
+                        child: Text("LogOut",
+                                style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                                ),
+                          style: ElevatedButton.styleFrom(
+                          primary: Color(0xCC2D9596),
+                          elevation: 4, )
                       ),
                     ],
                   ),
@@ -305,13 +365,15 @@ class _MySettingState extends State<MySetting> {
           ],
         ),
       ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF9AD0C2),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.lightGreen,
+        selectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
     );

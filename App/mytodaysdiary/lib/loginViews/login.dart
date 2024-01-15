@@ -122,18 +122,30 @@ class _LoginpageState extends State<Loginpage> {
           child: Column(
             children: <Widget>[
               Container(
-                alignment: Alignment.center,
-                child: Text(
-                  "반갑습니다!",
-                  style: TextStyle(
-                    fontSize: 48,
-                    color: Colors.black,
-                    fontFamily: 'Gowun Dodum',
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
+              width: 393,
+              height: 146,
+              decoration: ShapeDecoration(
+              color: Color(0xFF9AD0C2),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70)),
               ),
+              ),
+              ),
+                SizedBox(
+                width: 340,
+                height: 100,
+                child: Text(
+                'Nice to meet you!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                color: Color(0xFF194062),
+                fontSize: 40,
+                fontFamily: 'Gowun Dodum',
+                fontWeight: FontWeight.w400,
+                height: 0,
+                ),
+                ),
+                ),
               Form(
                 key: _formKey,
                 child: Column(
@@ -146,6 +158,7 @@ class _LoginpageState extends State<Loginpage> {
                       ),
                     ),
                     Container(
+                      color: Colors.white,
                       child: SizedBox(
                         width: 350,
                         child: TextFormField(
@@ -168,11 +181,7 @@ class _LoginpageState extends State<Loginpage> {
                       padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     ),
                     Container(
-                      decoration: ShapeDecoration(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                      color: Colors.white,
                       child: SizedBox(
                         width: 350,
                         child: TextFormField(
@@ -218,6 +227,66 @@ class _LoginpageState extends State<Loginpage> {
                           ),
                         ),
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          value: remember,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              remember = value ?? false;
+                              _saveRememberMeStatus();
+                            });
+                          },
+                        ),
+                        Text("ID REMEBER"),
+                        CupertinoSwitch(
+                          value: switchValue,
+                          activeColor: CupertinoColors.activeBlue,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              switchValue = value ?? false;
+                            });
+                          },
+                        ),
+                        Text("Auto Login"),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account? ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                        color: Color(0xFF2D9596),
+                        fontSize: 15,
+                        fontFamily: 'Gowun Dodum',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                        ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => JoinPage()),
+                            );
+                          },
+                          child: Text(
+                          'join the membership',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 15,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                          ),
+                          
+                          ),
+                        ),
+                      ]
+
                     ),
                     Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                     InkWell(
@@ -265,57 +334,47 @@ class _LoginpageState extends State<Loginpage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Checkbox(
-                          value: remember,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              remember = value ?? false;
-                              _saveRememberMeStatus();
-                            });
-                          },
-                        ),
-                        Text("ID REMEBER"),
-                        CupertinoSwitch(
-                          value: switchValue,
-                          activeColor: CupertinoColors.activeBlue,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              switchValue = value ?? false;
-                            });
-                          },
-                        ),
-                        Text("Auto Login"),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => JoinPage()),
-                            );
-                          },
-                          child: Text(
-                            "회원가입",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => IdFindPage()),
                             );
                           },
-                          child: Text("ID찾기", style: TextStyle(color: Colors.black)),
+                          child: Text("Find ID",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 22,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                          ),
+                          
+                          ),
                         ),
+                        Text("l",
+                                                  style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 25,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                          ),
+                          ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => PwFindPage()),
                             );
                           },
-                          child: Text("Password찾기", style: TextStyle(color: Colors.black)),
+                          child: Text("Find Password",
+                          style: TextStyle(
+                          color: Color(0xFF194062),
+                          fontSize: 22,
+                          fontFamily: 'Gowun Dodum',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                          ),
+                          ),
                         ),
                       ],
                     ),
