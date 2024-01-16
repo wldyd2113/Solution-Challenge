@@ -151,13 +151,16 @@ class _JoinPageState extends State<JoinPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          
-                          const Text("Email",
+                          Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child:const Text("Email",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
+                          ),
                           ),
                           ),
                           SizedBox(
@@ -180,13 +183,16 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          
-                          const Text("NickName",
+                          Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("NickName",
                           style: TextStyle(  
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
+                          ),
                           ),
                           ),
                           SizedBox(
@@ -224,6 +230,7 @@ class _JoinPageState extends State<JoinPage> {
                               elevation: 4, ),
                             ),
                           ),
+                          
                           const Text("Phone Number",
                           style: TextStyle(
                           color: Color(0xFF194062),
@@ -249,13 +256,18 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Password",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Password",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -275,13 +287,18 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Age",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Age",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -300,13 +317,18 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Gender",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Gender",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: DropdownButtonFormField<String?>(
@@ -334,13 +356,18 @@ class _JoinPageState extends State<JoinPage> {
                             ),
 
                           ),
-                          const Text("Job",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Job",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -359,13 +386,18 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Country",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Country",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(
@@ -384,13 +416,18 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          const Text("Language",
+                          Container(
+                            alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: const Text("Language",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
                           fontWeight: FontWeight.w400,
-                          ),),
+                          ),
+                          ),
+                          ),
                           SizedBox(
                             width: 300,
                             child: TextFormField(

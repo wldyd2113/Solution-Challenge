@@ -15,6 +15,107 @@ class _PwFindPageState extends State<PwFindPage> {
   bool _isVerificationSuccess = false;
   bool _isPasswordSent = false;
 
+
+    void _sendVerificationEmail() async {
+    final String apiUrl = 'http://localhost:8080/mail/auth';
+
+    String email = _emailController.text;
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiUrl),
+       
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        // 인증 코드를 성공적으로 보냈을 때의 로직 추가
+      } else {
+        print('서버 응답 에러: ${response.statusCode}');
+        print('에러 내용: ${response.body}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+    }
+  }
+
+  void _verifyEmail() async {
+    final String apiUrl = 'http://localhost:8080/mail/authCheck';
+
+    String email = _emailController.text;
+    String verificationCode = _verificationCodeController.text;
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'authNum': verificationCode}),
+      );
+
+      if (response.statusCode == 200) {
+        // 이메일 인증이 성공적으로 확인되었을 때의 로직 추가
+        setState(() {
+          _isVerificationSuccess = true;
+        });
+      } else {
+        print('서버 응답 에러: ${response.statusCode}');
+        print('에러 내용: ${response.body}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+    }
+  }
+  void _temporary() async {
+  final apiUrl = "http://localhost:8080/user/password/${_emailController.text}";
+
+  try {
+    var response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      // 서버에서 임시 비밀번호를 성공적으로 가져왔을 때의 로직 추가
+      String temporaryPassword = jsonDecode(response.body)['temporaryPassword'];
+      
+      // 임시 비밀번호를 서버로 전송
+      _sendTemporaryPassword(temporaryPassword);
+    } else {
+      print('서버 응답 에러: ${response.statusCode}');
+      print('에러 내용: ${response.body}');
+    }
+  } catch (error) {
+    print('에러 발생: $error');
+  }
+}
+
+void _sendTemporaryPassword(String temporaryPassword) async {
+  final String apiUrl = 'http://localhost:8080/mail/temporaryPassword';
+
+  String email = _emailController.text;
+
+  try {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'temporaryPassword': temporaryPassword}),
+    );
+
+    if (response.statusCode == 200) {
+      // 임시 비밀번호를 성공적으로 이메일로 보냈을 때의 로직 추가
+      setState(() {
+        _isPasswordSent = true;
+      });
+    } else {
+      print('서버 응답 에러: ${response.statusCode}');
+      print('에러 내용: ${response.body}');
+    }
+  } catch (error) {
+    print('에러 발생: $error');
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,105 +224,5 @@ class _PwFindPageState extends State<PwFindPage> {
       ),
     );
   }
-
-  void _sendVerificationEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/auth';
-
-    String email = _emailController.text;
-
-    try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-       
-        body: jsonEncode({'email': email}),
-      );
-
-      if (response.statusCode == 200) {
-        // 인증 코드를 성공적으로 보냈을 때의 로직 추가
-      } else {
-        print('서버 응답 에러: ${response.statusCode}');
-        print('에러 내용: ${response.body}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
-    }
-  }
-
-  void _verifyEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/authCheck';
-
-    String email = _emailController.text;
-    String verificationCode = _verificationCodeController.text;
-
-    try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'authNum': verificationCode}),
-      );
-
-      if (response.statusCode == 200) {
-        // 이메일 인증이 성공적으로 확인되었을 때의 로직 추가
-        setState(() {
-          _isVerificationSuccess = true;
-        });
-      } else {
-        print('서버 응답 에러: ${response.statusCode}');
-        print('에러 내용: ${response.body}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
-    }
-  }
-  void _temporary() async {
-  final apiUrl = "http://localhost:8080/user/password/${_emailController.text}";
-
-  try {
-    var response = await http.get(
-      Uri.parse(apiUrl),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      // 서버에서 임시 비밀번호를 성공적으로 가져왔을 때의 로직 추가
-      String temporaryPassword = jsonDecode(response.body)['temporaryPassword'];
-      
-      // 임시 비밀번호를 서버로 전송
-      _sendTemporaryPassword(temporaryPassword);
-    } else {
-      print('서버 응답 에러: ${response.statusCode}');
-      print('에러 내용: ${response.body}');
-    }
-  } catch (error) {
-    print('에러 발생: $error');
-  }
-}
-
-void _sendTemporaryPassword(String temporaryPassword) async {
-  final String apiUrl = 'http://localhost:8080/mail/temporaryPassword';
-
-  String email = _emailController.text;
-
-  try {
-    var response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'temporaryPassword': temporaryPassword}),
-    );
-
-    if (response.statusCode == 200) {
-      // 임시 비밀번호를 성공적으로 이메일로 보냈을 때의 로직 추가
-      setState(() {
-        _isPasswordSent = true;
-      });
-    } else {
-      print('서버 응답 에러: ${response.statusCode}');
-      print('에러 내용: ${response.body}');
-    }
-  } catch (error) {
-    print('에러 발생: $error');
-  }
-}
-
 
 }

@@ -8,6 +8,7 @@ import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/SendDiary.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
+import 'package:mytodaysdiary/diaryViews/explanation.dart';
 import 'package:provider/provider.dart';
 
 //나만 볼수 있거나 누군가에게 전송할수 있는 페이지
@@ -115,7 +116,7 @@ Future<void> sendUserServer() async {
         title: const Text("Diary"),
         actions: <Widget>[],
       ),
-            body: SafeArea(
+        body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
             child:Container(
@@ -130,7 +131,6 @@ Future<void> sendUserServer() async {
               ),
               child:Container(
                 alignment: Alignment.topLeft,
-                
                 width: 323,
                 height: 545.11,
                 decoration: ShapeDecoration(
@@ -168,14 +168,23 @@ Future<void> sendUserServer() async {
               )
               ],
               ),
-                child: SingleChildScrollView(
-          child: Column(
+            child: SingleChildScrollView(
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-                  Text(
-                    "Feelings of The Day:",
-                    style: TextStyle(fontSize: 13),
+              Container(
+                alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Feelings of The Day",
+                    style: TextStyle(
+                    color: Color(0xFF76453B),
+                    fontSize: 20,
+                    fontFamily: 'Noto Sans',
+                    fontWeight: FontWeight.w400,
+                    height: 0,
+                    ),
                   ),
+              ),
                   ToggleButtons(
                     children: [
                       Padding(
@@ -211,7 +220,7 @@ Future<void> sendUserServer() async {
                                     : Colors.white,
                     selectedColor: Colors.black,
                     selectedBorderColor: Colors.transparent,
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(10),
                   ),
               Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
               Form(
@@ -252,6 +261,7 @@ Future<void> sendUserServer() async {
                       ),
                     ),
                     Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                    Row(children:[
                     Text("누군가에게 들려주고픈 나의 하루",
                         style: TextStyle(
                         color: Color(0xFF76453B),
@@ -261,6 +271,17 @@ Future<void> sendUserServer() async {
                         height: 0,
                         ),
                         ),
+                            IconButton(
+                            onPressed: (){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => Explanation(),),);
+                            } ,
+                            
+                            
+                            icon: Icon(Icons.info),
+                          ),
+                    ],
+                    ),
                     SizedBox(
                       width: 350,
                       child: TextFormField(
