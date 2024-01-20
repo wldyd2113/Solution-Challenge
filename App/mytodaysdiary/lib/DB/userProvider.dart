@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class UserProvider extends ChangeNotifier {
   String _email = ''; //이메일
   String _name = ''; //닉네임
-  String _phone = ''; //전화번호
   String _password = ''; //비밀번호
   String _newpassword = '';//바뀐비밀번호
   late int _age; //나이
@@ -15,7 +14,6 @@ class UserProvider extends ChangeNotifier {
 
   String get email => _email;
   String get name => _name;
-  String get phone => _phone;
   int get age => _age;
   String get password => _password;
   String get newpassword => _newpassword;
@@ -36,10 +34,6 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void set phone(String input_phone) {
-    _phone = input_phone;
-    notifyListeners();
-  }
 
   void set age(int input_age) {
     _age = input_age;

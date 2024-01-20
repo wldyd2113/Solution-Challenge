@@ -170,7 +170,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       ),
                       child:Column(children:[
                       Container(
-                      child: Text("‘누군가에게 들려주고픈 나의 하루’ 기능은 일기를 공유할 수 있는 기능입니다. 작성하실 경우, 익명성이 유지된 채 다른 사용자들과 일기를 1:1로 공유할 수 있습니다. ’나의 하루’에 작성하는 일기는 공유되지 않으며, ‘누군가에게 들려주고픈 나의 하루’에 작성한 내용만 공유됩니다.",
+                      child: Text("‘누군가에게 들려주고픈 나의 하루’ 기능은 일기를 공유할 수 있는 기능입니다. 작성하실 경우, 익명성이 유지된 채 다른 사용자들과 일기를 1:1로 공유할 수 있습니다.’나의 하루’에 작성하는 일기는 공유되지 않으며, ‘누군가에게 들려주고픈 나의 하루’에 작성한 내용만 공유됩니다.",
                       style: TextStyle(
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,

@@ -3,17 +3,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mytodaysdiary/loginViews/login.dart';
+import 'package:mytodaysdiary/loginViews/joinPage.dart';
 
-class PwFindPage extends StatefulWidget {
+class EmailAu extends StatefulWidget {
   @override
-  _PwFindPageState createState() => _PwFindPageState();
+  _EmailAuState createState() => _EmailAuState();
 }
 
-class _PwFindPageState extends State<PwFindPage> {
+class _EmailAuState extends State<EmailAu> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _verificationCodeController = TextEditingController();
-  String _foundPw = '';
+
+
   bool _isVerificationSuccess = false;
   bool _isPasswordSent = false;
 
@@ -89,54 +90,6 @@ class _PwFindPageState extends State<PwFindPage> {
     }
   }
 
-  void _temporary() async {
-    final apiUrl = "http://localhost:8080/user/password/${_emailController.text}";
-
-    try {
-      var response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        String temporaryPassword = response.body;
-
-        // Show a confirmation dialog
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('임시 비밀번호 전송'),
-              content: Text('임시 비밀번호가 이메일로 전송되었습니다.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                    _navigateToLoginScreen(); // Navigate to the login screen
-                  },
-                  child: Text('완료'),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        print('서버 응답 에러: ${response.statusCode}');
-        print('에러 내용: ${response.body}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
-    }
-  }
-
-  void _navigateToLoginScreen() {
-    // Navigate to the login screen using Navigator
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Loginpage()), // Replace LoginScreen with your actual login screen class
-    );
-  }
-
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -151,7 +104,7 @@ class _PwFindPageState extends State<PwFindPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
-        title: Text('Password 찾기'),
+        title: Text('이메일 인증'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -228,29 +181,35 @@ class _PwFindPageState extends State<PwFindPage> {
                   ),
                 ),
                 SizedBox(height: 10),
+
                 SizedBox(
-                  width: 300,
-                  child: ElevatedButton(
-                    onPressed: _isVerificationSuccess && !_isPasswordSent ? _temporary : null,
-                    child: const Text(
-                      '임시 비밀번호 발급받기',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontFamily: 'Gowun Dodum',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xCC2D9596),
-                      elevation: 4,
-                    ),
-                  ),
-                ),
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JoinPage(),
+                                  ),
+                                );
+                              },
+                              child: Text('완료',
+                              style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontFamily: 'Gowun Dodum',
+                              fontWeight: FontWeight.w400,),),
+                              style: ElevatedButton.styleFrom(
+                              primary:  Color(0xCC2D9596),
+                              elevation: 4, ),
+                            ),
+                          ),
+                
               ],
             ),
           ),
         ),
+        
       ),
     );
   }

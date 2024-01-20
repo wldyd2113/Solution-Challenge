@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/loginViews/email_au.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,6 @@ class JoinPage extends StatefulWidget {
 class _JoinPageState extends State<JoinPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
@@ -48,7 +48,7 @@ class _JoinPageState extends State<JoinPage> {
         void _checkNicknameUniqueness() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/signup'), // 서버의 실제 엔드포인트로 수정
+          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
           headers: {
             'Content-Type': 'application/json',
           },
@@ -81,14 +81,13 @@ class _JoinPageState extends State<JoinPage> {
     void sendUserServer() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/signup'),
+          Uri.parse('http://localhost:8080/user/signup'),
           headers: {
             'Content-Type': 'application/json',
           },
           body: jsonEncode({
             'email': userProvider.email,
             'name': userProvider.name,
-            'phone': userProvider.phone.toString(),
             'password': userProvider.password,
             'age': userProvider.age.toString(),
             'sex': userProvider.sex,
@@ -183,6 +182,28 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
+                          SizedBox(
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EmailAu(),
+                                  ),
+                                );
+                              },
+                              child: Text('Email Authentication',
+                              style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'Gowun Dodum',
+                              fontWeight: FontWeight.w400,),),
+                              style: ElevatedButton.styleFrom(
+                              primary:  Color(0xCC2D9596),
+                              elevation: 4, ),
+                            ),
+                          ),
                           Container(
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
@@ -231,31 +252,7 @@ class _JoinPageState extends State<JoinPage> {
                             ),
                           ),
                           
-                          const Text("Phone Number",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),),
-                          SizedBox(
-                            width: 300,
-                            child: TextFormField(
-                              controller: _phoneController,
-                              decoration: InputDecoration(
-                                hintText: 'Phone Number',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return ("Please enter your Phone Number");
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
+                          
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
@@ -458,7 +455,6 @@ class _JoinPageState extends State<JoinPage> {
                               if (_formKey.currentState!.validate()) {
                                 userProvider.email = _emailController.text;
                                 userProvider.name = _nameController.text;
-                                userProvider.phone = _phoneController.text;
                                 userProvider.password =
                                     _passwordController.text;
 
