@@ -17,17 +17,15 @@ public class MyPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MYPOST_ID")
     private Long myPostId;
-    @Column(name = "MY_POST_TITLE")
-    private String title;
-    @Column(name = "MY_POST_BODY")
-    private String body;
+    @Column(name = "MY_DIARY")
+    private String myDiary;
     @Column(name = "MY_EMOTION")
     private String emotion;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_AT", updatable = false)
-    private Date createdAt;
+    private Date currentDate;
 
 
     @ManyToOne
@@ -35,19 +33,17 @@ public class MyPost {
     private User user;
 
     @Builder
-    public MyPost( String title, String body, User user, String emotion){
-        this.title=title;
-        this.body=body;
+    public MyPost( String myDiary, User user, String emotion){
+        this.myDiary=myDiary;
         this.emotion=emotion;
         this.user=user;
     }
 
     public MyPostResponseDto toDto(){
         MyPostResponseDto myPostResponseDto = MyPostResponseDto.builder()
-                .title(this.getTitle())
-                .body(this.getBody())
+                .myDiary(this.getMyDiary())
                 .emotion(this.getEmotion())
-                .createdAt(this.getCreatedAt())
+                .currentDate(this.getCurrentDate())
                 .build();
         return myPostResponseDto;
     }

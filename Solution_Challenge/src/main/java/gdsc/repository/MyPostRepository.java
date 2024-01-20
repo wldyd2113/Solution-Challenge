@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface MyPostRepository extends JpaRepository<MyPost, Long> {
 
-    @Query("SELECT mp FROM MyPost mp WHERE mp.user = :user AND DATE(mp.createdAt) = :date")
+    @Query("SELECT mp FROM MyPost mp WHERE mp.user = :user AND DATE(mp.currentDate) = :date")
     List<MyPost> findByUserAndCreatedAt(@Param("user") User user, @Param("date") LocalDate date);
 }
