@@ -55,10 +55,10 @@ public class UserController {
                 Integer userage = optionalUser.get().getAge();
                 String userlocation = optionalUser.get().getLocation();
                 String userlanguage = optionalUser.get().getLanguage();
-                String userphone = optionalUser.get().getPhone();
+                //String userphone = optionalUser.get().getPhone();
                 String userjob = optionalUser.get().getJob();
                 String usersex = optionalUser.get().getSex();
-                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + "\nuser phone: " + userphone + "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
+                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + /*"\nuser phone: " + userphone +*/ "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
             } else {
                 // 사용자 정보가 없을 경우 처리
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

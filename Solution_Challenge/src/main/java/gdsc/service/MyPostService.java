@@ -30,8 +30,7 @@ public class MyPostService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         MyPost newMyPost = MyPost.builder()
-                .title(myPostRequestDto.getTitle())
-                .body(myPostRequestDto.getBody())
+                .myDiary(myPostRequestDto.getMyDiary())
                 .emotion(myPostRequestDto.getEmotion())
                 .user(user)
                 .build();

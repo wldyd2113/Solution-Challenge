@@ -8,8 +8,7 @@ import java.util.Date;
 @Data
 @Builder
 public class MyPostResponseDto {
-    private String title;
-    private String body;
+    private String myDiary;
     private String emotion;
-    private Date createdAt;
+    private Date currentDate;
 }
