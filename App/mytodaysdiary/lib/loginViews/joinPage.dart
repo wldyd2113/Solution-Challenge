@@ -48,7 +48,7 @@ class _JoinPageState extends State<JoinPage> {
         void _checkNicknameUniqueness() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
+          Uri.parse('http://localhost:8080/signup'), // 서버의 실제 엔드포인트로 수정
           headers: {
             'Content-Type': 'application/json',
           },
@@ -81,7 +81,7 @@ class _JoinPageState extends State<JoinPage> {
     void sendUserServer() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'),
+          Uri.parse('http://localhost:8080/signup'),
           headers: {
             'Content-Type': 'application/json',
           },

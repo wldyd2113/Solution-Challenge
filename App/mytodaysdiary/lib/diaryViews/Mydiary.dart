@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
-import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/SendDiary.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
@@ -70,39 +69,68 @@ class _MyDiaryState extends State<MyDiary> {
         break;
     }
   }
+
+void decodeToken(String token) {
+  final parts = token.split('.');
+  if (parts.length != 3) {
+    print('토큰 구조가 잘못되었습니다.');
+    return;
+  }
+
+  final payload = parts[1];
+  final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
+  print('디코딩된 토큰 페이로드: $decoded');
+}
+
+  
 //서버로 현재 날짜와 일기 작성 감정 보냄
 Future<void> sendUserServer() async {
   final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
 
   // 저장된 토큰을 저장소에서 가져옵니다.
-  String? accessToken = await TokenStorage.getToken();
+  String? token = await TokenStorage.getToken();
+    if (token != null) {
+      decodeToken(token);
 
   try {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8080/api/posts/save'),
+      Uri.parse('http://localhost:8080/api/posts/save'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken', // 헤더에 토큰을 포함
+        'Authorization': 'Bearer $token', // 헤더에 토큰을 포함
       },
       body: jsonEncode({
         'myDiary': diaryProvider.myDiary,
         'emotion': diaryProvider.emotion,
         'currentDate': DateTime.now().toString(),
       }),
+      
     );
 
-    if (response.statusCode == 200) {
+    // 서버 응답 출력
+    print('응답: ${response.statusCode}');
+    print('응답 본문: ${response.body}');
+
+    if (response.statusCode == 201) {
       print('성공: ${response.body}');
+
+      // 서버 응답 데이터 디코딩 및 출력
+      try {
+        final responseData = jsonDecode(response.body);
+        print('응답 본문 디코딩 결과: $responseData');
+      } catch (error) {
+        print('JSON 디코딩 에러: $error');
+      }
     } else {
       print('상태 코드 ${response.statusCode}로 실패했습니다.');
     }
   } catch (error) {
     print('에러: $error');
   }
+}else {
+  print("토큰이 없습니다");
 }
-
-
+}
 
 
   @override

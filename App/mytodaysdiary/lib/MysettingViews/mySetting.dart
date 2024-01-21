@@ -76,7 +76,6 @@ class _MySettingState extends State<MySetting> {
             print('서버 응답 형식 예외처리: 기대하지 않은 형식');
           }
         } else if (getResponse.statusCode == 401) {
-          // ... (기존 코드)
         } else {
           print('데이터 로드 실패: ${getResponse.statusCode}');
         }
