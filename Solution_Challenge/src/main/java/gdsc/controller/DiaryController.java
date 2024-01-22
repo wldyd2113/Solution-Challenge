@@ -47,5 +47,21 @@ public class DiaryController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+    // 현재 로그인한 사용자가 받은 일기 조회
+    @GetMapping("/receivedDiaries")
+    public ResponseEntity<List<SendDiaryResponseDto>> getReceivedDiariesForCurrentUser(Principal principal) {
+        try {
+            // Principal을 이용하여 현재 로그인한 사용자의 정보를 가져옴
+            // 여기에서는 간단하게 사용자의 ID만 가져왔다고 가정
+            Long userId = Long.parseLong(principal.getName());
+
+            // DiaryService를 사용하여 사용자의 ID로 받은 일기 조회
+            List<SendDiaryResponseDto> receivedDiaries = diaryService.getReceivedDiariesForUser(userId);
+
+            return new ResponseEntity<>(receivedDiaries, HttpStatus.OK);
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
 
 }

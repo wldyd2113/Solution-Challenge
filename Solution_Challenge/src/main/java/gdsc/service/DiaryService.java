@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class DiaryService {
         SendDiary newSendDiary = SendDiary.builder()
                 .body(sendDiaryRequestDto.getBody())
                 .emotion(sendDiaryRequestDto.getEmotion())
-                .user(user)
+                .senderUser(user)
                 .build();
 
         SendDiary savedSendDiary = sendDiaryRepository.save(newSendDiary);
@@ -57,7 +58,7 @@ public class DiaryService {
             SendDiary newSendDiary = SendDiary.builder()
                     .body(sendDiaryRequestDto.getBody())
                     .emotion(sendDiaryRequestDto.getEmotion())
-                    .user(randomUser)
+                    .senderUser(randomUser)
                     .build();
 
             SendDiary savedSendDiary = sendDiaryRepository.save(newSendDiary);
@@ -86,16 +87,25 @@ public class DiaryService {
         List<User> allUsers = userRepository.findAll();
 
         if (!allUsers.isEmpty()) {
-            // 랜덤 사용자 선택
+            // 랜덤 보내는 사용자 선택
             Random random = new Random();
-            int randomIndex = random.nextInt(allUsers.size());
-            User randomUser = allUsers.get(randomIndex);
+            int senderIndex = random.nextInt(allUsers.size());
+            User senderUser = allUsers.get(senderIndex);
+
+            // 랜덤 받는 사용자 선택
+            int receiverIndex;
+            do {
+                receiverIndex = random.nextInt(allUsers.size());
+            } while (receiverIndex == senderIndex); // 받는 사용자와 보내는 사용자가 같으면 다시 선택
+
+            User receiverUser = allUsers.get(receiverIndex);
 
             // 일기 전송
             SendDiary newSendDiary = SendDiary.builder()
                     .body(sendDiaryRequestDto.getBody())
                     .emotion(sendDiaryRequestDto.getEmotion())
-                    .user(randomUser)
+                    .senderUser(senderUser)
+                    .receiverUser(receiverUser)
                     .build();
 
             SendDiary savedSendDiary = sendDiaryRepository.save(newSendDiary);
@@ -104,5 +114,22 @@ public class DiaryService {
             throw new RuntimeException("등록된 사용자가 없습니다.");
         }
     }
+    @Transactional
+    public List<SendDiaryResponseDto> getReceivedDiariesForUser(Long userId) {
+        // UserRepository를 사용하여 userId에 해당하는 사용자를 조회
+        Optional<User> optionalUser = userRepository.findById(userId);
 
+        if (optionalUser.isPresent()) {
+            User receivingUser = optionalUser.get();
+
+            // 해당 사용자가 받은 모든 일기 조회
+            List<SendDiary> receivedDiaries = sendDiaryRepository.findByReceiverUser(receivingUser);
+
+            return receivedDiaries.stream()
+                    .map(SendDiary::toDto)
+                    .collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("사용자가 존재하지 않습니다.");
+        }
+    }
 }
