@@ -1,0 +1,19 @@
+services:
+  database:
+    image: mysql
+    container_name: mysql-database
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+  application:
+    image: sukwan/Solution-challenge
+    container_name: spring-boot-app
+    depends_on:
+      - mysql-databse
+    environment:
+      DB_JDBC_URL: ${DB_JDBC_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ACCESS_TOKEN

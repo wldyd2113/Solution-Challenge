@@ -3,10 +3,13 @@ package com.gdsc.solutionchallenge.controller;
 import com.gdsc.solutionchallenge.domain.User;
 import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
+import com.gdsc.solutionchallenge.service.FirebaseAuthenticationService;
 import com.gdsc.solutionchallenge.service.MailService;
 import com.gdsc.solutionchallenge.service.UserService;
+import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private final FirebaseAuthenticationService firebaseAuthenticationService;
 
     @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto){
@@ -44,15 +48,14 @@ public class UserController {
     }
 
 
-    @GetMapping("/admin")
-    public ResponseEntity<String> admin(){
-        return ResponseEntity.ok("Hello Admin");
-    }
+    @GetMapping("/check/{email}") // localhost:8080/user/check/{email}   가입된 이메일인지 확인
+    public ResponseEntity<String> findEmail(@PathVariable String email){
+        boolean exist = userService.checkEmail(email);
+        if(exist)
+            return ResponseEntity.ok("가입된 이메일");
+        else
+            return ResponseEntity.ok("가입되지 않은 이메일");
 
-    @GetMapping("/email/{name}") // localhost:8080/user/email/{이름}   이름으로 이메일 찾기
-    public ResponseEntity<String> findEmailByName(@PathVariable String name){
-        String userEmail = userService.findEmailByName(name);
-        return ResponseEntity.ok(userEmail);
     }
 
     @GetMapping("/password/{email}")  // localhost:8080/user/password/{email}   이메일로 비밀번호 찾기 ( 이메일 인증 필수 )
@@ -70,7 +73,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/info")
+    @GetMapping("/user/info")
     public ResponseEntity<String> user(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
 
@@ -97,5 +100,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
     }
+    @PostMapping("/authenticate-firebase")
+    public ResponseEntity<String> authenticateAndGenerateBearerToken(@RequestBody String firebaseIdToken) {
+        try {
+            // Firebase ID 토큰 검증하고 Bearer 토큰 생성
+            String bearerToken = firebaseAuthenticationService.authenticateAndGenerateBearerToken(firebaseIdToken);
+            return ResponseEntity.ok(bearerToken);
+        } catch (FirebaseAuthException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 실패");
+        }
+    }
+
 
 }

@@ -44,9 +44,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // 세션 관리 정책을 항상 새로운 세션을 생성하도록 설정
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests   // HTTP 요청에 대한 인가 규칙 설정
-                        .requestMatchers("/user/**").permitAll()    // "/user/**"에 대한 요청은 모두에게 허용
-//                        .requestMatchers("/user/info").authenticated()
-                        .requestMatchers("/mail/*").permitAll()
+                        .requestMatchers("/login","/signup","/googleSignup","/email/{name}","/password/{email}","/mail/*","/authenticate-firebase","/user/**","/diary/**","/diary").permitAll()    // "/user/**"에 대한 요청은 모두에게 허용
+                        .requestMatchers("/user/info").authenticated()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
