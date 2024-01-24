@@ -14,14 +14,17 @@ public class DiaryResponseDto {
     private String emotion;
     private String secretDiary;
     private String shareDiary;
+    private String message;
     private LocalDateTime date;
 
+
     @Builder
-    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, LocalDateTime date){
+    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date){
         this.id = id;
         this.emotion = emotion;
         this.secretDiary = secretDiary;
         this.shareDiary = shareDiary;
+        this.message = message;
         this.date = date;
     }
 
@@ -31,6 +34,7 @@ public class DiaryResponseDto {
                 .emotion(diary.getEmotion())
                 .secretDiary(diary.getSecretDiary())
                 .shareDiary(diary.getShareDiary())
+                .message(diary.getMessage())
                 .date(diary.getDate())
                 .build();
     }

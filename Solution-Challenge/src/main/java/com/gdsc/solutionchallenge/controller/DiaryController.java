@@ -19,27 +19,25 @@ public class DiaryController {
 
     private final DiaryService diaryService;
 
-    @PostMapping("/save")
+    @PostMapping("/save") // localhost:8080/diary/save        { "emotion" : "", "secretDiary" : "", "shareDiary" : "" } 일기 저장
     public ResponseEntity<DiaryResponseDto> writeDiary(@RequestBody DiaryRequestDto diaryRequestDto, Principal principal) {
         Long userId = Long.parseLong(principal.getName());
-
         DiaryResponseDto diary = diaryService.writeDiary(diaryRequestDto, userId);
-
         return new ResponseEntity<>(diary, HttpStatus.CREATED);
     }
-    @GetMapping("/{diaryId}")
+    @GetMapping("/{diaryId}") // localhost:8080/diary/{diaryId}   일기 조회 반환 값{Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date}
     public ResponseEntity<DiaryResponseDto> getDiaryById(@PathVariable Long diaryId){
         DiaryResponseDto diary = diaryService.getDiary(diaryId);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
-    @GetMapping("/oldest")
+    @GetMapping("/oldest")  // localhost:8080/diary/oldest     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
     public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(){
         OldestDiaryResponseDto diary = diaryService.getOldestDiary();
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
-    @PostMapping("/writeMessage")
-    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, Long diaryId){
+    @PostMapping("/writeMessage/{diaryId}") // localhost:8080/diary/writeMessage/{diaryId}    응원메세지 작성 { "message" : "" }
+    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, @PathVariable Long diaryId){
         DiaryResponseDto result = diaryService.writeMessage(messageDto, diaryId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
