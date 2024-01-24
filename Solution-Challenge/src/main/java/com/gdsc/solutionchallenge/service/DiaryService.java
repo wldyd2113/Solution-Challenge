@@ -35,6 +35,7 @@ public class DiaryService {
         Diary oldestDiary = diaryRepository.findOldestDiary()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
         oldestDiary.setViewed(true);
+        diaryRepository.save(oldestDiary);
         return oldestDiary.toOldestDto();
     }
 
