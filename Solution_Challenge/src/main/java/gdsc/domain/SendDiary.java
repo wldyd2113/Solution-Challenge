@@ -21,7 +21,7 @@ public class SendDiary {
     @Column(name = "SEND_DAIRY_ID")
     private Long SendDairyId;
     @Column(name = "SEND_DAIRY_BODY")
-    private String body;
+    private String diary;
     @Column(name = "SEND_DAIRY_EMOTION")
     private String emotion;
 
@@ -30,7 +30,7 @@ public class SendDiary {
     private User senderUser;
 
     @ManyToOne
-    @JoinColumn(name = "RECEIVER_USER_ID") // 일기를 받는 사용자의 ID
+    @JoinColumn(name = "RECEIVER_USER_ID")  // 일기를 받는 사용자의 ID
     private User receiverUser;
 
     @UpdateTimestamp
@@ -39,8 +39,8 @@ public class SendDiary {
     private Date createdAt;
 
     @Builder
-    public SendDiary(String body, User senderUser, User receiverUser, String emotion){
-        this.body=body;
+    public SendDiary(String diary, User senderUser, User receiverUser, String emotion){
+        this.diary=diary;
         this.emotion=emotion;
         this.senderUser=senderUser;
         this.receiverUser=receiverUser;
@@ -48,7 +48,7 @@ public class SendDiary {
 
     public SendDiaryResponseDto toDto(){
         SendDiaryResponseDto sendDiaryResponseDto = SendDiaryResponseDto.builder()
-                .body(this.getBody())
+                .diary(this.getDiary())
                 .emotion(this.getEmotion())
                 .createdAt(this.getCreatedAt())
                 .build();

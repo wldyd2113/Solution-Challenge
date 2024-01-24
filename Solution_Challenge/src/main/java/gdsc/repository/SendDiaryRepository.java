@@ -17,4 +17,5 @@ public interface SendDiaryRepository extends JpaRepository <SendDiary, Long> {
     List<SendDiary> findByUserAndCreatedAt(@Param("user") User user, @Param("date") LocalDate date);
 
     List<SendDiary> findByReceiverUser(User receiverUser);
+
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 @Builder
 public class SendDiaryResponseDto {
-    private String body;
+    private String diary;
     private String emotion;
     private Date createdAt;
 }

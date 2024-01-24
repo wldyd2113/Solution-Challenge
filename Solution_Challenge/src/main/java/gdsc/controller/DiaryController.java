@@ -1,13 +1,15 @@
 package gdsc.controller;
 
-import gdsc.dto.MyPostResponseDto;
+import gdsc.domain.User;
 import gdsc.dto.SendDiaryRequestDto;
 import gdsc.dto.SendDiaryResponseDto;
+import gdsc.repository.UserRepository;
 import gdsc.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,16 +21,28 @@ import java.util.List;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public DiaryController(DiaryService diaryService) {
+    public DiaryController(DiaryService diaryService, UserRepository userRepository) {
         this.diaryService = diaryService;
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/createAndSendRandom")
-    public ResponseEntity<SendDiaryResponseDto> createAndSendRandomDiary(@RequestBody SendDiaryRequestDto sendDiaryRequestDto) {
-        SendDiaryResponseDto createdAndSentDiary = diaryService.createAndSendRandomDiary(sendDiaryRequestDto);
-        return new ResponseEntity<>(createdAndSentDiary, HttpStatus.CREATED);
+    @PostMapping("/create-and-send")
+    public ResponseEntity<?> createAndSendDiary(@RequestBody SendDiaryRequestDto sendDiaryRequestDto, Principal principal) {
+        try {
+            Long userId = Long.parseLong(principal.getName());
+            User senderUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
+
+            SendDiaryResponseDto response = diaryService.createAndSendDiaryToRandomUser(sendDiaryRequestDto, senderUser);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("유효하지 않은 사용자 ID 형식입니다.", HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("일기를 생성하고 전송하는 도중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/findSendDiary")
@@ -48,6 +62,7 @@ public class DiaryController {
         }
     }
     // 현재 로그인한 사용자가 받은 일기 조회
+    //
     @GetMapping("/receivedDiaries")
     public ResponseEntity<List<SendDiaryResponseDto>> getReceivedDiariesForCurrentUser(Principal principal) {
         try {

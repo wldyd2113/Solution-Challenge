@@ -48,9 +48,15 @@ public class MyPostController {
             // PostService를 사용하여 사용자의 ID와 날짜로 게시글 조회
             List<MyPostResponseDto> posts = myPostService.getPostsByUserAndDate(userId, date);
 
+            if (posts.isEmpty()) {
+                // 해당 날짜에 일기가 없을 경우 예외 처리
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
 }

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class SendDiaryRequestDto {
-    private String body;
+    private String diary;
     private String emotion;
 }
