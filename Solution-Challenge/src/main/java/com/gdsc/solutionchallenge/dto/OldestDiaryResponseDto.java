@@ -10,4 +10,5 @@ import java.security.Principal;
 public class OldestDiaryResponseDto {
     private Long id;
     private String shareDiary;
+    private String emotion;
 }

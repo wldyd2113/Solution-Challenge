@@ -14,7 +14,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DiaryService {
     private final DiaryRepository diaryRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
 
     public DiaryResponseDto writeDiary(DiaryRequestDto requestDto, Long userId) {
@@ -25,8 +24,8 @@ public class DiaryService {
         return DiaryResponseDto.of(savedDiary);
     }
 
-    public DiaryResponseDto getDiary(Long diaryId) {
-        Diary diary = diaryRepository.findById(diaryId)
+    public DiaryResponseDto getDiary(String date) {
+        Diary diary = diaryRepository.findByDate(date)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
         return diary.toDto();
     }
