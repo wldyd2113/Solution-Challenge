@@ -39,17 +39,21 @@ public class Diary {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime date;
+    private LocalDateTime createdAt;
+
+    @Column(name = "DATE")
+    private String date;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;
 
     @Builder
-    public Diary(String emotion, String secretDiary, String shareDiary, User user, LocalDateTime date){
+    public Diary(String emotion, String secretDiary, String shareDiary, User user, String date, LocalDateTime createdAt){
         this.emotion = emotion;
         this.secretDiary = secretDiary;
         this.shareDiary = shareDiary;
+        this.createdAt = createdAt;
         this.date = date;
         this.user = user;
     }
@@ -59,12 +63,14 @@ public class Diary {
                 .emotion(this.emotion)
                 .secretDiary(this.secretDiary)
                 .shareDiary(this.shareDiary)
+                .createdAt(this.createdAt)
                 .date(this.date)
                 .build();
     }
     public OldestDiaryResponseDto toOldestDto(){
         return OldestDiaryResponseDto.builder()
                 .id(this.id)
+                .emotion(this.emotion)
                 .shareDiary(this.shareDiary)
                 .build();
     }
@@ -74,6 +80,7 @@ public class Diary {
                 .emotion(requestDto.getEmotion())
                 .secretDiary(requestDto.getSecretDiary())
                 .shareDiary(requestDto.getShareDiary())
+                .date(requestDto.getDate())
                 .user(user)
                 .build();
     }

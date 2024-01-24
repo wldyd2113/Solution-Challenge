@@ -45,7 +45,6 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests   // HTTP 요청에 대한 인가 규칙 설정
                         .requestMatchers("/login","/signup","/googleSignup","/email/{name}","/password/{email}","/mail/*","/authenticate-firebase","/user/**","/diary/**","/diary").permitAll()    // "/user/**"에 대한 요청은 모두에게 허용
-                        .requestMatchers("/user/info").authenticated()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

@@ -12,4 +12,5 @@ public class DiaryRequestDto {
     private String emotion;
     private String secretDiary;
     private String shareDiary;
+    private String date;
 }

@@ -15,16 +15,18 @@ public class DiaryResponseDto {
     private String secretDiary;
     private String shareDiary;
     private String message;
-    private LocalDateTime date;
+    private LocalDateTime createdAt;
+    private String date;
 
 
     @Builder
-    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date){
+    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime createdAt, String date){
         this.id = id;
         this.emotion = emotion;
         this.secretDiary = secretDiary;
         this.shareDiary = shareDiary;
         this.message = message;
+        this.createdAt = createdAt;
         this.date = date;
     }
 
@@ -35,6 +37,7 @@ public class DiaryResponseDto {
                 .secretDiary(diary.getSecretDiary())
                 .shareDiary(diary.getShareDiary())
                 .message(diary.getMessage())
+                .createdAt(diary.getCreatedAt())
                 .date(diary.getDate())
                 .build();
     }
