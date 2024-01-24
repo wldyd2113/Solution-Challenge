@@ -2,6 +2,8 @@ package com.gdsc.solutionchallenge.controller;
 
 import com.gdsc.solutionchallenge.dto.DiaryRequestDto;
 import com.gdsc.solutionchallenge.dto.DiaryResponseDto;
+import com.gdsc.solutionchallenge.dto.MessageDto;
+import com.gdsc.solutionchallenge.dto.OldestDiaryResponseDto;
 import com.gdsc.solutionchallenge.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/diary")
@@ -32,8 +32,16 @@ public class DiaryController {
         DiaryResponseDto diary = diaryService.getDiary(diaryId);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
+    @GetMapping("/oldest")
+    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(){
+        OldestDiaryResponseDto diary = diaryService.getOldestDiary();
+        return new ResponseEntity<>(diary, HttpStatus.OK);
+    }
+
+    @PostMapping("/writeMessage")
+    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, Long diaryId){
+        DiaryResponseDto result = diaryService.writeMessage(messageDto, diaryId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 }
-
-
-

@@ -2,6 +2,7 @@ package com.gdsc.solutionchallenge.domain;
 
 import com.gdsc.solutionchallenge.dto.DiaryRequestDto;
 import com.gdsc.solutionchallenge.dto.DiaryResponseDto;
+import com.gdsc.solutionchallenge.dto.OldestDiaryResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,6 +12,7 @@ import java.util.Date;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Diary {
@@ -21,10 +23,19 @@ public class Diary {
 
     @Column(name = "EMMOTION")
     private String emotion;
+
     @Column(name = "SECRETDIARY")
     private String secretDiary;
+
     @Column(name = "SHAREDIARY")
     private String shareDiary;
+
+    @Column(name = "MESSAGE")
+    private String message;
+
+    @Column(name = "IS_VIEWED")
+    private boolean isViewed = false;
+
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_AT", updatable = false)
@@ -49,6 +60,12 @@ public class Diary {
                 .secretDiary(this.secretDiary)
                 .shareDiary(this.shareDiary)
                 .date(this.date)
+                .build();
+    }
+    public OldestDiaryResponseDto toOldestDto(){
+        return OldestDiaryResponseDto.builder()
+                .id(this.id)
+                .shareDiary(this.shareDiary)
                 .build();
     }
 
