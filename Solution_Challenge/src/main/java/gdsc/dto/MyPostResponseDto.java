@@ -11,4 +11,5 @@ public class MyPostResponseDto {
     private String myDiary;
     private String emotion;
     private Date currentDate;
+
 }
