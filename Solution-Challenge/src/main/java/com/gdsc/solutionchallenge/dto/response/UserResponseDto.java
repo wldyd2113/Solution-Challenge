@@ -1,4 +1,4 @@
-package com.gdsc.solutionchallenge.dto;
+package com.gdsc.solutionchallenge.dto.response;
 
 import com.gdsc.solutionchallenge.domain.User;
 import lombok.AllArgsConstructor;

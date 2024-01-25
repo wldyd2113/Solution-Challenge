@@ -1,10 +1,12 @@
 package com.gdsc.solutionchallenge.controller;
 
-import com.gdsc.solutionchallenge.dto.EmailCheckDto;
-import com.gdsc.solutionchallenge.dto.EmailRequestDto;
+import com.gdsc.solutionchallenge.dto.ApiResponse;
+import com.gdsc.solutionchallenge.dto.request.EmailCheckDto;
+import com.gdsc.solutionchallenge.dto.request.EmailRequestDto;
 import com.gdsc.solutionchallenge.service.MailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,18 +21,18 @@ public class MailController {
 
 //  localhost:8080/mail/auth   이메일 인증
     @PostMapping("/auth")
-    public String mailSend(@RequestBody @Valid EmailRequestDto emailDto){
+    public ApiResponse<String> mailSend(@RequestBody @Valid EmailRequestDto emailDto){
         System.out.println("이메일 인증 이메일 : "+emailDto.getEmail());
-        return mailService.joinEmail(emailDto.getEmail());
+        return ApiResponse.ok(mailService.joinEmail(emailDto.getEmail()));
     }
 //  localhost:8080/mail/authCheck   인증번호 확인
     @PostMapping("/authCheck")
-    public String authCheck(@RequestBody @Valid EmailCheckDto emailCheckDto){
+    public ApiResponse<String> authCheck(@RequestBody @Valid EmailCheckDto emailCheckDto){
         Boolean checked=mailService.CheckAuthNum(emailCheckDto.getEmail(), emailCheckDto.getAuthNum());
         if(checked){
-            return "ok";
+            return ApiResponse.ok("ok");
         } else {
-            throw new NullPointerException("오류!");
+            return ApiResponse.of(HttpStatus.BAD_REQUEST,"오류", null);
         }
 
     }

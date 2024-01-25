@@ -1,4 +1,4 @@
-package com.gdsc.solutionchallenge.dto;
+package com.gdsc.solutionchallenge.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,6 +2,9 @@ package com.gdsc.solutionchallenge.service;
 
 import com.gdsc.solutionchallenge.domain.User;
 import com.gdsc.solutionchallenge.dto.*;
+import com.gdsc.solutionchallenge.dto.request.ChangePasswordDto;
+import com.gdsc.solutionchallenge.dto.request.UserRequestDto;
+import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,15 +48,9 @@ public class UserService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
-
-        return tokenDto;
+        return tokenProvider.generateTokenDto(authentication);
     }
 
-    @Transactional
-    public boolean checkEmail(String email){
-        return userRepository.existsByEmail(email);
-    }
     @Transactional
     public Optional<User> getUserById(long id){
         return userRepository.findUserById(id);
@@ -72,7 +69,7 @@ public class UserService {
 
     @Transactional
     public String makeRandomPassword() {
-        int length = 8;
+        int length = 10;
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder temporaryPassword = new StringBuilder();
 
@@ -93,6 +90,7 @@ public class UserService {
 
         User user = userRepository.findById(Long.valueOf(userEmail))
                 .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
+
         if(!passwordEncoder.matches(currentPassword, user.getPassword())){
             throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
         }
