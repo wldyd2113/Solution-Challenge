@@ -27,8 +27,13 @@ public class DiaryController {
     }
     @GetMapping("/{date}") // localhost:8080/diary/{diaryId}   일기 조회 반환 값{Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date}
     public ResponseEntity<DiaryResponseDto> getDiaryById(@PathVariable String date){
-        DiaryResponseDto diary = diaryService.getDiary(date);
-        return new ResponseEntity<>(diary, HttpStatus.OK);
+        try{
+            DiaryResponseDto diary = diaryService.getDiary(date);
+            return new ResponseEntity<>(diary, HttpStatus.OK);
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(new DiaryResponseDto(e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
     }
     @GetMapping("/oldest")  // localhost:8080/diary/oldest     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
     public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(){
