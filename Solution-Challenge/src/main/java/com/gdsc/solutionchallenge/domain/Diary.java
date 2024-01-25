@@ -1,14 +1,13 @@
 package com.gdsc.solutionchallenge.domain;
 
-import com.gdsc.solutionchallenge.dto.DiaryRequestDto;
-import com.gdsc.solutionchallenge.dto.DiaryResponseDto;
-import com.gdsc.solutionchallenge.dto.OldestDiaryResponseDto;
+import com.gdsc.solutionchallenge.dto.request.DiaryRequestDto;
+import com.gdsc.solutionchallenge.dto.response.DiaryResponseDto;
+import com.gdsc.solutionchallenge.dto.response.OldestDiaryResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -31,7 +30,7 @@ public class Diary {
     private String shareDiary;
 
     @Column(name = "MESSAGE")
-    private String message;
+    private String cheeringMessage;
 
     @Column(name = "IS_VIEWED")
     private boolean isViewed = false;

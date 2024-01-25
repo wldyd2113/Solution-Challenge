@@ -1,4 +1,4 @@
-package com.gdsc.solutionchallenge.dto;
+package com.gdsc.solutionchallenge.dto.request;
 
 import com.gdsc.solutionchallenge.domain.Role;
 import com.gdsc.solutionchallenge.domain.User;

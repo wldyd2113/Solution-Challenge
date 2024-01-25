@@ -1,4 +1,4 @@
-package com.gdsc.solutionchallenge.dto;
+package com.gdsc.solutionchallenge.dto.request;
 
 
 import jakarta.validation.constraints.Email;

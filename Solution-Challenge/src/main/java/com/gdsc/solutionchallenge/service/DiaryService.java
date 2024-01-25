@@ -2,13 +2,14 @@ package com.gdsc.solutionchallenge.service;
 
 import com.gdsc.solutionchallenge.domain.Diary;
 import com.gdsc.solutionchallenge.domain.User;
-import com.gdsc.solutionchallenge.dto.*;
+import com.gdsc.solutionchallenge.dto.request.DiaryRequestDto;
+import com.gdsc.solutionchallenge.dto.request.MessageDto;
+import com.gdsc.solutionchallenge.dto.response.DiaryResponseDto;
+import com.gdsc.solutionchallenge.dto.response.OldestDiaryResponseDto;
 import com.gdsc.solutionchallenge.repository.DiaryRepository;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class DiaryService {
 
     public DiaryResponseDto writeDiary(DiaryRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Diary diary = Diary.create(requestDto, user);
         Diary savedDiary = diaryRepository.save(diary);
         return DiaryResponseDto.of(savedDiary);
@@ -26,13 +27,13 @@ public class DiaryService {
 
     public DiaryResponseDto getDiary(String date) {
         Diary diary = diaryRepository.findByDate(date)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 날짜의 일기를 찾을 수 없습니다."));
         return diary.toDto();
     }
 
     public OldestDiaryResponseDto getOldestDiary(){
         Diary oldestDiary = diaryRepository.findOldestDiary()
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
         oldestDiary.setViewed(true);
         diaryRepository.save(oldestDiary);
         return oldestDiary.toOldestDto();
@@ -43,7 +44,7 @@ public class DiaryService {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
 
-        diary.setMessage(messageDto.getMessage());
+        diary.setCheeringMessage(messageDto.getCheeringMessage());
         diaryRepository.save(diary);
         return DiaryResponseDto.of(diary);
     }

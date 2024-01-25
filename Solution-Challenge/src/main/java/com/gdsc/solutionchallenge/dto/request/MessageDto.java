@@ -1,4 +1,4 @@
-package com.gdsc.solutionchallenge.dto;
+package com.gdsc.solutionchallenge.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDto {
-    private String message;
+    private String cheeringMessage;
 }
