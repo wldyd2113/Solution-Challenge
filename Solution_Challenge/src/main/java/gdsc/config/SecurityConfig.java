@@ -37,8 +37,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/login","/signup/*","/user","/api/posts/save","/user2").permitAll()
-                        .requestMatchers("/api/posts/**","/user2").authenticated()
+                        .requestMatchers("/login","/signup/*","/user","/user2").permitAll()
+                        .requestMatchers("api/posts/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
