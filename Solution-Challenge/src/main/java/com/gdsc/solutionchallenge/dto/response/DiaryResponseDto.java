@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class DiaryResponseDto {
     private Long id;
     private String emotion;
@@ -20,7 +18,6 @@ public class DiaryResponseDto {
     private String cheeringMessage;
     private LocalDateTime createdAt;
     private String date;
-    private String errorMessage;
 
     @Builder
     private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String cheeringMessage, LocalDateTime createdAt, String date) {
@@ -33,9 +30,6 @@ public class DiaryResponseDto {
         this.date = date;
     }
 
-    public DiaryResponseDto(String message) {
-        this.errorMessage = message;
-    }
 
     public static DiaryResponseDto of(Diary diary) {
         return DiaryResponseDto.builder()

@@ -11,6 +11,8 @@ import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class DiaryService {
@@ -20,13 +22,19 @@ public class DiaryService {
     public DiaryResponseDto writeDiary(DiaryRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        String userDate = requestDto.getDate();
+        if (diaryRepository.existsByDateAndUser(userDate, user)) {
+            throw new IllegalArgumentException("해당 날짜에는 이미 일기가 작성되었습니다.");
+        }
         Diary diary = Diary.create(requestDto, user);
         Diary savedDiary = diaryRepository.save(diary);
         return DiaryResponseDto.of(savedDiary);
     }
 
-    public DiaryResponseDto getDiary(String date) {
-        Diary diary = diaryRepository.findByDate(date)
+    public DiaryResponseDto getDiary(String date, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Diary diary = diaryRepository.findByDateAndUser(date, user)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 날짜의 일기를 찾을 수 없습니다."));
         return diary.toDto();
     }
