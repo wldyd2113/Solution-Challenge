@@ -5,11 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/MysettingViews/passwordChange.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
-import 'package:provider/provider.dart';
 
 class MySetting extends StatefulWidget {
   @override
@@ -21,32 +20,76 @@ class _MySettingState extends State<MySetting> {
   int _selectedIndex = 1;
   late String email = '';
   late String name = '';
+
   static const TextStyle optionStyle = TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,
   );
 
+    void decodeToken(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      print('토큰 구조가 잘못되었습니다.');
+      return;
+    }
+
+    final payload = parts[1];
+    final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
+    print('디코딩된 토큰 페이로드: $decoded');
+  }
   Future<void> fetchData() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final token = await TokenStorage.getToken();
 
-    try {
-      final response = await http.get(Uri.parse('')); //  서버 주소 입력
+    if (token != null) {
+      decodeToken(token);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        userProvider.email = data['email'];
-        userProvider.name = data['name'];
-        setState(() {
-          email = userProvider.email;
-          name = userProvider.name;
-        });
-      } else {
-        print('Failed to load data: ${response.statusCode}');
+      try {
+        final getResponse = await http.get(
+          Uri.parse('http://localhost:8080/user/info'),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        print('Server Response: ${getResponse.statusCode}');
+        print('Server Response Body: ${getResponse.body}');
+
+        if (getResponse.statusCode == 200) {
+          // 서버에서 일반 텍스트로 반환된 데이터를 직접 처리
+          final data = getResponse.body;
+
+          // 예제: 데이터 파싱
+          final nameIndex = data.indexOf('user name: ');
+          final emailIndex = data.indexOf('user email: ');
+
+          if (nameIndex != -1 && emailIndex != -1) {
+            final name = data.substring(nameIndex + 'user name: '.length, emailIndex).trim();
+            final email = data.substring(emailIndex + 'user email: '.length).trim();
+
+            setState(() {
+              this.name = name;
+              this.email = email;
+            });
+
+            print('데이터 가져오기 성공: $name, $email');
+          } else {
+            print('서버 응답 형식 예외처리: 기대하지 않은 형식');
+          }
+        } else if (getResponse.statusCode == 401) {
+        } else {
+          print('데이터 로드 실패: ${getResponse.statusCode}');
+        }
+      } catch (error, stackTrace) {
+        print('에러: $error');
+        print('스택 트레이스: $stackTrace');
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
+      print('토큰이 없습니다.');
     }
   }
+
+
+
 
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
@@ -143,17 +186,32 @@ class _MySettingState extends State<MySetting> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchData(); // initState에서 fetchData 호출
+  }
+
+  @override
   Widget build(BuildContext context) {
     final _imageSize = MediaQuery.of(context).size.width / 4;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFECF4D6),
       body: SafeArea(
+        child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Container(
               alignment: Alignment.center,
               child: Text(
                 "My Info",
-                style: TextStyle(fontSize: 30),
+                style: TextStyle(
+                color: Color(0xFF194062),
+                fontSize: 48,
+                fontFamily: 'Noto Sans',
+                fontWeight: FontWeight.w400,
+                height: 0,
+                ),
               ),
             ),
             SizedBox(height: 20,),
@@ -198,56 +256,123 @@ class _MySettingState extends State<MySetting> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Text("Name: $name"),
-                    ],
-                  ),
-                  Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                  Row(
-                    children: <Widget>[
-                      Text("Email: $email"),
-                    ],
-                  ),
-                  Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                  Row(
-                    children: <Widget>[
-                      Text("Password: "),
-                      ElevatedButton(
-                        onPressed: onPressed,
-                        child: Text("Password Change"),
+                      Text("Name: $name",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
                       ),
                     ],
                   ),
-                                    Row(
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                  Row(
                     children: <Widget>[
-                      Text("The number of diaries I've recorded:"),
+                      Text("Email: $email",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
                     ],
                   ),
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                  Row(
+                    children: <Widget>[
+                      Text("Password: ",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
+                      ElevatedButton(
+                        onPressed: onPressed,
+                        child: Text("Password Change",
+                        style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                        ),
+                          style: ElevatedButton.styleFrom(
+                          primary: Color(0xCC2D9596),
+                          elevation: 4, )
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text("The number of diaries I've recorded:",
+                      style: TextStyle(
+                      color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),),
+                    ],
+                  ),
+                  SizedBox(height: 10,),
                   Column(
                     children: <Widget>[
-                      ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => Loginpage()),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // 로그아웃 시 토큰을 삭제합니다.
+                          await TokenStorage.deleteToken();
+                          
+                          // 현재 선택된 인덱스에 따라 다른 페이지로 이동합니다.
+                          if (_selectedIndex == 0) {
+                            // 캘린더 페이지로 이동
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Calendar()),
                             );
-                      }, child: Text("LogOut"))
+                          } else if (_selectedIndex == 1) {
+                            // 로그인 페이지로 이동
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Loginpage()),
+                            );
+                          }
+                        },
+                        child: Text("LogOut",
+                                style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                                ),
+                          style: ElevatedButton.styleFrom(
+                          primary: Color(0xCC2D9596),
+                          elevation: 4, )
+                      ),
                     ],
                   ),
-                
-                
                 ],
-                
               ),
             )
           ],
-          
         ),
       ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF9AD0C2),
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.lightGreen,
+        selectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
     );

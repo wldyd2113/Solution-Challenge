@@ -19,7 +19,7 @@ public class UserRequestDto {
     private String sex;
     private String location;
     private String language;
-    private String phone;
+    //private String phone;
     private String job;
 
     public User toUser(PasswordEncoder passwordEncoder){
@@ -31,7 +31,7 @@ public class UserRequestDto {
                 .sex(sex)
                 .location(location)
                 .language(language)
-                .phone(phone)
+                //.phone(phone)
                 .job(job)
                 .role(Role.ROLE_USER)
                 .build();

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
 import 'package:mytodaysdiary/DB/userProvider.dart';
+import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:provider/provider.dart';
 
@@ -13,12 +14,28 @@ class SendDiaryScreen extends StatefulWidget {
 }
 
 class _SendDiaryScreenState extends State<SendDiaryScreen> {
-  late String country;
+  late String location;
   late String send;
   String result_cloud_google = '';
   final TextEditingController _receiverDiaryController = TextEditingController();
   final TextEditingController _sendDiaryController = TextEditingController();
   final TextEditingController _cheeringmessageController = TextEditingController();
+    int _selectedIndex = 0;
+
+    final List<Widget> _widgetOptions = <Widget>[
+    Calendar(),
+    MySetting(),
+  ];
+    
+    void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _widgetOptions[index]),
+    );
+  }
 
   @override
   void initState() {
@@ -39,7 +56,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         final Map<String, dynamic> data = json.decode(response.body);
         userProvider.location = data['location'];
         setState(() {
-          country = userProvider.location;
+          location = userProvider.location;
         });
       } else {
         // 서버 응답이 실패일 경우 에러 처리
@@ -140,18 +157,80 @@ Future<void> getTranslation_google_cloud_translation() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECF4D6),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFECF4D6),
         title: const Text("Diary"),
         actions: <Widget>[],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
+            child:Container(
+              alignment: Alignment.center,
+              width: 329,
+              height: 575.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFB19470),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              ),
+              ),
+              child:Container(
+                alignment: Alignment.topLeft,
+                
+                width: 323,
+                height: 545.11,
+                decoration: ShapeDecoration(
+                color: Color(0xFFD0D4C7),
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                ),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                width: 317,
+              height: 530.11,
+              decoration: ShapeDecoration(
+              color: Color(0xFFFAFFEC),
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              ),
+              ),
+              child :Container(
+                alignment: Alignment.centerRight,
+              width: 290,
+              height: 480,
+              decoration: ShapeDecoration(
+              color: Color(0xFFFFFFEC),
+              shape: RoundedRectangleBorder(
+              side: BorderSide(width: 1),
+              borderRadius: BorderRadius.circular(10),
+              ),
+              shadows: [
+              BoxShadow(
+              color: Color(0x3F000000),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+              spreadRadius: 0,
+              )
+              ],
+              ),
+
+                child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                 //Text(country ?? 'Loading...'), // country가 null이면 'Loading...'을 표시
-                Text("폴란드에 사는 누군가의 하루가 도착했어요."),
+                 //Text(location ?? 'Loading...'), // location가 null이면 'Loading...'을 표시
+                Text("폴란드에 사는 누군가의 하루가 도착했어요.",
+                style: TextStyle(
+                        color: Color(0xFF76453B),
+                        fontSize: 18,
+                        fontFamily: 'Noto Sans',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                        ),
+                ),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                 // TextField에 서버에서 받아온 sendDiary를 설정
                 SizedBox(
@@ -160,16 +239,39 @@ Future<void> getTranslation_google_cloud_translation() async {
                   controller: _sendDiaryController,
                   readOnly: true, // 읽기 전용으로 설정하여 사용자의 입력을 막음
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(),
                     labelText: 'Send Diary',
+                    border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                   ),
                 ),
                 ),
-                ElevatedButton(onPressed: (){
+                SizedBox(
+                child:ElevatedButton(onPressed: (){
                   getTranslation_google_cloud_translation();
-                }, child: Text("Translation")),
+                }, child: Text("Translation",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                primary: Color(0x996B3A2F),
+                                elevation: 4, )
+                ),
+                ),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                Text("A message of support that I would like to convey"),
+                Text("A message of support that I would like to convey",
+                style: TextStyle(
+                        color: Color(0xFF76453B),
+                        fontSize: 18,
+                        fontFamily: 'Noto Sans',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                        ),),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                       SizedBox(
                       width: 350,
@@ -177,9 +279,11 @@ Future<void> getTranslation_google_cloud_translation() async {
                         controller: _cheeringmessageController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           hintText: 'Message',
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -197,13 +301,40 @@ Future<void> getTranslation_google_cloud_translation() async {
                     MaterialPageRoute(builder: (_) => Calendar())
                   );
                 },
-                child: Text("Send"),
+                child: Text("Send",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                                ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                primary: Color(0x996B3A2F),
+                                elevation: 4, )
+
               ),
               
               ],
             ),
           ),
+          ),
         ),
+      ),
+      ),
+    ),
+      ),
+      ),
+        bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF9AD0C2),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        onTap: _onItemTapped,
       ),
     );
   }

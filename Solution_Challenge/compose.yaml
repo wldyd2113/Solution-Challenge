@@ -1,0 +1,35 @@
+#services:
+#  database:
+#    image: mysql
+#    container_name: mysql-database
+#    environment:
+#      MYSQL_DATABASE: ${MYSQL_DATABASE}
+#      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+#      MYSQL_ROOT_HOST: &{MYSQL_ROOT_HOST}
+#    volumes:
+#      - &{MYSQL_VOLUMES}
+#    ports:
+#      - "3306:3306"
+#    restart: always
+#    networks: database-network
+#  application:
+#    image: lgy115/Solution_Challenge
+#    container_name: spring-boot-app
+#    depends_on:
+#      - mysql-database
+#    environment:
+#      MYSQL_DATABASE: ${MYSQL_DATABASE}
+#      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+#      MYSQL_ROOT_HOST: &{MYSQL_ROOT_HOST}
+#      JWT_SECRET: &{JWT_SECRET}
+#    volumes:
+#      - ./app:/app
+#    ports:
+#      - "80:8080"
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 2048MB
+#    restart: on-failure
+#    networks:
+#      - database-network

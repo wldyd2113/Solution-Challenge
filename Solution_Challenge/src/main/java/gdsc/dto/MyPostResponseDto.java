@@ -3,10 +3,13 @@ package gdsc.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Builder
 public class MyPostResponseDto {
- //   private String userName;
-    private String title;
-    private String body;
+    private String myDiary;
+    private String emotion;
+    private Date currentDate;
+
 }

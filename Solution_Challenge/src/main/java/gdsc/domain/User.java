@@ -26,8 +26,8 @@ public class User {
     private String location;
     @Column(name="USER_LANGUAGE", nullable = false)
     private String language;
-    @Column(name = "USER_PHONE", nullable = false)
-    private String phone;
+    //@Column(name = "USER_PHONE", nullable = false)
+    //private String phone;
     @Column(name = "USER_JOB")
     private String job;
 
@@ -38,7 +38,7 @@ public class User {
     private Role role;
 
     @Builder
-    public User(String email, String password, Integer age, String name, String sex, String location, String language, String phone, String job, Role role){
+    public User(String email, String password, Integer age, String name, String sex, String location, String language, /*String phone,*/ String job, Role role){
         this.email=email;
         this.password=password;
          this.age=age;
@@ -46,7 +46,7 @@ public class User {
         this.sex=sex;
         this.location=location;
         this.language=language;
-        this.phone=phone;
+      //  this.phone=phone;
         this.job=job;
         this.role=role;
     }

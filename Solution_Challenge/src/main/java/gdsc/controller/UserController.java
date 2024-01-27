@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
 
-    @PostMapping("/signup/user")
+    @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.ok(userService.signup(userRequestDto));
     }
@@ -36,7 +36,7 @@ public class UserController {
         return ResponseEntity.ok("Hello User");
     }
 
-    @GetMapping("/user2")
+    @GetMapping("/user/info")
     public ResponseEntity<String> user(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         String accessToken = authorizationHeader.replace("Bearer ", "");
 
@@ -55,10 +55,10 @@ public class UserController {
                 Integer userage = optionalUser.get().getAge();
                 String userlocation = optionalUser.get().getLocation();
                 String userlanguage = optionalUser.get().getLanguage();
-                String userphone = optionalUser.get().getPhone();
+                //String userphone = optionalUser.get().getPhone();
                 String userjob = optionalUser.get().getJob();
                 String usersex = optionalUser.get().getSex();
-                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + "\nuser phone: " + userphone + "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
+                return ResponseEntity.ok("user name: " + username + "\nuser email: " + useremail + "\nuser sex: "+ usersex + "\nuser age: " + userage + /*"\nuser phone: " + userphone +*/ "\nuser job: " + userjob + "\nuser location: " + userlocation + "\nuser language: "+ userlanguage);
             } else {
                 // 사용자 정보가 없을 경우 처리
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

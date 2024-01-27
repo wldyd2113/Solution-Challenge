@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,79 +9,126 @@ class IdFindPage extends StatefulWidget {
 }
 
 class _IdFindPageState extends State<IdFindPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  String _foundId = ''; // 찾아진 아이디를 저장할 변수
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
         title: Text('이메일 찾기'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
+      body: Center(
+        child: Container(
+          width: 340,
+          height: 360,
+          decoration: ShapeDecoration(
+            color: const Color(0xFFECF4D6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 10.0),
+                alignment: Alignment.centerLeft,
+                child: Text("Email",
+                style: TextStyle(
+                color: Color(0xFF194062),
+                fontSize: 20,
+                fontFamily: 'Gowun Dodum',
+                fontWeight: FontWeight.w400,
+                height: 0,
+                ),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _phoneController,
-              decoration: InputDecoration(
-                labelText: 'Phone',
+              SizedBox(height: 10,),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _findId();
-              },
-              child: Text('이메일 찾기'),
-            ),
-            SizedBox(height: 20),
-            Text('찾아진 이메일: $_foundId'),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  _findId();
+                },
+                child: const Text(
+                  '이메일 확인해보기',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontFamily: 'Gowun Dodum',
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xCC2D9596),
+                  elevation: 4,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // 아이디 찾기 로직을 구현하는 함수
   void _findId() async {
-    // TODO: 실제 서버 엔드포인트 및 로직에 맞게 수정하세요
-    final String apiUrl = 'https://example.com/api/find_id';
+    final String apiUrl = 'http://localhost:8080/signup/user';
 
-    // 이름과 전화번호 값을 가져옴
-    String name = _nameController.text;
-    String phone = _phoneController.text;
+    String email = _emailController.text;
 
     try {
-      // 서버로 POST 요청을 보내 아이디를 찾음
       var response = await http.post(
         Uri.parse(apiUrl),
-        body: {'name': name, 'phone': phone},
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'email': email}),
       );
 
       if (response.statusCode == 200) {
-        // 성공적으로 응답을 받으면 찾아진 아이디를 변수에 저장
-        setState(() {
-          _foundId = response.body;
-        });
+        String foundId = response.body;
+
+        if (foundId.isNotEmpty) {
+          _showAlertDialog('가입되어 있는 이메일입니다', foundId);
+        } else {
+          _showAlertDialog('가입되어 있지 않은 이메일입니다', '');
+        }
       } else {
-        // 서버 응답이 실패인 경우 에러 메시지를 출력
         print('서버 응답 에러: ${response.statusCode}');
         print('에러 내용: ${response.body}');
+        _showAlertDialog('에러 발생', '서버 응답 에러: ${response.statusCode}');
       }
     } catch (error) {
-      // 예외가 발생한 경우 에러 메시지를 출력
       print('에러 발생: $error');
+      _showAlertDialog('에러 발생', '에러 발생: $error');
     }
   }
-}
 
+  void _showAlertDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

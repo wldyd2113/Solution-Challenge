@@ -10,6 +10,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class MyPostService {
@@ -23,9 +30,8 @@ public class MyPostService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         MyPost newMyPost = MyPost.builder()
-               // .userName(user.getName())
-                .title(myPostRequestDto.getTitle())
-                .body(myPostRequestDto.getBody())
+                .myDiary(myPostRequestDto.getMyDiary())
+                .emotion(myPostRequestDto.getEmotion())
                 .user(user)
                 .build();
 
@@ -34,10 +40,18 @@ public class MyPostService {
     }
 
     @Transactional
-    public MyPostResponseDto findMyPostById(Long myPostId){
-        MyPost myPost = myPostRepository.findById(myPostId)
-                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+    public List<MyPostResponseDto> getPostsByUserAndDate(Long userId, LocalDate date) {
+        // 사용자의 ID로 User 객체를 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        return myPost.toDto();
+        // 사용자의 ID와 날짜로 게시글을 조회하는 작업 수행
+        List<MyPost> posts = myPostRepository.findByUserAndCreatedAt(user, date);
+
+        // 조회된 게시글을 MyPostResponseDto로 변환하여 반환
+        return posts.stream()
+                .map(MyPost::toDto)
+                .collect(Collectors.toList());
     }
 }
+
