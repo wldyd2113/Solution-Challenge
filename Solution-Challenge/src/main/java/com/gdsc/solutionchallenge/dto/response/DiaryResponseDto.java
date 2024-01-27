@@ -1,8 +1,10 @@
 package com.gdsc.solutionchallenge.dto.response;
 
 import com.gdsc.solutionchallenge.domain.Diary;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +19,8 @@ public class DiaryResponseDto {
     private LocalDateTime createdAt;
     private String date;
 
-
     @Builder
-    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String cheeringMessage, LocalDateTime createdAt, String date){
+    private DiaryResponseDto(Long id, String emotion, String secretDiary, String shareDiary, String cheeringMessage, LocalDateTime createdAt, String date) {
         this.id = id;
         this.emotion = emotion;
         this.secretDiary = secretDiary;
@@ -29,7 +30,8 @@ public class DiaryResponseDto {
         this.date = date;
     }
 
-    public static DiaryResponseDto of(Diary diary){
+
+    public static DiaryResponseDto of(Diary diary) {
         return DiaryResponseDto.builder()
                 .id(diary.getId())
                 .emotion(diary.getEmotion())
@@ -40,5 +42,6 @@ public class DiaryResponseDto {
                 .date(diary.getDate())
                 .build();
     }
+
 
 }

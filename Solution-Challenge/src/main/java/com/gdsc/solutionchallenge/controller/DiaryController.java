@@ -19,25 +19,31 @@ public class DiaryController {
 
     private final DiaryService diaryService;
 
-    @PostMapping("/save") // localhost:8080/diary/save        { "emotion" : "", "secretDiary" : "", "shareDiary" : "", "date" : "너가 보내줄 달력 날짜"} 일기 저장
+    @PostMapping("/save")
+    // localhost:8080/diary/save        { "emotion" : "", "secretDiary" : "", "shareDiary" : "", "date" : "너가 보내줄 달력 날짜"} 일기 저장
     public ResponseEntity<DiaryResponseDto> writeDiary(@RequestBody DiaryRequestDto diaryRequestDto, Principal principal) {
         Long userId = Long.parseLong(principal.getName());
         DiaryResponseDto diary = diaryService.writeDiary(diaryRequestDto, userId);
         return new ResponseEntity<>(diary, HttpStatus.CREATED);
     }
-    @GetMapping("/{date}") // localhost:8080/diary/{diaryId}   일기 조회 반환 값{Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date}
-    public ResponseEntity<DiaryResponseDto> getDiaryById(@PathVariable String date){
-        DiaryResponseDto diary = diaryService.getDiary(date);
+
+    @GetMapping("/{date}")
+    // localhost:8080/diary/{diaryId}   일기 조회 반환 값{Long id, String emotion, String secretDiary, String shareDiary, String message, LocalDateTime date}
+    public ResponseEntity<DiaryResponseDto> getDiaryById(@PathVariable String date, Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        DiaryResponseDto diary = diaryService.getDiary(date, userId);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
+
     @GetMapping("/oldest")  // localhost:8080/diary/oldest     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
-    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(){
+    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary() {
         OldestDiaryResponseDto diary = diaryService.getOldestDiary();
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
-    @PostMapping("/writeMessage/{diaryId}") // localhost:8080/diary/writeMessage/{diaryId}    응원메세지 작성 { "message" : "" }
-    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, @PathVariable Long diaryId){
+    @PostMapping("/writeMessage/{diaryId}")
+    // localhost:8080/diary/writeMessage/{diaryId}    응원메세지 작성 { "message" : "" }
+    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, @PathVariable Long diaryId) {
         DiaryResponseDto result = diaryService.writeMessage(messageDto, diaryId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
