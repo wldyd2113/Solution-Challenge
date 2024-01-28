@@ -40,8 +40,8 @@ public class DiaryService {
         return diary.toDto();
     }
     @Transactional
-    public OldestDiaryResponseDto getOldestDiary(){
-        Diary oldestDiary = diaryRepository.findOldestDiary()
+    public OldestDiaryResponseDto getOldestDiary(User loggedInUser){
+        Diary oldestDiary = diaryRepository.findOldestDiary(loggedInUser)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
         oldestDiary.setViewed(true);
         diaryRepository.save(oldestDiary);

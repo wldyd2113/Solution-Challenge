@@ -1,9 +1,11 @@
 package com.gdsc.solutionchallenge.controller;
 
+import com.gdsc.solutionchallenge.domain.User;
 import com.gdsc.solutionchallenge.dto.request.DiaryRequestDto;
 import com.gdsc.solutionchallenge.dto.response.DiaryResponseDto;
 import com.gdsc.solutionchallenge.dto.request.MessageDto;
 import com.gdsc.solutionchallenge.dto.response.OldestDiaryResponseDto;
+import com.gdsc.solutionchallenge.repository.UserRepository;
 import com.gdsc.solutionchallenge.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.security.Principal;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final UserRepository userRepository;
 
     @PostMapping("/save")
     // localhost:8080/diary/save        { "emotion" : "", "secretDiary" : "", "shareDiary" : "", "date" : "너가 보내줄 달력 날짜"} 일기 저장
@@ -36,8 +39,11 @@ public class DiaryController {
     }
 
     @GetMapping("/oldest")  // localhost:8080/diary/oldezst     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
-    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary() {
-        OldestDiaryResponseDto diary = diaryService.getOldestDiary();
+    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        User loggedInUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        OldestDiaryResponseDto diary = diaryService.getOldestDiary(loggedInUser);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
