@@ -18,10 +18,10 @@ class _JoinPageState extends State<JoinPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _languageController = TextEditingController();
 
   String? _sex; // 추가: 선택된 성별을 저장하는 변수
+  String? _location;//사는 나라
+  String? _language;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -48,7 +48,7 @@ class _JoinPageState extends State<JoinPage> {
         void _checkNicknameUniqueness() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/signup'), // 서버의 실제 엔드포인트로 수정
+          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
           headers: {
             'Content-Type': 'application/json',
           },
@@ -81,7 +81,7 @@ class _JoinPageState extends State<JoinPage> {
     void sendUserServer() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/signup'),
+          Uri.parse('http://localhost:8080/user/signup'),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -208,7 +208,7 @@ class _JoinPageState extends State<JoinPage> {
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
                           child: const Text("NickName",
-                          style: TextStyle(  
+                          style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
                           fontFamily: 'Gowun Dodum',
@@ -397,21 +397,53 @@ class _JoinPageState extends State<JoinPage> {
                           ),
                           SizedBox(
                             width: 300,
-                            child: TextFormField(
-                              controller: _locationController,
-                              decoration: InputDecoration(
-                                hintText: 'Country',
+                            child: DropdownButtonFormField<String?>(
+                                decoration: InputDecoration(
+                                labelText: 'Country',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
+                              onChanged: (String? country) {
+                                _location = country;
+                              },
+                              items: [
+                                null,
+                                "USA",
+                                "Korea",
+                                "Japan",
+                                "Vietnam",
+                                "China",
+                                "France",
+                                "Spain",
+                                "Germany",
+                                "Italy",
+                                "Thailand",
+                                ].map<DropdownMenuItem<String?>>((String? location) {
+                                return DropdownMenuItem<String?>(
+                                  value: location,
+                                  child: Text({
+                                    "USA": "USA",
+                                    "Korea": "Republic of Korea",
+                                    "Japan": "Japan",
+                                    "Vietnam":"Vietnam",
+                                    "China":"China",
+                                    "France":"France",
+                                    "Spain":"Spain",
+                                    "Germany":"Germany",
+                                    "Italy":"Italy",
+                                    "Thailand":"Thailand",
+                                    }[location] ?? "비공개"),
+                                );
+                              }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Country");
+                                  return "Please enter your Country";
                                 }
                                 return null;
                               },
                             ),
+
                           ),
                           Container(
                             alignment: Alignment.centerLeft,
@@ -427,21 +459,55 @@ class _JoinPageState extends State<JoinPage> {
                           ),
                           SizedBox(
                             width: 300,
-                            child: TextFormField(
-                              controller: _languageController,
-                              decoration: InputDecoration(
-                                hintText: 'Language',
+                            child: DropdownButtonFormField<String?>(
+                                decoration: InputDecoration(
+                                labelText: 'Language',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
+                              onChanged: (String? languages) {
+                                _language = languages;
+                              },
+                              items: [
+                                null,
+                                "English",
+                                "Korean",
+                                "Japanese",
+                                "Vietnamese",
+                                "Chinese1",//번체
+                                "Chinese2",//간체
+                                "French",
+                                "Spanish",
+                                "German",
+                                "Italian",
+                                "Thai",
+                                ].map<DropdownMenuItem<String?>>((String? language) {
+                                return DropdownMenuItem<String?>(
+                                  value: language,
+                                  child: Text({
+                                    "English": "English",
+                                    "Korean": "한국어",
+                                    "Japanese": "日本語",
+                                    "Vietnamese":"Tiếng Việt",
+                                    "Chinese1":"漢文",
+                                    "Chinese2":"汉文",
+                                    "French":"Français",
+                                    "Spanish":"Español",
+                                    "German":"Deutsch",
+                                    "Italian":"Italiano",
+                                    "Thai":"แบบไทย",
+                                    }[language] ?? "비공개"),
+                                );
+                              }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Language");
+                                  return "Please enter your Language";
                                 }
                                 return null;
                               },
                             ),
+
                           ),
                         ],
                       ),
@@ -473,9 +539,9 @@ class _JoinPageState extends State<JoinPage> {
                                 userProvider.sex = _sex ?? "";
                                 userProvider.job = _jobController.text;
                                 userProvider.location =
-                                    _locationController.text;
+                                    _location ?? "";
                                 userProvider.language =
-                                    _languageController.text;
+                                    _language ?? "";
 
                                 sendUserServer();
                                 Navigator.pushReplacement(

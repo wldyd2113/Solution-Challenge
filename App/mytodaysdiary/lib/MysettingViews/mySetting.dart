@@ -45,7 +45,7 @@ class _MySettingState extends State<MySetting> {
 
       try {
         final getResponse = await http.get(
-          Uri.parse('http://localhost:8080/user/info'),
+          Uri.parse('http://localhost:8080/user/user/info'),
           headers: {
             'Authorization': 'Bearer $token',
           },

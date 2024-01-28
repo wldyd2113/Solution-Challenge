@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/DB/diaryProvider.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
@@ -10,8 +11,12 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/diaryViews/explanation.dart';
 import 'package:provider/provider.dart';
 
-//나만 볼수 있거나 누군가에게 전송할수 있는 페이지
+
 class MyDiary extends StatefulWidget {
+  final DateTime? selectedDate;
+
+  const MyDiary({Key? key, this.selectedDate}) : super(key: key);
+
   @override
   _MyDiaryState createState() => _MyDiaryState();
 }
@@ -21,18 +26,21 @@ class _MyDiaryState extends State<MyDiary> {
   bool sad = false;
   bool angry = false;
   bool soso = false;
+  bool loneliness = false;
+  bool hungry = false;
+
   late List<bool> isSelected;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _myDiaryController = TextEditingController();
-  final TextEditingController _receiverDiaryController = TextEditingController();
+  final TextEditingController _secretDiaryController = TextEditingController();
+  final TextEditingController _shareDiaryController = TextEditingController();
   int _selectedIndex = 0;
 
-    final List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
     MySetting(),
   ];
-    
-    void _onItemTapped(int index) {
+
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -41,9 +49,10 @@ class _MyDiaryState extends State<MyDiary> {
       MaterialPageRoute(builder: (context) => _widgetOptions[index]),
     );
   }
+
   @override
   void initState() {
-    isSelected = [happy, sad, angry, soso];
+    isSelected = [happy, sad, angry, soso,loneliness,hungry];
     super.initState();
   }
 
@@ -67,70 +76,90 @@ class _MyDiaryState extends State<MyDiary> {
       case 3:
         diaryProvider.emotion = 'So-so';
         break;
+      case 4:
+        diaryProvider.emotion = 'loneliness';
+        break;
+      case 5:
+        diaryProvider.emotion = "hungry";
+        break;
+
     }
   }
 
-void decodeToken(String token) {
-  final parts = token.split('.');
-  if (parts.length != 3) {
-    print('토큰 구조가 잘못되었습니다.');
-    return;
+  void decodeToken(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      print('토큰 구조가 잘못되었습니다.');
+      return;
+    }
+
+    final payload = parts[1];
+    final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
+    print('디코딩된 토큰 페이로드: $decoded');
   }
 
-  final payload = parts[1];
-  final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
-  print('디코딩된 토큰 페이로드: $decoded');
-}
-
-  
-//서버로 현재 날짜와 일기 작성 감정 보냄
-Future<void> sendUserServer() async {
+Future<void> sendUserServer(DateTime selectedDate) async {
   final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
 
-  // 저장된 토큰을 저장소에서 가져옵니다.
   String? token = await TokenStorage.getToken();
-    if (token != null) {
-      decodeToken(token);
+  if (token != null) {
+    decodeToken(token);
 
-  try {
-    final response = await http.post(
-      Uri.parse('http://localhost:8080/api/posts/save'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // 헤더에 토큰을 포함
-      },
-      body: jsonEncode({
-        'myDiary': diaryProvider.myDiary,
-        'emotion': diaryProvider.emotion,
-        'currentDate': DateTime.now().toString(),
-      }),
+    try {
+      String shareDiaryValue = _shareDiaryController.text.trim();
       
-    );
+      // 선택한 날짜를 "yyyy-MM-dd" 형식으로 문자열로 형식화
+      String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
 
-    // 서버 응답 출력
-    print('응답: ${response.statusCode}');
-    print('응답 본문: ${response.body}');
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/diary/save'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'secretDiary': diaryProvider.secretDiary,
+          'shareDiary': shareDiaryValue,
+          'emotion': diaryProvider.emotion,
+          'date': formattedDate,  // 수정된 부분
+        }),
+      );
 
-    if (response.statusCode == 201) {
-      print('성공: ${response.body}');
+      print('응답: ${response.statusCode}');
+      print('응답 본문: ${response.body}');
+      
+      // shareDiary 값 확인 로그 추가
+      print('shareDiary 값 확인: $shareDiaryValue');
 
-      // 서버 응답 데이터 디코딩 및 출력
-      try {
-        final responseData = jsonDecode(response.body);
-        print('응답 본문 디코딩 결과: $responseData');
-      } catch (error) {
-        print('JSON 디코딩 에러: $error');
+      if (response.statusCode == 201) {
+        print('성공: ${response.body}');
+
+        try {
+          final responseData = jsonDecode(response.body);
+          print('응답 본문 디코딩 결과: $responseData');
+
+          final int? diaryId = responseData['id'];
+          if (diaryId != null) {
+            // 다이어리 ID를 DiaryProvider에 저장
+            diaryProvider.id = diaryId;
+            print('다이어리 ID: $diaryId');
+          } else {
+            print('응답에서 다이어리 ID를 찾을 수 없습니다.');
+          }
+        } catch (error) {
+          print('JSON 디코딩 에러: $error');
+        }
+      } else {
+        print('상태 코드 ${response.statusCode}로 실패했습니다.');
       }
-    } else {
-      print('상태 코드 ${response.statusCode}로 실패했습니다.');
+    } catch (error) {
+      print('에러: $error');
     }
-  } catch (error) {
-    print('에러: $error');
+  } else {
+    print("토큰이 없습니다");
   }
-}else {
-  print("토큰이 없습니다");
 }
-}
+
 
 
   @override
@@ -144,228 +173,254 @@ Future<void> sendUserServer() async {
         title: const Text("Diary"),
         actions: <Widget>[],
       ),
-        body: SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child:Container(
+            child: Container(
               alignment: Alignment.center,
               width: 329,
               height: 575.11,
               decoration: ShapeDecoration(
-              color: Color(0xFFB19470),
-              shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+                color: Color(0xFFB19470),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              ),
-              child:Container(
+              child: Container(
                 alignment: Alignment.topLeft,
                 width: 323,
                 height: 545.11,
                 decoration: ShapeDecoration(
-                color: Color(0xFFD0D4C7),
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                ),
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                width: 317,
-              height: 530.11,
-              decoration: ShapeDecoration(
-              color: Color(0xFFFAFFEC),
-              shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              ),
-              ),
-              child :Container(
-                alignment: Alignment.centerRight,
-              width: 290,
-              height: 480,
-              decoration: ShapeDecoration(
-              color: Color(0xFFFFFFEC),
-              shape: RoundedRectangleBorder(
-              side: BorderSide(width: 1),
-              borderRadius: BorderRadius.circular(10),
-              ),
-              shadows: [
-              BoxShadow(
-              color: Color(0x3F000000),
-              blurRadius: 4,
-              offset: Offset(0, 4),
-              spreadRadius: 0,
-              )
-              ],
-              ),
-            child: SingleChildScrollView(
-            child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Feelings of The Day",
-                    style: TextStyle(
-                    color: Color(0xFF76453B),
-                    fontSize: 20,
-                    fontFamily: 'Noto Sans',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                    ),
-                  ),
-              ),
-                  ToggleButtons(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('Happy'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('Sad'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('Angry'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('So-so'),
-                      ),
-                    ],
-                    isSelected: isSelected,
-                    onPressed: (int index) {
-                      toggleSelect(index);
-                    },
-                    color: Colors.black,
-                    fillColor: isSelected[0]
-                        ? Colors.yellow
-                        : isSelected[1]
-                            ? Colors.blue
-                            : isSelected[2]
-                                ? Colors.red
-                                : isSelected[3]
-                                    ? Colors.grey
-                                    : Colors.white,
-                    selectedColor: Colors.black,
-                    selectedBorderColor: Colors.transparent,
+                  color: Color(0xFFD0D4C7),
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-              Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("나의 하루", style: TextStyle(
-                        color: Color(0xFF76453B),
-                        fontSize: 20,
-                        fontFamily: 'Noto Sans',
-                        fontWeight: FontWeight.w400,
-                        height: 0,
-                        ),
+                ),
+                child: Container(
+                  width: 317,
+                  height: 530.11,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFFAFFEC),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: _myDiaryController,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration:  InputDecoration(
-                          hintText: '나의 하루',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                        ),
-                            onChanged: (value) {
-                            // 텍스트가 변경될 때마다 프로바이더에서 값을 업데이트
-                            diaryProvider.myDiary = value;
-                          },
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return ("Please enter your My day");
-                          }
-                          return null;
-                        },
+                  ),
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    width: 290,
+                    height: 480,
+                    decoration: ShapeDecoration(
+                      color: Color(0xFFFFFFEC),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(width: 1),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      shadows: [
+                        BoxShadow(
+                          color: Color(0x3F000000),
+                          blurRadius: 4,
+                          offset: Offset(0, 4),
+                          spreadRadius: 0,
+                        )
+                      ],
                     ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-                    Row(children:[
-                    Text("누군가에게 들려주고픈 나의 하루",
-                        style: TextStyle(
-                        color: Color(0xFF76453B),
-                        fontSize: 18,
-                        fontFamily: 'Noto Sans',
-                        fontWeight: FontWeight.w400,
-                        height: 0,
-                        ),
-                        ),
-                            IconButton(
-                            onPressed: (){
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => Explanation(),),);
-                            } ,
-                            
-                            
-                            icon: Icon(Icons.info),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Feelings of The Day",
+                              style: TextStyle(
+                                color: Color(0xFF76453B),
+                                fontSize: 20,
+                                fontFamily: 'Noto Sans',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
                           ),
-                    ],
-                    ),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: _receiverDiaryController,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration:  InputDecoration(
-                          hintText: '당신의 하루를 공유해주세요!',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                          ToggleButtons(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('Happy',
+                                style: TextStyle(fontSize: 10),),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('Sad',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('Angry',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('So-so',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: Text("Loney",
+                              style: TextStyle(fontSize: 10)),),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: Text("Hungry",style: TextStyle(fontSize: 10)),
+                              ),
+
+                            ],
+                            isSelected: isSelected,
+                            onPressed: (int index) {
+                              toggleSelect(index);
+                            },
+                            color: Colors.black,
+                            fillColor: isSelected[0]
+                                ? Colors.yellow
+                                : isSelected[1]
+                                    ? Colors.blue
+                                    : isSelected[2]
+                                        ? Colors.red
+                                        : isSelected[3]
+                                            ? Colors.green
+                                            : isSelected[4]
+                                            ? Colors.grey
+                                            :isSelected[5]
+                                            ?Colors.purple
+                                            : Colors.white,
+                            selectedColor: Colors.black,
+                            selectedBorderColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "나의 하루",
+                                  style: TextStyle(
+                                    color: Color(0xFF76453B),
+                                    fontSize: 20,
+                                    fontFamily: 'Noto Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 350,
+                                  child: TextFormField(
+                                    controller: _secretDiaryController,
+                                    maxLines: null,
+                                    keyboardType: TextInputType.multiline,
+                                    decoration: InputDecoration(
+                                      hintText: '나의 하루',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      diaryProvider.secretDiary = value;
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return ("Please enter your My day");
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "누군가에게 들려주고픈 나의 하루",
+                                      style: TextStyle(
+                                        color: Color(0xFF76453B),
+                                        fontSize: 18,
+                                        fontFamily: 'Noto Sans',
+                                        fontWeight: FontWeight.w400,
+                                        height: 0,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (_) => Explanation()),
+                                        );
+                                      },
+                                      icon: Icon(Icons.info),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 350,
+                                  child: TextFormField(
+                                    controller: _shareDiaryController,
+                                    maxLines: null,
+                                    keyboardType: TextInputType.multiline,
+                                    decoration: InputDecoration(
+                                      hintText: '당신의 하루를 공유해주세요!',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return ("Please enter");
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return ("Please enter");
-                          }
-                          return null;
-                        },
+                          ),
+                          Padding(padding: const EdgeInsets.symmetric(vertical: 30.0)),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_shareDiaryController.text == null || _shareDiaryController.text.trim().isEmpty) {
+                                sendUserServer(widget.selectedDate!);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Calendar()),
+                                );
+                              } else {
+                                sendUserServer(widget.selectedDate!);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SendDiaryScreen()),
+                                );
+                              }
+                            },
+                            child: Text(
+                              "Finish",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Gowun Dodum',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Color(0x996B3A2F),
+                              elevation: 4,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-              Padding(padding: const EdgeInsets.symmetric(vertical: 30.0)),
-              ElevatedButton(
-                onPressed: () async{
-                await sendUserServer();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => SendDiaryScreen())
-                  );
-                },
-                child: Text("Finish",
-                            style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontFamily: 'Gowun Dodum',
-                            fontWeight: FontWeight.w400,
-                            height: 0,
-                                ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                primary: Color(0x996B3A2F),
-                                elevation: 4, )
-                                
-              ),
-            ],
-          ),
-        ),
             ),
-      ),
-          ),
           ),
         ),
       ),
-      ),
-        bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF9AD0C2),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),

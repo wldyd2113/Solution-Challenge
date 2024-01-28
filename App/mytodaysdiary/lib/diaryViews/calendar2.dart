@@ -5,26 +5,17 @@ import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/MysettingViews/mySetting.dart';
 import 'package:mytodaysdiary/diaryViews/Mydiary.dart';
 import 'package:mytodaysdiary/diaryViews/RecordDiary.dart';
+import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Calendar extends StatefulWidget {
+class CheckCalendar extends StatefulWidget {
   @override
-  _CalendarState createState() => _CalendarState();
+  _CheckCalendarState createState() => _CheckCalendarState();
 }
 
-class _CalendarState extends State<Calendar> {
+class _CheckCalendarState extends State<CheckCalendar> {
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
-  late String formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate); // Initialize here
-
-
-@override
-void initState() {
-  super.initState();
-  final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
-  _checkDataExist(formattedDate);
-}
-
 
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
@@ -50,7 +41,7 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('미래 날짜는 기록할 수 없습니다.'),
+          title: Text('미래 날짜는 확인할 수 없습니다.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -63,23 +54,19 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
       },
     );
   } else {
-    bool hasData = await _checkDataExist(formattedDate);
+    bool hasData = await _checkDataExist(selectedDay);
 
-    if (hasData) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => RecordDiary(selectedDate: selectedDay)),
-      );
-    } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => MyDiary(selectedDate: selectedDay)),
-      );
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RecordDiary(selectedDate: selectedDay),
+      ),
+    );
   }
 }
 
 
 
-Future<bool> _checkDataExist(String formattedDate) async {
+Future<bool> _checkDataExist(DateTime date) async {
   final token = await TokenStorage.getToken();
 
   if (token != null) {

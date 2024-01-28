@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mytodaysdiary/DB/TokenSave.dart';
-import 'package:mytodaysdiary/DB/tokenData.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/idFind.dart';
 import 'package:mytodaysdiary/loginViews/joinPage.dart';
@@ -25,6 +24,9 @@ class _LoginpageState extends State<Loginpage> {
   final dio = Dio();
   bool remember = false;
   bool switchValue = false;
+  String ACCESS_TOKEN_KEY = 'accessToken';
+  String iosip = 'http://localhost:8080/user/login';
+  String androidip = 'http://localhost:8080/user/login';
 
   @override
   void initState() {
@@ -83,7 +85,7 @@ class _LoginpageState extends State<Loginpage> {
         await TokenStorage.saveToken(token);
 
         // 아래의 Navigator 코드는 _handleSignIn 안에서 이미 처리되므로 주석 처리
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
       } catch (e) {
         print('Auto-login error: $e');
       }

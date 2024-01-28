@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,14 +32,15 @@ class _IdFindPageState extends State<IdFindPage> {
               Container(
                 padding: EdgeInsets.only(left: 10.0),
                 alignment: Alignment.centerLeft,
-                child: Text("Email",
-                style: TextStyle(
-                color: Color(0xFF194062),
-                fontSize: 20,
-                fontFamily: 'Gowun Dodum',
-                fontWeight: FontWeight.w400,
-                height: 0,
-                ),
+                child: Text(
+                  "Email",
+                  style: TextStyle(
+                    color: Color(0xFF194062),
+                    fontSize: 20,
+                    fontFamily: 'Gowun Dodum',
+                    fontWeight: FontWeight.w400,
+                    height: 0,
+                  ),
                 ),
               ),
               SizedBox(height: 10,),
@@ -80,27 +79,26 @@ class _IdFindPageState extends State<IdFindPage> {
   }
 
   void _findId() async {
-    final String apiUrl = 'http://localhost:8080/signup/user';
-
-    String email = _emailController.text;
+    final String apiUrl = 'http://localhost:8080/user/check/${_emailController.text}';
 
     try {
-      var response = await http.post(
+      var response = await http.get(
         Uri.parse(apiUrl),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({'email': email}),
       );
 
       if (response.statusCode == 200) {
-        String foundId = response.body;
+        String message = response.body;
 
-        if (foundId.isNotEmpty) {
-          _showAlertDialog('가입되어 있는 이메일입니다', foundId);
+        if (message == '가입된 이메일') {
+          _showAlertDialog('성공', '가입되어 있는 이메일입니다');
         } else {
-          _showAlertDialog('가입되어 있지 않은 이메일입니다', '');
+          _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
         }
+      } else if (response.statusCode == 404) {
+        _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
       } else {
         print('서버 응답 에러: ${response.statusCode}');
         print('에러 내용: ${response.body}');
