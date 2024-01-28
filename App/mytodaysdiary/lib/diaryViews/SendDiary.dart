@@ -24,6 +24,9 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   List<String> translationLanguages = ['en', 'ko', 'ja', 'zh', 'fr', 'es', 'de', 'it', 'th'];
   String result_cloud_google = '';
 
+  late DiaryProvider diaryProvider; // 추가된 부분
+
+
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
     MySetting(),
@@ -53,7 +56,6 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
 
   Future<void> getDiary() async {
   final token = await TokenStorage.getToken();
-
   if (token != null) {
     decodeToken(token);
 
@@ -74,7 +76,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
           final dynamic jsonData = jsonDecode(getResponse.body);
 
           final emotion = jsonData['emotion'];
-          final shareDiary = jsonData['shareDiary'];
+          final shareDiary = jsonData['shareDiary'] ??'';
 
           setState(() {
             this.emotion = emotion;
@@ -184,6 +186,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   void initState() {
     super.initState();
     getDiary();
+    diaryProvider = Provider.of<DiaryProvider>(context, listen: false); // 추가된 부분
   }
 
   @override

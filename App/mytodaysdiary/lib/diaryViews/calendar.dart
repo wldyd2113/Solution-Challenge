@@ -63,6 +63,7 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
       },
     );
   } else {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
     bool hasData = await _checkDataExist(formattedDate);
 
     if (hasData) {
@@ -76,6 +77,7 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
     }
   }
 }
+
 
 
 

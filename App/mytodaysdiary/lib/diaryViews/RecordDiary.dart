@@ -108,7 +108,7 @@ class _RecordDiaryState extends State<RecordDiary> {
 
             this.emotion = jsonData['emotion'];
             this.secretDiary = jsonData['secretDiary'];
-            this.shareDiary = jsonData['shareDiary'];
+            this.shareDiary = jsonData['shareDiary']??'';
             this.cheeringMessage =
                 jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
             this.date = jsonData['date'];
