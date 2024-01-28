@@ -56,6 +56,7 @@ class _MyDiaryState extends State<MyDiary> {
     super.initState();
   }
 
+  //토글 버튼
   void toggleSelect(int value) {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
     setState(() {
@@ -77,10 +78,10 @@ class _MyDiaryState extends State<MyDiary> {
         diaryProvider.emotion = 'So-so';
         break;
       case 4:
-        diaryProvider.emotion = 'loneliness';
+        diaryProvider.emotion = 'Loney';
         break;
       case 5:
-        diaryProvider.emotion = "hungry";
+        diaryProvider.emotion = "Hungry";
         break;
 
     }
@@ -98,6 +99,8 @@ class _MyDiaryState extends State<MyDiary> {
     print('디코딩된 토큰 페이로드: $decoded');
   }
 
+// 서버에 나의일기, 공유일기, 감정 선택한 날짜를 전송하는
+//동시에 서버에서 일기의 아이디 값을 전송해줌  아이디 값을 프로바이더에 저장
 Future<void> sendUserServer(DateTime selectedDate) async {
   final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
 
@@ -121,7 +124,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
           'secretDiary': diaryProvider.secretDiary,
           'shareDiary': shareDiaryValue,
           'emotion': diaryProvider.emotion,
-          'date': formattedDate,  // 수정된 부분
+          'date': formattedDate,
         }),
       );
 
@@ -143,6 +146,12 @@ Future<void> sendUserServer(DateTime selectedDate) async {
             // 다이어리 ID를 DiaryProvider에 저장
             diaryProvider.id = diaryId;
             print('다이어리 ID: $diaryId');
+
+            // 프로바이더에 저장되었음을 알리는 문구 출력
+            print('프로바이더에 다이어리 ID가 저장되었습니다.');
+
+            // 다이어리 ID를 확인하는 부분
+            // 이곳에서 diaryProvider.id 값을 사용하거나 출력할 수 있습니다.
           } else {
             print('응답에서 다이어리 ID를 찾을 수 없습니다.');
           }
@@ -159,6 +168,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
     print("토큰이 없습니다");
   }
 }
+
 
 
 

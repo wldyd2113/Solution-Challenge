@@ -40,6 +40,10 @@ void initState() {
       MaterialPageRoute(builder: (context) => _widgetOptions[index]),
     );
   }
+
+//미래 날짜를 클릭하면 기록할수 없는 창이 뜨고 해당 날짜를 클릭하면 formattedDate에 저장됨
+//해당 날짜에 데이터가 있으면 Mydiary페이지로 이동
+//없으면 RecordDiary페이지로 이동
 Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
   setState(() {
     _selectedDate = selectedDay;
@@ -80,7 +84,7 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
 
 
 
-
+//해당 날짜에 데이터가 있는지 없는지 검사해줌
 Future<bool> _checkDataExist(String formattedDate) async {
   final token = await TokenStorage.getToken();
 

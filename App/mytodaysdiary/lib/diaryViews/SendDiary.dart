@@ -16,6 +16,7 @@ class SendDiaryScreen extends StatefulWidget {
 class _SendDiaryScreenState extends State<SendDiaryScreen> {
   late String shareDiary = '';
   late String emotion = '';
+  late int id;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _sendDiaryController = TextEditingController();
   final TextEditingController _cheeringMessageController = TextEditingController();
@@ -54,6 +55,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
     print('디코딩된 토큰 페이로드: $decoded');
   }
 
+  //서버에서 다른 사용자의 공유일기를 받아옴
   Future<void> getDiary() async {
   final token = await TokenStorage.getToken();
   if (token != null) {
@@ -74,16 +76,17 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
           final dynamic jsonData = jsonDecode(getResponse.body);
-
-          final emotion = jsonData['emotion'];
+          final emotion = jsonData['emotion']??'';
           final shareDiary = jsonData['shareDiary'] ??'';
-
+          final id = jsonData['id'] ??'';
           setState(() {
             this.emotion = emotion;
             this.shareDiary = shareDiary;
+            this.id = id;
+            diaryProvider.id = id;
           });
 
-          print('데이터 가져오기 성공: $emotion, $shareDiary');
+          print('데이터 가져오기 성공: $emotion, $shareDiary,$id');
         } catch (e) {
           print('데이터 파싱 중 오류 발생: $e');
         }
@@ -101,7 +104,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   }
 }
 
-
+  //서버에 응원에 메시지를 보내고 보내는 동시에 서버에서 일기의 id값을 보냄
   Future<void> sendCheerServer() async {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
 
@@ -144,7 +147,8 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
       print("토큰이 없습니다");
     }
   }
-
+  
+  //번역
     Future<void> getTranslation_google_cloud_translation(String targetLanguage) async {
     var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
     var key = 'AIzaSyB6EHY71E1D1CVUVqy5DpDRJpzNiyaHCsk';
@@ -375,11 +379,11 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                           Padding(padding: const EdgeInsets.symmetric(vertical: 30.0)),
                           ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
+                              
                                 userProvider.cheeringMessage = _cheeringMessageController.text;
                               sendCheerServer();
                               Navigator.of(context).push(MaterialPageRoute(builder: (_) => Calendar()));
-                              }
+                              
                             },
                             child: Text(
                               "Send",

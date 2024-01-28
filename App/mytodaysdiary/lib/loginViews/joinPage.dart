@@ -48,7 +48,7 @@ class _JoinPageState extends State<JoinPage> {
         void _checkNicknameUniqueness() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'), // 서버의 실제 엔드포인트로 수정
+          Uri.parse('http://localhost:8080/user/signup'),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -103,7 +103,7 @@ class _JoinPageState extends State<JoinPage> {
           // 여기서 사용자에게 회원가입이 성공했다는 메시지를 보여줄 수 있습니다.
         } else {
           // 서버 응답 실패
-          print('Failed with status code: ${response.statusCode}');
+          print('Failed with status code: ${response.statusCode}  ');
           // 여기서 사용자에게 회원가입 실패 메시지를 보여줄 수 있습니다.
         }
       } catch (error) {
