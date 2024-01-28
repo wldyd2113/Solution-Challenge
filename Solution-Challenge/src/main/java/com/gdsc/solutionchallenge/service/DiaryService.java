@@ -10,6 +10,7 @@ import com.gdsc.solutionchallenge.repository.DiaryRepository;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final UserRepository userRepository;
-
+    @Transactional
     public DiaryResponseDto writeDiary(DiaryRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -30,7 +31,7 @@ public class DiaryService {
         Diary savedDiary = diaryRepository.save(diary);
         return DiaryResponseDto.of(savedDiary);
     }
-
+    @Transactional
     public DiaryResponseDto getDiary(String date, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -38,7 +39,7 @@ public class DiaryService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 날짜의 일기를 찾을 수 없습니다."));
         return diary.toDto();
     }
-
+    @Transactional
     public OldestDiaryResponseDto getOldestDiary(){
         Diary oldestDiary = diaryRepository.findOldestDiary()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
@@ -47,7 +48,7 @@ public class DiaryService {
         return oldestDiary.toOldestDto();
     }
 
-
+    @Transactional
     public DiaryResponseDto writeMessage(MessageDto messageDto, Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));

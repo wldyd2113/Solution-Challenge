@@ -35,7 +35,7 @@ public class DiaryController {
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
-    @GetMapping("/oldest")  // localhost:8080/diary/oldest     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
+    @GetMapping("/oldest")  // localhost:8080/diary/oldezst     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
     public ResponseEntity<OldestDiaryResponseDto> getOldestDiary() {
         OldestDiaryResponseDto diary = diaryService.getOldestDiary();
         return new ResponseEntity<>(diary, HttpStatus.OK);
