@@ -63,6 +63,7 @@ public class Diary {
                 .secretDiary(this.secretDiary)
                 .shareDiary(this.shareDiary)
                 .createdAt(this.createdAt)
+                .cheeringMessage(this.cheeringMessage)
                 .date(this.date)
                 .build();
     }
