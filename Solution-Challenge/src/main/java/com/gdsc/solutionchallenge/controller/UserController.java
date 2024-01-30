@@ -84,7 +84,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/userInfo")
+    @GetMapping("/Info")
     public ResponseEntity<UserInfoResponseDto> getUserInfo(Principal principal) {
         Long loggedInUsername = Long.parseLong(principal.getName());
         Optional<User> userOptional = userRepository.findById(loggedInUsername);
