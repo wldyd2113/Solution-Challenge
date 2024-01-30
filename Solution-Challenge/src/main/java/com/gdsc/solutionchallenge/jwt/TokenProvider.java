@@ -46,9 +46,15 @@ public class TokenProvider {
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        String refreshToken = Jwts.builder()
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

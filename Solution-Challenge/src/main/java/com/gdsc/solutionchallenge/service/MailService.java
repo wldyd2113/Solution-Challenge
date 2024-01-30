@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -24,6 +25,7 @@ public class MailService {
     @Autowired
     UserService userService;
 
+    @Transactional
     public boolean CheckAuthNum(String email, String authNum) {
         if (redisUtil.getData(authNum) == null) {
             return false;
@@ -33,7 +35,7 @@ public class MailService {
             return false;
         }
     }
-
+    @Transactional
     public void makeRandomNumber() {
         Random r = new Random();
         StringBuilder randomNumber = new StringBuilder();
@@ -43,7 +45,7 @@ public class MailService {
         }
         authNumber = Integer.parseInt(randomNumber.toString());
     }
-
+    @Transactional
     public String joinEmail(String email) {
         makeRandomNumber();
         String setFrom = "sukwan1106@gmail.com";
@@ -59,6 +61,7 @@ public class MailService {
         return Integer.toString(authNumber);
     }
 
+    @Transactional
     public void sendMail(String setFrom, String toMail, String title, String content) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
@@ -73,7 +76,7 @@ public class MailService {
         }
         redisUtil.setDataExpire(Integer.toString(authNumber), toMail, 60 * 5L);
     }
-
+    @Transactional
     public String sendPassword(String email) {
         String temporaryPassword = userService.makeRandomPassword();
         String setFrom = "sukwan1106@gmail.com";
