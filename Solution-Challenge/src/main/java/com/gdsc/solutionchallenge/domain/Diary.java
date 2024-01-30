@@ -72,6 +72,7 @@ public class Diary {
                 .id(this.id)
                 .emotion(this.emotion)
                 .shareDiary(this.shareDiary)
+                .location(this.user.getLocation())
                 .build();
     }
 
