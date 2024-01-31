@@ -8,18 +8,14 @@ import com.gdsc.solutionchallenge.dto.response.UserInfoResponseDto;
 import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
+import com.gdsc.solutionchallenge.service.DiaryService;
 import com.gdsc.solutionchallenge.service.FirebaseAuthenticationService;
-import com.gdsc.solutionchallenge.service.MailService;
 import com.gdsc.solutionchallenge.service.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -32,7 +28,7 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final TokenProvider tokenProvider;
+    private final DiaryService diaryService;
     private final FirebaseAuthenticationService firebaseAuthenticationService;
 
     @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
@@ -50,13 +46,7 @@ public class UserController {
         return ResponseEntity.ok(userService.login(userRequestDto));
     }
 
-    @GetMapping // localhost:8080/user    로그인 테스트
-    public ResponseEntity<String> user() {
-        return ResponseEntity.ok("Hello User");
-    }
-
-
-    @GetMapping("/check/{email}") // localhost:8080/user/check/{email}   가입된 이메일인지 확인
+    @GetMapping("/email/{email}") // localhost:8080/user/check/{email}   가입된 이메일인지 확인
     public ResponseEntity<String> findEmail(@PathVariable String email) {
         boolean exist = userRepository.existsByEmail(email);
         if (exist)
@@ -68,8 +58,8 @@ public class UserController {
 
     @GetMapping("/password/{email}")  // localhost:8080/user/password/{email}   이메일로 비밀번호 찾기 ( 이메일 인증 필수 )
     public ResponseEntity<String> findPasswordByEmail(@PathVariable String email) {
-        String userPassword = userService.findPasswordByEmail(email);
-        return ResponseEntity.ok(userPassword);
+        userService.findPasswordByEmail(email);
+        return ResponseEntity.ok("비밀번호 초기화 이메일이 전송되었습니다. 새로운 비밀번호로 로그인하세요.");
     }
 
     @PostMapping("/password")
@@ -84,13 +74,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/Info")
+    @GetMapping("/info")
     public ResponseEntity<UserInfoResponseDto> getUserInfo(Principal principal) {
         Long loggedInUsername = Long.parseLong(principal.getName());
         Optional<User> userOptional = userRepository.findById(loggedInUsername);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            Long diaryCount = diaryService.getDiaryCount(loggedInUsername);
             UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
                     .email(user.getEmail())
                     .name(user.getName())
@@ -99,6 +90,7 @@ public class UserController {
                     .age(user.getAge())
                     .sex(user.getSex())
                     .language(user.getLanguage())
+                    .diaryCount(diaryCount)
                     .build();
 
             return new ResponseEntity<>(userInfoResponseDto, HttpStatus.OK);

@@ -41,16 +41,15 @@ public class DiaryController {
     @GetMapping("/oldest")  // localhost:8080/diary/oldezst     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
     public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(Principal principal) {
         Long userId = Long.parseLong(principal.getName());
-        User loggedInUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        OldestDiaryResponseDto diary = diaryService.getOldestDiary(loggedInUser);
+        OldestDiaryResponseDto diary = diaryService.getOldestDiary(userId);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
     @PostMapping("/writeMessage/{diaryId}")
     // localhost:8080/diary/writeMessage/{diaryId}    응원메세지 작성 { "message" : "" }
-    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, @PathVariable Long diaryId) {
-        DiaryResponseDto result = diaryService.writeMessage(messageDto, diaryId);
+    public ResponseEntity<DiaryResponseDto> writeMessage(@RequestBody MessageDto messageDto, @PathVariable Long diaryId, Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        DiaryResponseDto result = diaryService.writeMessage(messageDto, diaryId, userId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

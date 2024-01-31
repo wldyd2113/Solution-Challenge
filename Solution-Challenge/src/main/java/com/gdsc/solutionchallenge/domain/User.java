@@ -6,6 +6,9 @@
     import lombok.NoArgsConstructor;
     import lombok.Setter;
 
+    import java.util.ArrayList;
+    import java.util.List;
+
     @Entity
     @Setter
     @Getter
@@ -43,6 +46,10 @@
         @Enumerated(EnumType.STRING)
         @Column(name = "USER_ROLE", nullable = false)
         private Role role;
+
+        @OneToMany(mappedBy = "user")
+        private List<Diary> diaries = new ArrayList<>();
+
 
         @Builder
         public User(String email, String password, String name,Role role, String sex, String location, String job, int age, String language){
