@@ -66,22 +66,22 @@ class _MyDiaryState extends State<MyDiary> {
     });
     switch (value) {
       case 0:
-        diaryProvider.emotion = 'Happy';
+        diaryProvider.emotion = '행복';
         break;
       case 1:
-        diaryProvider.emotion = 'Sad';
+        diaryProvider.emotion = '슬플';
         break;
       case 2:
-        diaryProvider.emotion = 'Angry';
+        diaryProvider.emotion = '화남';
         break;
       case 3:
-        diaryProvider.emotion = 'So-so';
+        diaryProvider.emotion = '그저그럼';
         break;
       case 4:
-        diaryProvider.emotion = 'Loney';
+        diaryProvider.emotion = '외로움';
         break;
       case 5:
-        diaryProvider.emotion = "Hungry";
+        diaryProvider.emotion = "배고픔";
         break;
 
     }
@@ -117,7 +117,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
       final response = await http.post(
         Uri.parse('http://localhost:8080/diary/save'),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
@@ -241,7 +241,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                           Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "Feelings of The Day",
+                              "오늘의 감정",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 20,
@@ -255,29 +255,29 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
-                                child: Text('Happy',
+                                child: Text('기쁨',
                                 style: TextStyle(fontSize: 10),),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
-                                child: Text('Sad',
+                                child: Text('슬픔',
                                 style: TextStyle(fontSize: 10)),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
-                                child: Text('Angry',
+                                child: Text('화남',
                                 style: TextStyle(fontSize: 10)),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
-                                child: Text('So-so',
+                                child: Text('그저그럼',
                                 style: TextStyle(fontSize: 10)),
                               ),
                               Padding(padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text("Loney",
+                              child: Text("외로움",
                               style: TextStyle(fontSize: 10)),),
                               Padding(padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Text("Hungry",style: TextStyle(fontSize: 10)),
+                              child: Text("배고픔",style: TextStyle(fontSize: 10)),
                               ),
 
                             ],

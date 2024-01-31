@@ -228,7 +228,7 @@ Future<bool> _checkDataExist(String formattedDate) async {
                               child: ElevatedButton(
                                 onPressed: _onLeaveTodayPressed,
                                 child: Text(
-                                  'Leave Today',
+                                  '오늘 하루남기기',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 24,

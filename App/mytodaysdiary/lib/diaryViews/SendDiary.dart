@@ -17,6 +17,9 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   late String shareDiary = '';
   late String emotion = '';
   late int id;
+  String message = '';
+  String location = '';
+  Color color = Colors.black;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _sendDiaryController = TextEditingController();
   final TextEditingController _cheeringMessageController = TextEditingController();
@@ -75,14 +78,52 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
       if (getResponse.statusCode == 200) {
         // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
-          final dynamic jsonData = jsonDecode(getResponse.body);
-          final emotion = jsonData['emotion']??'';
-          final shareDiary = jsonData['shareDiary'] ??'';
-          final id = jsonData['id'] ??'';
+          final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
+          final emotion = jsonData['emotion']?? '';
+          final shareDiary = jsonData['shareDiary'] ?? '';
+          final location = jsonData['location'] ?? '';
+          final id = jsonData['id'] ?? '';
+
+          // 감정에 따라 메시지와 색상 설정
+          switch (emotion) {
+            case '기쁨':
+              message = '응원';
+              color = Colors.yellow;
+              break;
+            case '슬픔':
+              message = '위로';
+              color = Colors.blue;
+              break;
+            case '화남':
+              message = '공감';
+              color = Colors.red;
+              break;
+            case '그저그럼':
+              message = '보통';
+              color = Colors.green;
+              break;
+            case '외로움':
+              message = '따듯한';
+              color = Colors.grey;
+              break;
+            case '배고픔':
+              message = '맛있는';
+              color = Colors.purple;
+              break;
+            default:
+              message = '알 수 없음';
+              color = Colors.black;
+              break;
+          }
+
+
           setState(() {
             this.emotion = emotion;
             this.shareDiary = shareDiary;
             this.id = id;
+            this.location = location;
+            this.message = message;
+            this.color = color;
             diaryProvider.id = id;
           });
 
@@ -104,6 +145,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   }
 }
 
+
   //서버에 응원에 메시지를 보내고 보내는 동시에 서버에서 일기의 id값을 보냄
   Future<void> sendCheerServer() async {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
@@ -116,7 +158,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         final response = await http.post(
           Uri.parse('http://localhost:8080/diary/writeMessage/${diaryProvider.id}'),
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
             'Authorization': 'Bearer $token',
           },
           body: jsonEncode({
@@ -259,15 +301,36 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            "누군가의 하루가 도착했어요.",
-                            style: TextStyle(
-                              color: Color(0xFF76453B),
-                              fontSize: 18,
-                              fontFamily: 'Noto Sans',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
+                          Row(mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "${location} ",
+                                  style: TextStyle(
+                                    color: Colors.red, // Set the color to red
+                                    fontSize: 15,
+                                    fontFamily: 'Noto Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "사는 누군가의 하루가 도착했어요.",
+                                  style: TextStyle(
+                                    color: Color(0xFF76453B),
+                                    fontSize: 15,
+                                    fontFamily: 'Noto Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                              ],
                             ),
+                          ),
+
+                          ],
                           ),
                           Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                     Container(
@@ -290,7 +353,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                       ],
                     ),
                     padding:  const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Text('emotion : ${emotion} \n'
+                      child: Text('emotion : ${emotion} \n\n'
                             '${shareDiary}',
                             style: TextStyle(
                               color: Colors.black,
@@ -326,7 +389,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                                 getTranslation_google_cloud_translation(selectedLanguage);
                               },
                               child: Text(
-                                "Translation",
+                                "번역",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -343,7 +406,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                           ),
                           Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                           Text(
-                            "A message of support that I would like to convey",
+                            "이 사람에게 전해주고 싶은 ${message}메세지",
                             style: TextStyle(
                               color: Color(0xFF76453B),
                               fontSize: 18,
@@ -369,7 +432,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter");
+                                  return ("응원에 메세지를 작성해주세요");
                                 }
                                 return null;
                               },

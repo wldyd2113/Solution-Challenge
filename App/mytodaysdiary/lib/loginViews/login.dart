@@ -137,7 +137,7 @@ class _LoginpageState extends State<Loginpage> {
                 width: 340,
                 height: 100,
                 child: Text(
-                'Nice to meet you!',
+                '반갑습니다!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                 color: Color(0xFF194062),
@@ -172,7 +172,7 @@ class _LoginpageState extends State<Loginpage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty || !value.contains('@')) {
-                              return ("Please enter your email");
+                              return ("Email을 입력해주세요");
                             }
                             return null;
                           },
@@ -196,7 +196,7 @@ class _LoginpageState extends State<Loginpage> {
                           ),
                           validator: (value) {
                             if (value == null || value.length <= 9) {
-                              return ("Password must be at least 9 characters");
+                              return ("비밀번호는 9자 이상이어야 합니다.");
                             }
                             return null;
                           },
@@ -242,7 +242,7 @@ class _LoginpageState extends State<Loginpage> {
                             });
                           },
                         ),
-                        Text("ID REMEBER"),
+                        Text("Email 기억하기"),
                         CupertinoSwitch(
                           value: switchValue,
                           activeColor: CupertinoColors.activeBlue,
@@ -252,13 +252,13 @@ class _LoginpageState extends State<Loginpage> {
                             });
                           },
                         ),
-                        Text("Auto Login"),
+                        Text("자동로그인"),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Don't have an account? ",
+                        Text("계정이 없으신가요? ",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                         color: Color(0xFF2D9596),
@@ -271,11 +271,11 @@ class _LoginpageState extends State<Loginpage> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => JoinPage()),
+                              MaterialPageRoute(builder: (_) => JoinPage(isEmailVerified: true)),
                             );
                           },
                           child: Text(
-                          'join the membership',
+                          '회원가입',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                           color: Color(0xFF194062),
@@ -342,7 +342,7 @@ class _LoginpageState extends State<Loginpage> {
                               MaterialPageRoute(builder: (_) => IdFindPage()),
                             );
                           },
-                          child: Text("Find ID",
+                          child: Text("Email 찾기",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 22,
@@ -368,7 +368,7 @@ class _LoginpageState extends State<Loginpage> {
                               MaterialPageRoute(builder: (_) => PwFindPage()),
                             );
                           },
-                          child: Text("Find Password",
+                          child: Text("비밀번호 찾기",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 22,

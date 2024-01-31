@@ -8,6 +8,9 @@ import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart';
 
 class JoinPage extends StatefulWidget {
+  final bool isEmailVerified;
+
+  JoinPage({required this.isEmailVerified});
   @override
   _JoinPageState createState() => _JoinPageState();
 }
@@ -21,7 +24,8 @@ class _JoinPageState extends State<JoinPage> {
 
   String? _sex; // 추가: 선택된 성별을 저장하는 변수
   String? _location;//사는 나라
-  String? _language;
+  String? _language;// 언어
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -50,7 +54,7 @@ class _JoinPageState extends State<JoinPage> {
         final response = await http.post(
           Uri.parse('http://localhost:8080/user/signup'),
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode({
             'nickname': _nameController.text,
@@ -83,7 +87,7 @@ class _JoinPageState extends State<JoinPage> {
         final response = await http.post(
           Uri.parse('http://localhost:8080/user/signup'),
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode({
             'email': userProvider.email,
@@ -112,6 +116,15 @@ class _JoinPageState extends State<JoinPage> {
         // 여기서 사용자에게 오류 메시지를 보여줄 수 있습니다.
       }
     }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
 
     return Scaffold(
       backgroundColor: const Color(0xFF9AD0C2),
@@ -176,7 +189,7 @@ class _JoinPageState extends State<JoinPage> {
                                 if (value == null ||
                                     value.isEmpty ||
                                     !value.contains('@')) {
-                                  return ("Please enter your email");
+                                  return ("Email을 입력해주세요");
                                 }
                                 return null;
                               },
@@ -193,7 +206,7 @@ class _JoinPageState extends State<JoinPage> {
                                   ),
                                 );
                               },
-                              child: Text('Email Authentication',
+                              child: Text('이메일 인증',
                               style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -207,7 +220,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("NickName",
+                          child: const Text("닉네임",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -221,14 +234,14 @@ class _JoinPageState extends State<JoinPage> {
                             child: TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
-                                hintText: 'NickName',
+                                hintText: '닉네임',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your NickName");
+                                  return ("닉네임을 입력해주세요");
                                 }
                                 return null;
                               },
@@ -256,7 +269,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Password",
+                          child: const Text("비밀번호",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -271,14 +284,14 @@ class _JoinPageState extends State<JoinPage> {
                               controller: _passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
-                                hintText: 'Password',
+                                hintText: '비밀번호',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               validator: (value) {
                                 if (value == null || value.length <= 9) {
-                                  return ("Password must be at least 9 characters");
+                                  return ("비밀번호는 9자 이상이어야 합니다");
                                 }
                                 return null;
                               },
@@ -287,7 +300,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Age",
+                          child: const Text("나이",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -301,14 +314,14 @@ class _JoinPageState extends State<JoinPage> {
                             child: TextFormField(
                               controller: _ageController,
                               decoration: InputDecoration(
-                                hintText: 'Age',
+                                hintText: '나이',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Age");
+                                  return ("나이를 입력해주세요");
                                 }
                                 return null;
                               },
@@ -317,7 +330,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Gender",
+                          child: const Text("성별",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -330,7 +343,7 @@ class _JoinPageState extends State<JoinPage> {
                             width: 300,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
-                                labelText: 'Gender',
+                                labelText: '성별',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -338,15 +351,15 @@ class _JoinPageState extends State<JoinPage> {
                               onChanged: (String? gender) {
                                 _sex = gender;
                               },
-                              items: [null, "M", "F", "T"].map<DropdownMenuItem<String?>>((String? sex) {
+                              items: [null, "남", "여", "중"].map<DropdownMenuItem<String?>>((String? sex) {
                                 return DropdownMenuItem<String?>(
                                   value: sex,
-                                  child: Text({"M": "Male", "F": "Female", "T": "Transgender"}[sex] ?? "비공개"),
+                                  child: Text({"남": "남자", "여": "여자", "중": "중성"}[sex] ?? "비공개"),
                                 );
                               }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Please enter your Gender";
+                                  return "성별을 선택해주세요";
                                 }
                                 return null;
                               },
@@ -356,7 +369,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Job",
+                          child: const Text("직업",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -370,14 +383,14 @@ class _JoinPageState extends State<JoinPage> {
                             child: TextFormField(
                               controller: _jobController,
                               decoration: InputDecoration(
-                                hintText: 'Job',
+                                hintText: '직업',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return ("Please enter your Job");
+                                  return ("직업을 입력해주세요");
                                 }
                                 return null;
                               },
@@ -386,7 +399,7 @@ class _JoinPageState extends State<JoinPage> {
                           Container(
                             alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Country",
+                          child: const Text("나라",
                           style: TextStyle(
                           color: Color(0xFF194062),
                           fontSize: 20,
@@ -399,7 +412,7 @@ class _JoinPageState extends State<JoinPage> {
                             width: 300,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
-                                labelText: 'Country',
+                                labelText: '나라',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -438,7 +451,7 @@ class _JoinPageState extends State<JoinPage> {
                               }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Please enter your Country";
+                                  return "나라를 선택해주세요";
                                 }
                                 return null;
                               },
@@ -461,7 +474,7 @@ class _JoinPageState extends State<JoinPage> {
                             width: 300,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
-                                labelText: 'Language',
+                                labelText: '언어',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -502,7 +515,7 @@ class _JoinPageState extends State<JoinPage> {
                               }).toList(),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Please enter your Language";
+                                  return "언어를 선택해주세요";
                                 }
                                 return null;
                               },
@@ -518,30 +531,31 @@ class _JoinPageState extends State<JoinPage> {
                   width: 300,
                   child: ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                userProvider.email = _emailController.text;
-                                userProvider.name = _nameController.text;
-                                userProvider.password =
-                                    _passwordController.text;
+                              if(widget.isEmailVerified){
+                                if (_formKey.currentState!.validate()) {
+                                  userProvider.email = _emailController.text;
+                                  userProvider.name = _nameController.text;
+                                  userProvider.password =
+                                      _passwordController.text;
 
-                                String ageText = _ageController.text;
-                                if (ageText.isNotEmpty) {
-                                  int? age = int.tryParse(ageText);
-                                  if (age != null) {
-                                    userProvider.age = age;
+                                  String ageText = _ageController.text;
+                                  if (ageText.isNotEmpty) {
+                                    int? age = int.tryParse(ageText);
+                                    if (age != null) {
+                                      userProvider.age = age;
+                                    } else {
+                                      print('Invalid age format');
+                                    }
                                   } else {
-                                    print('Invalid age format');
+                                    print('Age is required');
                                   }
-                                } else {
-                                  print('Age is required');
-                                }
 
-                                userProvider.sex = _sex ?? "";
-                                userProvider.job = _jobController.text;
-                                userProvider.location =
-                                    _location ?? "";
-                                userProvider.language =
-                                    _language ?? "";
+                                  userProvider.sex = _sex ?? "";
+                                  userProvider.job = _jobController.text;
+                                  userProvider.location =
+                                      _location ?? "";
+                                  userProvider.language =
+                                      _language ?? "";
 
                                 sendUserServer();
                                 Navigator.pushReplacement(
@@ -551,12 +565,15 @@ class _JoinPageState extends State<JoinPage> {
                                   ),
                                 );
                               }
+                              }else{
+                                _showSnackBar('이메일 인증을 먼저 완료해주세요.');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               primary:  Color(0xCC2D9596),
                               elevation: 4, // 그림자 설정
                             ),
-                            child: const Text("Join",
+                            child: const Text("회원가입",
                                 style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 26,

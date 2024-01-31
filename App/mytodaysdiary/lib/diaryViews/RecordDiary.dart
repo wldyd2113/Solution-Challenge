@@ -26,6 +26,7 @@ import 'package:provider/provider.dart';
     String shareDiary = '';
     String cheeringMessage = '';
     String date = '';
+    late String messageLocation='';
 
     String selectedLanguage = 'en'; // 기본 언어 설정
 
@@ -104,18 +105,17 @@ import 'package:provider/provider.dart';
 
           print('Server Response: ${getResponse.statusCode}');
           print('Server Response Body: ${getResponse.body}');
-
           if (getResponse.statusCode == 200) {
             // 서버에서 JSON 형식으로 반환된 데이터를 파싱
             try {
-              final dynamic jsonData = jsonDecode(getResponse.body);
-
+              final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
               this.emotion = jsonData['emotion'];
               this.secretDiary = jsonData['secretDiary'];
               this.shareDiary = jsonData['shareDiary']??'';
               this.cheeringMessage =
                   jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
               this.date = jsonData['date'];
+              this.messageLocation = jsonData['messageLocation'] ?? '';
 
               setState(() {
                 this.emotion = emotion;
@@ -123,9 +123,10 @@ import 'package:provider/provider.dart';
                 this.shareDiary = shareDiary;
                 this.cheeringMessage = cheeringMessage;
                 this.date = date;
+                this.messageLocation = messageLocation;
               });
 
-              print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage');
+              print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage, $messageLocation');
             } catch (e) {
               print('데이터 파싱 중 오류 발생: $e');
             }
@@ -250,7 +251,7 @@ import 'package:provider/provider.dart';
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "Selected Date: ${date}",
+                              "기록한 날짜: ${date}",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 18,
@@ -276,7 +277,7 @@ import 'package:provider/provider.dart';
                               height: 10,
                             ),
                             Text(
-                              "My Diary",
+                              "나의 하루",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 20,
@@ -325,7 +326,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Text(
-                                    "Share Diary",
+                                    "공유 일기",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,
@@ -371,7 +372,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Text(
-                                    "Cheering Message",
+                                    "${messageLocation}에 사는 누군가의 위로의 편지",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,
@@ -440,7 +441,7 @@ import 'package:provider/provider.dart';
                                         selectedLanguage);
                                   },
                                   child: const Text(
-                                    "Translation",
+                                    "번역",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
