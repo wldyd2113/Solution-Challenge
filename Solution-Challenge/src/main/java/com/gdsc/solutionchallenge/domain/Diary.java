@@ -70,6 +70,7 @@ public class Diary {
                 .createdAt(this.createdAt)
                 .cheeringMessage(this.cheeringMessage)
                 .date(this.date)
+                .messageLocation(this.messageLocation)
                 .build();
     }
     public OldestDiaryResponseDto toOldestDto(){
