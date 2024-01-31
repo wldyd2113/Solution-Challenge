@@ -43,9 +43,14 @@ public class Diary {
     @Column(name = "DATE")
     private String date;
 
+    @Column(name = "MESSAGE_LOCATION")
+    private String messageLocation;
+
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;
+
+
 
     @Builder
     public Diary(String emotion, String secretDiary, String shareDiary, User user, String date, LocalDateTime createdAt){

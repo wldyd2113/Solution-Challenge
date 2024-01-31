@@ -8,6 +8,7 @@ import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -57,13 +58,13 @@ public class UserService {
     }
 
     @Transactional
-    public String findPasswordByEmail(String email){
+    public ResponseEntity<String> findPasswordByEmail(String email){
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("해당하는 이메일의 사용자를 찾을 수 없습니다."));
         String temporaryPassword = mailService.sendPassword(email);
         user.setPassword(passwordEncoder.encode(temporaryPassword));
         userRepository.save(user);
-        return temporaryPassword;
+        return ResponseEntity.ok("비밀번호 초기화 이메일이 전송되었습니다. 새로운 비밀번호로 로그인하세요.");
     }
 
 

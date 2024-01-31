@@ -15,4 +15,5 @@ public class UserInfoResponseDto {
     String language;
     String job;
     String sex;
+    Long diaryCount;
 }

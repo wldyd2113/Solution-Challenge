@@ -19,8 +19,8 @@ public class MailController {
 
     //  localhost:8080/mail/auth   이메일 인증
     @PostMapping("/auth")
-    public String mailSend(@RequestBody @Valid EmailRequestDto emailDto){
-        System.out.println("이메일 인증 이메일 : "+emailDto.getEmail());
+    public String sendMail(@RequestBody @Valid EmailRequestDto emailDto){
+//        System.out.println("이메일 인증 이메일 : "+emailDto.getEmail());
         return mailService.joinEmail(emailDto.getEmail());
     }
     //  localhost:8080/mail/authCheck   인증번호 확인
@@ -30,7 +30,7 @@ public class MailController {
         if(checked){
             return "ok";
         } else {
-            throw new NullPointerException("오류!");
+            throw new NullPointerException("인증 실패");
         }
 
     }

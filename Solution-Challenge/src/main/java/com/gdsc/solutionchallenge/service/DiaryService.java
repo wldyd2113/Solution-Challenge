@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 @Service
@@ -40,7 +41,9 @@ public class DiaryService {
         return diary.toDto();
     }
     @Transactional
-    public OldestDiaryResponseDto getOldestDiary(User loggedInUser){
+    public OldestDiaryResponseDto getOldestDiary(Long userId){
+        User loggedInUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Diary oldestDiary = diaryRepository.findOldestDiary(loggedInUser)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
         oldestDiary.setViewed(true);
@@ -49,13 +52,19 @@ public class DiaryService {
     }
 
     @Transactional
-    public DiaryResponseDto writeMessage(MessageDto messageDto, Long diaryId) {
+    public DiaryResponseDto writeMessage(MessageDto messageDto, Long diaryId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기는 존재하지 않습니다."));
-
         diary.setCheeringMessage(messageDto.getCheeringMessage());
+        diary.setMessageLocation(user.getLocation());
         diaryRepository.save(diary);
         return DiaryResponseDto.of(diary);
     }
 
+    @Transactional
+    public Long getDiaryCount(Long userId){
+        return userRepository.countDiariesByUserId(userId);
+    }
 }
