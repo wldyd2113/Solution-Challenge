@@ -6,7 +6,6 @@ import com.gdsc.solutionchallenge.dto.request.ChangePasswordDto;
 import com.gdsc.solutionchallenge.dto.request.UserRequestDto;
 import com.gdsc.solutionchallenge.dto.response.UserInfoResponseDto;
 import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
-import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import com.gdsc.solutionchallenge.service.DiaryService;
 import com.gdsc.solutionchallenge.service.FirebaseAuthenticationService;
