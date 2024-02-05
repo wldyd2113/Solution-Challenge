@@ -66,7 +66,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
 
     try {
       final getResponse = await http.get(
-        Uri.parse('http://localhost:8080/diary/oldest'),
+        Uri.parse('http://localhost:8080/diary/oldest/${diaryProvider.emotion}'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -86,20 +86,20 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
 
           // 감정에 따라 메시지와 색상 설정
           switch (emotion) {
-            case '기쁨':
-              message = '응원';
+            case '행복':
+              message = '응원에 ';
               color = Colors.yellow;
               break;
             case '슬픔':
-              message = '위로';
+              message = '위로에 ';
               color = Colors.blue;
               break;
             case '화남':
-              message = '공감';
+              message = '공감의 ';
               color = Colors.red;
               break;
             case '그저그럼':
-              message = '보통';
+              message = '보통의 ';
               color = Colors.green;
               break;
             case '외로움':
@@ -232,7 +232,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   void initState() {
     super.initState();
     getDiary();
-    diaryProvider = Provider.of<DiaryProvider>(context, listen: false); // 추가된 부분
+    diaryProvider = Provider.of<DiaryProvider>(context, listen: false) ?? DiaryProvider(); // 추가된 부분
   }
 
   @override
@@ -406,7 +406,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                           ),
                           Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                           Text(
-                            "이 사람에게 전해주고 싶은 ${message}메세지",
+                            "이 사람에게 전해주고 싶은 ${message??''}메세지",
                             style: TextStyle(
                               color: Color(0xFF76453B),
                               fontSize: 18,

@@ -9,6 +9,61 @@ class IdFindPage extends StatefulWidget {
 class _IdFindPageState extends State<IdFindPage> {
   final TextEditingController _emailController = TextEditingController();
 
+
+
+  void _findId() async {
+    final String apiUrl = 'http://localhost:8080/user/check/${_emailController.text}';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      
+
+      if (response.statusCode == 200) {
+        String message = response.body;
+
+        if (message == '가입된 이메일') {
+          _showAlertDialog('성공', '가입되어 있는 이메일입니다');
+        } else {
+          _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
+        }
+      } else if (response.statusCode == 404) {
+        _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
+      } else {
+        print('서버 응답 에러: ${response.statusCode}');
+        print('에러 내용: ${response.body}');
+        _showAlertDialog('에러 발생', '서버 응답 에러: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+      _showAlertDialog('에러 발생', '에러 발생: $error');
+    }
+  }
+
+  void _showAlertDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,55 +133,4 @@ class _IdFindPageState extends State<IdFindPage> {
     );
   }
 
-  void _findId() async {
-    final String apiUrl = 'http://localhost:8080/user/check/${_emailController.text}';
-
-    try {
-      var response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        String message = response.body;
-
-        if (message == '가입된 이메일') {
-          _showAlertDialog('성공', '가입되어 있는 이메일입니다');
-        } else {
-          _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
-        }
-      } else if (response.statusCode == 404) {
-        _showAlertDialog('찾을 수 없음', '가입되어 있지 않은 이메일입니다');
-      } else {
-        print('서버 응답 에러: ${response.statusCode}');
-        print('에러 내용: ${response.body}');
-        _showAlertDialog('에러 발생', '서버 응답 에러: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
-      _showAlertDialog('에러 발생', '에러 발생: $error');
-    }
-  }
-
-  void _showAlertDialog(String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }

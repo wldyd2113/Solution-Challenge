@@ -14,6 +14,8 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
     bool sad = false;
     bool angry = false;
     bool soso = false;
+    bool loneliness = false;
+    bool hungry = false;
     late List<bool> isSelected;
 
     final List<Widget> _widgetOptions = <Widget>[
@@ -23,7 +25,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
 
     @override
     void initState() {
-      isSelected = [happy, sad, angry, soso];
+      isSelected = [happy, sad, angry, soso,loneliness,hungry];
       super.initState();
     }
 
@@ -84,8 +86,8 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                 ),
                 child :Container(
                   alignment: Alignment.centerRight,
-                width: 290,
-                height: 480,
+                width:300,
+                height: 490,
                 decoration: ShapeDecoration(
                 color: Color(0xFFFFFFEC),
                 shape: RoundedRectangleBorder(
@@ -109,7 +111,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                   Container(
                     alignment: Alignment.centerLeft,
                   child: Text(
-                      "Feelings of The Day:",
+                      "오늘의 감정:",
                       style: TextStyle(
                       color: Color(0xFF76453B),
                       fontSize: 20,
@@ -119,24 +121,34 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       ),
                     ),
                   ),
-                    ToggleButtons(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('Happy'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('Sad'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('Angry'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('So-so'),
-                        ),
+                          ToggleButtons(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('기쁨',
+                                style: TextStyle(fontSize: 10),),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('슬픔',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('화남',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text('그저그럼',
+                                style: TextStyle(fontSize: 10)),
+                              ),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: Text("외로움",
+                              style: TextStyle(fontSize: 10)),),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: Text("배고픔",style: TextStyle(fontSize: 10)),
+                              ),
                       ],
                       isSelected: isSelected,
                       onPressed: (int index) {
@@ -156,6 +168,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       selectedBorderColor: Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
+                    SizedBox(height: 10,),
                     Center(
                     child:Container(
                       alignment: Alignment.center,

@@ -49,6 +49,7 @@ dependencies:
   easy_localization: ^3.0.3
   image_picker: ^1.0.5
   intl: ^0.18.1
+  jwt_decoder: ^2.0.1
   
 dev_dependencies:
   flutter_test:

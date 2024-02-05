@@ -129,7 +129,7 @@ class _JoinPageState extends State<JoinPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
-        title: const Text("Join"),
+        title: const Text("가입하기"),
         actions: <Widget>[],
       ),
       body: SafeArea(

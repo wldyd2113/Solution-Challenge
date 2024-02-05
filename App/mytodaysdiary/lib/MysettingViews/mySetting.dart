@@ -40,6 +40,7 @@ class _MySettingState extends State<MySetting> {
   }
 Future<void> fetchData() async {
   final token = await TokenStorage.getToken();
+ 
 
   if (token != null) {
     decodeToken(token);
@@ -84,11 +85,6 @@ Future<void> fetchData() async {
     print('토큰이 없습니다.');
   }
 }
-
-
-
-
-
 
 
   final List<Widget> _widgetOptions = <Widget>[
@@ -257,9 +253,18 @@ Future<void> fetchData() async {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Text("닉네임: $name",
+                      Text("닉네임: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
+                      Text("$name",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
@@ -271,14 +276,24 @@ Future<void> fetchData() async {
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                   Row(
                     children: <Widget>[
-                      Text("Email: $email",
+                      Text("Email: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
-                      ),),
+                      ),
+                      ),
+                      Text("$email",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
                     ],
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
@@ -311,14 +326,24 @@ Future<void> fetchData() async {
                   ),
                   Row(
                     children: <Widget>[
-                      Text("내가 기록한 하루 수: ${diaryCount}",
+                      Text("내가 기록한 하루 수: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
-                      ),),
+                      ),
+                      ),
+                      Text("${diaryCount}",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 10,),

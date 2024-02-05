@@ -33,6 +33,8 @@ class _MyDiaryState extends State<MyDiary> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _secretDiaryController = TextEditingController();
   final TextEditingController _shareDiaryController = TextEditingController();
+  
+  
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
@@ -69,7 +71,7 @@ class _MyDiaryState extends State<MyDiary> {
         diaryProvider.emotion = '행복';
         break;
       case 1:
-        diaryProvider.emotion = '슬플';
+        diaryProvider.emotion = '슬픔';
         break;
       case 2:
         diaryProvider.emotion = '화남';
@@ -392,19 +394,20 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                           ElevatedButton(
                             onPressed: () {
                               if (_shareDiaryController.text == null || _shareDiaryController.text.trim().isEmpty) {
-                                sendUserServer(widget.selectedDate!);
+                                sendUserServer(widget.selectedDate ?? DateTime.now());
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => Calendar()),
                                 );
                               } else {
-                                sendUserServer(widget.selectedDate!);
+                                sendUserServer(widget.selectedDate ?? DateTime.now());
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => SendDiaryScreen()),
                                 );
                               }
                             },
+
                             child: Text(
                               "Finish",
                               style: TextStyle(

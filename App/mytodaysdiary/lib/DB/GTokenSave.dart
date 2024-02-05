@@ -1,16 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class TokenStorage {
+class GTokenStorage {
   static final FlutterSecureStorage _storage = const FlutterSecureStorage();
   static const String accessTokenKey = 'accessToken';
 
-static Future<void> saveToken(String token) async {
-  if (token != null) {
+  static Future<void> saveToken(String token) async {
     await _storage.write(key: accessTokenKey, value: token);
-  } else {
-    print('Trying to save null token!');
   }
-}
 
   static Future<String?> getToken() async {
     return await _storage.read(key: accessTokenKey);
@@ -33,5 +29,4 @@ static Future<void> saveToken(String token) async {
       await deleteToken();
     }
   }
-  
 }

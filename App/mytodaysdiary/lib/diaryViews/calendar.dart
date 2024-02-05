@@ -17,14 +17,12 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedDate = DateTime.now();
   late String formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate); // Initialize here
 
-
-@override
-void initState() {
-  super.initState();
-  final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
-  _checkDataExist(formattedDate);
-}
-
+  @override
+  void initState() {
+    super.initState();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    _checkDataExist(formattedDate);
+  }
 
   final List<Widget> _widgetOptions = <Widget>[
     Calendar(),
@@ -41,24 +39,92 @@ void initState() {
     );
   }
 
-//미래 날짜를 클릭하면 기록할수 없는 창이 뜨고 해당 날짜를 클릭하면 formattedDate에 저장됨
-//해당 날짜에 데이터가 있으면 Mydiary페이지로 이동
-//없으면 RecordDiary페이지로 이동
-Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
-  setState(() {
-    _selectedDate = selectedDay;
-  });
+  Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
+    setState(() {
+      _selectedDate = selectedDay;
+    });
 
-  if (selectedDay.isAfter(DateTime.now())) {
+    if (selectedDay.isAfter(DateTime.now())) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('미래 날짜는 기록할 수 없습니다.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+      bool hasData = await _checkDataExist(formattedDate);
+
+      if (hasData) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => RecordDiary(selectedDate: selectedDay)),
+        );
+      } else {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => MyDiary(selectedDate: selectedDay)),
+        );
+      }
+    }
+  }
+
+  Future<bool> _checkDataExist(String formattedDate) async {
+    final token = await TokenStorage.getToken();
+
+    if (token != null) {
+      try {
+        final response = await http.get(
+          Uri.parse('http://localhost:8080/diary/$formattedDate'), // 실제 서버의 엔드포인트로 수정
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          return true;
+        } else if (response.statusCode == 404) {
+          return false;
+        } else {
+          print('서버 응답 오류: ${response.statusCode}');
+          return false;
+        }
+      } catch (error) {
+        print('통신 중 에러: $error');
+        return false;
+      }
+    } else {
+      print('토큰이 없습니다.');
+      return false;
+    }
+  }
+
+void _onLeaveTodayPressed() async {
+  // 선택된 날짜를 형식에 맞게 포맷
+  String formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
+  
+  // 선택된 날짜에 데이터가 있는지 확인
+  bool hasData = await _checkDataExist(formattedDate);
+
+  if (hasData) {
+    // 이미 데이터가 있는 경우, AlertDialog를 통해 메시지를 보여줌
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('미래 날짜는 기록할 수 없습니다.'),
+          title: Text('이미 기록된 일기가 있습니다.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // 확인 버튼을 누르면 AlertDialog를 닫음
               },
               child: Text('확인'),
             ),
@@ -67,67 +133,14 @@ Future<void> _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
       },
     );
   } else {
-    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
-    bool hasData = await _checkDataExist(formattedDate);
-
-    if (hasData) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => RecordDiary(selectedDate: selectedDay)),
-      );
-    } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => MyDiary(selectedDate: selectedDay)),
-      );
-    }
-  }
-}
-
-
-
-//해당 날짜에 데이터가 있는지 없는지 검사해줌
-Future<bool> _checkDataExist(String formattedDate) async {
-  final token = await TokenStorage.getToken();
-
-  if (token != null) {
-    try {
-      final response = await http.get(
-        Uri.parse('http://localhost:8080/diary/$formattedDate'), // 실제 서버의 엔드포인트로 수정
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // 서버 응답이 성공적으로 왔을 때
-        return true; // 데이터가 있음을 나타냄
-      } else if (response.statusCode == 404) {
-        // 서버 응답이 404일 때 (데이터가 없을 때)
-        return false; // 데이터가 없음을 나타냄
-      } else {
-        // 다른 상태 코드에 대한 처리 (예: 401은 권한 없음)
-        print('서버 응답 오류: ${response.statusCode}');
-        return false; // 일단 실패로 처리
-      }
-    } catch (error) {
-      // 통신 중 에러 발생
-      print('통신 중 에러: $error');
-      return false; // 일단 실패로 처리
-    }
-  } else {
-    // 토큰이 없을 때
-    print('토큰이 없습니다.');
-    return false; // 일단 실패로 처리
-  }
-}
-
-
-  void _onLeaveTodayPressed() {
+    // 데이터가 없는 경우, MyDiary 페이지로 이동
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => MyDiary(),
       ),
     );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +196,7 @@ Future<bool> _checkDataExist(String formattedDate) async {
                             },
                             headerStyle: HeaderStyle(
                               titleCentered: true,
-                              titleTextFormatter: (date, locale) =>
-                                  DateFormat.yMMMMd(locale).format(date),
+                              titleTextFormatter: (date, locale) => DateFormat('yyyy\nMM').format(date),
                               formatButtonVisible: false,
                               titleTextStyle: const TextStyle(
                                 fontSize: 20.0,
