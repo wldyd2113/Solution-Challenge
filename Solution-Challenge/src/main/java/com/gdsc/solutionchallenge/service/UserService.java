@@ -98,4 +98,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+    @Transactional
+    public boolean isNameUnique(String name) {
+        User existingUser = userRepository.findByName(name);
+        return existingUser == null;
+    }
 }
