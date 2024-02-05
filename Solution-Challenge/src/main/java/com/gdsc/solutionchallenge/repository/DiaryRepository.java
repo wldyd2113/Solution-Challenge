@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
-    @Query("SELECT d FROM Diary d WHERE d.shareDiary IS NOT NULL AND d.isViewed = false AND d.user <> :loggedInUser ORDER BY d.createdAt ASC LIMIT 1")
-    Optional<Diary> findOldestDiary(@Param("loggedInUser") User loggedInUser);
+    @Query("SELECT d FROM Diary d WHERE d.shareDiary IS NOT NULL AND d.isViewed = false AND d.user <> :loggedInUser AND d.emotion = :emotion ORDER BY d.createdAt ASC LIMIT 1")
+    Optional<Diary> findOldestDiary(@Param("loggedInUser") User loggedInUser, @Param("emotion") String emotion);
 
     Optional<Diary> findByDateAndUser(String date, User user);
 

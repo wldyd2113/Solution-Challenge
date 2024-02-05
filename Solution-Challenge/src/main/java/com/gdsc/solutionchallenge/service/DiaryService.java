@@ -41,10 +41,10 @@ public class DiaryService {
         return diary.toDto();
     }
     @Transactional
-    public OldestDiaryResponseDto getOldestDiary(Long userId){
+    public OldestDiaryResponseDto getOldestDiary(Long userId, String emotion){
         User loggedInUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        Diary oldestDiary = diaryRepository.findOldestDiary(loggedInUser)
+        Diary oldestDiary = diaryRepository.findOldestDiary(loggedInUser, emotion)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
         oldestDiary.setViewed(true);
         diaryRepository.save(oldestDiary);

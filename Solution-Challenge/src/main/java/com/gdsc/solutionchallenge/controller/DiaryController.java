@@ -38,10 +38,10 @@ public class DiaryController {
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
-    @GetMapping("/oldest")  // localhost:8080/diary/oldezst     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
-    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(Principal principal) {
+    @GetMapping("/oldest/{emotion}")  // localhost:8080/diary/oldest     가장 오래된 공유 일기 조회 반환 값{ Long id, String shareDiary }
+    public ResponseEntity<OldestDiaryResponseDto> getOldestDiary(@PathVariable String emotion, Principal principal) {
         Long userId = Long.parseLong(principal.getName());
-        OldestDiaryResponseDto diary = diaryService.getOldestDiary(userId);
+        OldestDiaryResponseDto diary = diaryService.getOldestDiary(userId, emotion);
         return new ResponseEntity<>(diary, HttpStatus.OK);
     }
 
