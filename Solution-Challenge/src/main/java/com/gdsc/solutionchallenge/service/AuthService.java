@@ -26,7 +26,7 @@ public class AuthService {
     private String GOOGLE_CLIENT_ID;
     @Value("${CLIENT_SECRET}")
     private String GOOGLE_CLIENT_SECRET;
-    private final String GOOGLE_REDIRECT_URI = "http://localhost:8080/api/oauth2/callback/google";
+    private final String GOOGLE_REDIRECT_URI = "http://localhost:8080/user/callback/google";
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;

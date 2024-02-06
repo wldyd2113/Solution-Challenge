@@ -58,6 +58,14 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
+    public TokenDto convertToken(String accessToken) {
+        // 여기에 주어진 accessToken과 refreshToken을 이용한 변환 로직을 추가하세요
+        // 예시로 TokenDto를 생성하고 반환하도록 작성했습니다. 실제로 사용하는 값으로 대체하세요.
+        return TokenDto.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .build();
+    }
     public TokenDto createToken(Member member) {
         long nowTime = (new Date()).getTime();
 
