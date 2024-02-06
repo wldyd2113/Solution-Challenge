@@ -83,7 +83,9 @@ class _PasswordChangeDialogState extends State<PasswordChangeDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('비밀번호 변경'),
-      content: Column(
+      content: SizedBox(
+        height: 250,
+      child: Column(
         children: [
           TextField(
             controller: currentPasswordController,
@@ -101,6 +103,7 @@ class _PasswordChangeDialogState extends State<PasswordChangeDialog> {
             decoration: InputDecoration(labelText: '비밀번호 확인'),
           ),
         ],
+      ),
       ),
       actions: [
         TextButton(
@@ -141,6 +144,8 @@ class _PasswordChangeDialogState extends State<PasswordChangeDialog> {
           child: Text('확인'),
         ),
       ],
+      
+      
     );
   }
 }

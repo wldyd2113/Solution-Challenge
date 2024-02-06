@@ -13,7 +13,7 @@ class EmailAu extends StatefulWidget {
 class _EmailAuState extends State<EmailAu> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _verificationCodeController = TextEditingController();
-
+  bool _isTimerRunning = false;
 
   bool _isVerificationSuccess = false;
   bool _isPasswordSent = false;
@@ -36,6 +36,9 @@ class _EmailAuState extends State<EmailAu> {
       );
 
       if (response.statusCode == 200) {
+        setState(() {
+          _isTimerRunning = true; // 타이머 시작
+        });
         _showSnackBar('인증 코드가 이메일로 전송되었습니다.');
         _startCountdownTimer();
       } else {
@@ -54,41 +57,53 @@ class _EmailAuState extends State<EmailAu> {
           _remainingTime--;
           if (_remainingTime == 0) {
             _countdownTimer.cancel();
+            setState(() {
+              _isTimerRunning = false; // 타이머 중지
+            });
           }
         });
       }
     });
   }
 
-  void _verifyEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/authCheck';
+void _verifyEmail() async {
+  final String apiUrl = 'http://localhost:8080/mail/authCheck';
 
-    String email = _emailController.text;
-    String verificationCode = _verificationCodeController.text;
+  String email = _emailController.text;
+  String verificationCode = _verificationCodeController.text;
 
-    try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'email': email, 'authNum': verificationCode}),
+  try {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'email': email, 'authNum': verificationCode}),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _isVerificationSuccess = true;
+      });
+      _showSnackBar('이메일 인증이 성공적으로 확인되었습니다.');
+      _countdownTimer.cancel();
+
+      // 이메일 인증이 성공하면 JoinPage로 이동하면서 인증 완료 여부를 전달
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => JoinPage(isEmailVerified: true),
+        ),
       );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _isVerificationSuccess = true;
-        });
-        _showSnackBar('이메일 인증이 성공적으로 확인되었습니다.');
-        _countdownTimer.cancel();
-      } else {
-        print('서버 응답 에러: ${response.statusCode}');
-        print('에러 내용: ${response.body}');
-      }
-    } catch (error) {
-      print('에러 발생: $error');
+    } else {
+      print('서버 응답 에러: ${response.statusCode}');
+      print('에러 내용: ${response.body}');
     }
+  } catch (error) {
+    print('에러 발생: $error');
   }
+}
+
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -98,6 +113,13 @@ class _EmailAuState extends State<EmailAu> {
       ),
     );
   }
+
+@override
+void dispose() {
+  // 위젯이 Dispose(해제)될 때 타이머를 취소합니다.
+  _countdownTimer.cancel();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -132,11 +154,11 @@ class _EmailAuState extends State<EmailAu> {
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _sendVerificationEmail();
-                    },
+                    onPressed: _isTimerRunning ? null : _sendVerificationEmail,
                     child: Text(
-                      '이메일로 인증 코드 받기',
+                      _isTimerRunning
+                          ? '$_remainingTime 초 후에 재시도'
+                          : '이메일로 인증 코드 받기',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 26,
@@ -189,7 +211,7 @@ class _EmailAuState extends State<EmailAu> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => JoinPage(),
+                                    builder: (context) => JoinPage(isEmailVerified: _isVerificationSuccess),
                                   ),
                                 );
                               },

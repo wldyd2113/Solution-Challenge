@@ -17,4 +17,5 @@ public interface UserRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT COUNT(d) FROM Member m LEFT JOIN m.diaries d WHERE m.id = :memberId")
     Long countDiariesByMemberId(@Param("memberId") Long memberId);
+
 }

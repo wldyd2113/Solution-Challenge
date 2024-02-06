@@ -118,5 +118,14 @@ public class UserController {
         return authService.loginOrSignUp(googleAccessToken);
     }
 
+    @GetMapping("/checkName/{name}")
+    public ResponseEntity<String> checkName(@PathVariable String name) {
+        boolean isUnique = memberService.isNameUnique(name);
+        if (isUnique) {
+            return ResponseEntity.ok("닉네임 사용 가능 합니다.");
+        } else {
+            return ResponseEntity.badRequest().body("이미 존재하는 닉네임 입니다.");
+        }
+    }
 
 }

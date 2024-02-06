@@ -20,6 +20,7 @@ class _MySettingState extends State<MySetting> {
   int _selectedIndex = 1;
   late String email = '';
   late String name = '';
+  late int diaryCount;
 
   static const TextStyle optionStyle = TextStyle(
     fontSize: 30,
@@ -37,58 +38,53 @@ class _MySettingState extends State<MySetting> {
     final decoded = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
     print('디코딩된 토큰 페이로드: $decoded');
   }
-  Future<void> fetchData() async {
-    final token = await TokenStorage.getToken();
+Future<void> fetchData() async {
+  final token = await TokenStorage.getToken();
+ 
 
-    if (token != null) {
-      decodeToken(token);
+  if (token != null) {
+    decodeToken(token);
 
-      try {
-        final getResponse = await http.get(
-          Uri.parse('http://localhost:8080/user/info'),
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        );
+    try {
+      final getResponse = await http.get(
+        Uri.parse('http://localhost:8080/user/info'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-        print('Server Response: ${getResponse.statusCode}');
-        print('Server Response Body: ${getResponse.body}');
+      print('Server Response: ${getResponse.statusCode}');
+      print('Server Response Body: ${getResponse.body}');
 
-        if (getResponse.statusCode == 200) {
-          // 서버에서 일반 텍스트로 반환된 데이터를 직접 처리
-          final data = getResponse.body;
+      if (getResponse.statusCode == 200) {
+        // 서버에서 JSON으로 반환된 데이터를 디코딩
+        final Map<String, dynamic> data = jsonDecode(utf8.decode(getResponse.bodyBytes));
 
-          // 예제: 데이터 파싱
-          final nameIndex = data.indexOf('user name: ');
-          final emailIndex = data.indexOf('user email: ');
+        // 데이터를 추출
+        final name = data['name'];
+        final email = data['email'];
+        final diaryCount = data['diaryCount'];
 
-          if (nameIndex != -1 && emailIndex != -1) {
-            final name = data.substring(nameIndex + 'user name: '.length, emailIndex).trim();
-            final email = data.substring(emailIndex + 'user email: '.length).trim();
+        setState(() {
+          this.name = name;
+          this.email = email;
+          this.diaryCount = diaryCount;
+        });
 
-            setState(() {
-              this.name = name;
-              this.email = email;
-            });
-
-            print('데이터 가져오기 성공: $name, $email');
-          } else {
-            print('서버 응답 형식 예외처리: 기대하지 않은 형식');
-          }
-        } else if (getResponse.statusCode == 401) {
-        } else {
-          print('데이터 로드 실패: ${getResponse.statusCode}');
-        }
-      } catch (error, stackTrace) {
-        print('에러: $error');
-        print('스택 트레이스: $stackTrace');
+        print('데이터 가져오기 성공: $name, $email');
+      } else if (getResponse.statusCode == 401) {
+        // ...
+      } else {
+        print('데이터 로드 실패: ${getResponse.statusCode}');
       }
-    } else {
-      print('토큰이 없습니다.');
+    } catch (error, stackTrace) {
+      print('에러: $error');
+      print('스택 트레이스: $stackTrace');
     }
+  } else {
+    print('토큰이 없습니다.');
   }
-
-
+}
 
 
   final List<Widget> _widgetOptions = <Widget>[
@@ -188,6 +184,7 @@ class _MySettingState extends State<MySetting> {
   @override
   void initState() {
     super.initState();
+    diaryCount = 0; // 초기값 설정
     fetchData(); // initState에서 fetchData 호출
   }
 
@@ -204,7 +201,7 @@ class _MySettingState extends State<MySetting> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                "My Info",
+                "내 정보",
                 style: TextStyle(
                 color: Color(0xFF194062),
                 fontSize: 48,
@@ -256,9 +253,18 @@ class _MySettingState extends State<MySetting> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Text("Name: $name",
+                      Text("닉네임: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
+                      Text("$name",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
@@ -270,20 +276,30 @@ class _MySettingState extends State<MySetting> {
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                   Row(
                     children: <Widget>[
-                      Text("Email: $email",
+                      Text("Email: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
-                      ),),
+                      ),
+                      ),
+                      Text("$email",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
                     ],
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
                   Row(
                     children: <Widget>[
-                      Text("Password: ",
+                      Text("비밀번호: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
                       fontSize: 20,
@@ -293,7 +309,7 @@ class _MySettingState extends State<MySetting> {
                       ),),
                       ElevatedButton(
                         onPressed: onPressed,
-                        child: Text("Password Change",
+                        child: Text("비밀번호 변경",
                         style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -310,14 +326,24 @@ class _MySettingState extends State<MySetting> {
                   ),
                   Row(
                     children: <Widget>[
-                      Text("The number of diaries I've recorded:",
+                      Text("내가 기록한 하루 수: ",
                       style: TextStyle(
                       color: Color(0xFF194062),
                       fontSize: 20,
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
-                      ),),
+                      ),
+                      ),
+                      Text("${diaryCount} days",
+                      style: TextStyle(
+                      color: Color(0xCC2D9596),
+                      fontSize: 20,
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 10,),

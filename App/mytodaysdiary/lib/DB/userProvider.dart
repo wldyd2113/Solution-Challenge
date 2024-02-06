@@ -4,7 +4,7 @@ class UserProvider extends ChangeNotifier {
   String _email = ''; //이메일
   String _name = ''; //닉네임
   String _password = ''; //비밀번호
-  String _newpassword = '';//바뀐비밀번호
+  String _newpassword = '';//새로운 비밀번호
   late int _age; //나이
   String _sex = ''; //성별
   String _job = ''; //직업

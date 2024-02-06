@@ -98,4 +98,10 @@ public class MemberService {
         member.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(member);
     }
+    @Transactional
+    public boolean isNameUnique(String name) {
+        Member existingUser = userRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return existingUser == null;
+    }
 }
