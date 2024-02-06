@@ -6,6 +6,7 @@ import com.gdsc.solutionchallenge.dto.request.ChangePasswordDto;
 import com.gdsc.solutionchallenge.dto.request.MemberRequestDto;
 import com.gdsc.solutionchallenge.dto.response.MemberInfoResponseDto;
 import com.gdsc.solutionchallenge.dto.response.MemberResponseDto;
+import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import com.gdsc.solutionchallenge.service.AuthService;
 import com.gdsc.solutionchallenge.service.DiaryService;
@@ -31,6 +32,7 @@ public class UserController {
     private final DiaryService diaryService;
     private final FirebaseAuthenticationService firebaseAuthenticationService;
     private final AuthService authService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
     public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto memberRequestDto) {
@@ -127,5 +129,9 @@ public class UserController {
             return ResponseEntity.badRequest().body("이미 존재하는 닉네임 입니다.");
         }
     }
-
+    @GetMapping("/convert")
+    public ResponseEntity<TokenDto> convertToken(String accessToken) {
+        TokenDto tokenDto = tokenProvider.convertToken(accessToken);
+        return ResponseEntity.ok(tokenDto);
+    }
 }
