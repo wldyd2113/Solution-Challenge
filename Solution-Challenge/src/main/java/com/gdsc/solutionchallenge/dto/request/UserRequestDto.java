@@ -1,7 +1,7 @@
 package com.gdsc.solutionchallenge.dto.request;
 
 import com.gdsc.solutionchallenge.domain.Role;
-import com.gdsc.solutionchallenge.domain.Member;
+import com.gdsc.solutionchallenge.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRequestDto {
+public class UserRequestDto {
 
     private String email;
     private String password;
@@ -22,8 +22,8 @@ public class MemberRequestDto {
     private String job;
     private String name;
 
-    public Member toMember(PasswordEncoder passwordEncoder){
-        return Member.builder()
+    public User toUser(PasswordEncoder passwordEncoder){
+        return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .age(age)
@@ -35,8 +35,8 @@ public class MemberRequestDto {
                 .name(name)
                 .build();
     }
-    public Member toGoogleUser(){
-        return Member.builder()
+    public User toGoogleUser(){
+        return User.builder()
                 .age(age)
                 .location(location)
                 .sex(sex)

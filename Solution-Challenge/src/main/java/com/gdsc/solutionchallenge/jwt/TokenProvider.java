@@ -1,6 +1,5 @@
 package com.gdsc.solutionchallenge.jwt;
 
-import com.gdsc.solutionchallenge.domain.Member;
 import com.gdsc.solutionchallenge.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -58,30 +57,6 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
-    public TokenDto convertToken(String accessToken) {
-        // 여기에 주어진 accessToken과 refreshToken을 이용한 변환 로직을 추가하세요
-        // 예시로 TokenDto를 생성하고 반환하도록 작성했습니다. 실제로 사용하는 값으로 대체하세요.
-        return TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .build();
-    }
-    public TokenDto createToken(Member member) {
-        long nowTime = (new Date()).getTime();
-
-        Date tokenExpiredTime = new Date(nowTime + ACCESS_TOKEN_EXPIRE_TIME);
-
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("auth", member.getRole().name())
-                .setExpiration(tokenExpiredTime)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-
-        return TokenDto.builder()
-                .accessToken(accessToken)
-                .build();
-    }
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
@@ -121,4 +96,3 @@ public class TokenProvider {
         }
     }
 }
-
