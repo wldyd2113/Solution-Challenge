@@ -69,6 +69,56 @@ class _JoinPageState extends State<JoinPage> {
         // 여기서 사용자에게 오류 메시지를 보여줄 수 있습니다.
       }
     }
+        void _showAlertDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _checkName() async {
+    final String apiUrl = 'http://localhost:8080/user/checkName/${_nameController.text}';
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        String message = response.body;
+
+        if (message == '가입된 닉네임') {
+          _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다.');
+        } else {
+          _showAlertDialog('중복검사', '가입되어 있지 않은 닉네임입니다');
+        }
+      } else if (response.statusCode == 400) {
+        _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다');
+      } else {
+        print('서버 응답 에러: ${response.statusCode}');
+        print('에러 내용: ${response.body}');
+        _showAlertDialog('에러 발생', '서버 응답 에러: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+      _showAlertDialog('에러 발생', '에러 발생: $error');
+    }
+  }
+
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +158,7 @@ class _JoinPageState extends State<JoinPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        //crossAxisAlignment: CrossAxisAlignment.start, // 열 내에서 왼쪽 정렬
+                        
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -162,8 +212,11 @@ class _JoinPageState extends State<JoinPage> {
                           ],
                           ),
                           SizedBox(height: 10,),
-                          Container(
-                            width: 380,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                            Container(
+                            width: 230,
                             child: TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
@@ -176,9 +229,33 @@ class _JoinPageState extends State<JoinPage> {
                                 }
                                 return null;
                               },
-                              
                             ),
                           ),
+                            SizedBox(
+                            width: 150,
+                            height: 65,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                _checkName();
+                              },
+                              child: Text('닉네임 중복검사',
+                              style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontFamily: 'Gowun Dodum',
+                              fontWeight: FontWeight.w400,),),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.0), // 원하는 값으로 조절
+                              ),
+                              primary:  Colors.black,
+                              elevation: 4, ),
+                            ),
+                          ),
+                          
+                          ],
+                          ),
+                          
                           SizedBox(height: 10,),
                           SizedBox(
                             width: 380,
