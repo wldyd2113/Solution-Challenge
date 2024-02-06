@@ -1,10 +1,10 @@
 package com.gdsc.solutionchallenge.service;
 
-import com.gdsc.solutionchallenge.domain.User;
+import com.gdsc.solutionchallenge.domain.Member;
 import com.gdsc.solutionchallenge.dto.*;
 import com.gdsc.solutionchallenge.dto.request.ChangePasswordDto;
-import com.gdsc.solutionchallenge.dto.request.UserRequestDto;
-import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
+import com.gdsc.solutionchallenge.dto.request.MemberRequestDto;
+import com.gdsc.solutionchallenge.dto.response.MemberResponseDto;
 import com.gdsc.solutionchallenge.jwt.TokenProvider;
 import com.gdsc.solutionchallenge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class MemberService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserRepository userRepository;
@@ -30,22 +30,22 @@ public class UserService {
     private final MailService mailService;
 
     @Transactional
-    public UserResponseDto signup(UserRequestDto userRequestDto){
-        if(userRepository.existsByEmail(userRequestDto.getEmail())){
+    public MemberResponseDto signup(MemberRequestDto memberRequestDto){
+        if(userRepository.existsByEmail(memberRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
-        User user = userRequestDto.toUser(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
+        Member member = memberRequestDto.toMember(passwordEncoder);
+        return MemberResponseDto.of(userRepository.save(member));
     }
     @Transactional
-    public UserResponseDto googleSignup(UserRequestDto userRequestDto){
-        User user = userRequestDto.toGoogleUser();
-        return UserResponseDto.of(userRepository.save(user));
+    public MemberResponseDto googleSignup(MemberRequestDto memberRequestDto){
+        Member member = memberRequestDto.toGoogleUser();
+        return MemberResponseDto.of(userRepository.save(member));
     }
 
     @Transactional
-    public TokenDto login(UserRequestDto userRequestDto){
-        UsernamePasswordAuthenticationToken authenticationToken = userRequestDto.toAuthentication();
+    public TokenDto login(MemberRequestDto memberRequestDto){
+        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -53,17 +53,17 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<User> getUserById(long id){
-        return userRepository.findUserById(id);
+    public Optional<Member> getMemberById(long id){
+        return userRepository.findMemberById(id);
     }
 
     @Transactional
     public ResponseEntity<String> findPasswordByEmail(String email){
-        User user = userRepository.findByEmail(email)
+        Member member = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("해당하는 이메일의 사용자를 찾을 수 없습니다."));
         String temporaryPassword = mailService.sendPassword(email);
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
-        userRepository.save(user);
+        member.setPassword(passwordEncoder.encode(temporaryPassword));
+        userRepository.save(member);
         return ResponseEntity.ok("비밀번호 초기화 이메일이 전송되었습니다. 새로운 비밀번호로 로그인하세요.");
     }
 
@@ -84,18 +84,18 @@ public class UserService {
     @Transactional
     public void changePassword(ChangePasswordDto changePasswordDto){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
+        String memberEmail = authentication.getName();
 
         String currentPassword = changePasswordDto.getCurrentPassword();
         String newPassword = changePasswordDto.getNewPassword();
 
-        User user = userRepository.findById(Long.valueOf(userEmail))
+        Member member = userRepository.findById(Long.valueOf(memberEmail))
                 .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
 
-        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
+        if(!passwordEncoder.matches(currentPassword, member.getPassword())){
             throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
         }
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        member.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(member);
     }
 }

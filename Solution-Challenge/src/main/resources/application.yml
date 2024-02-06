@@ -39,3 +39,5 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/v1/**
+client_id: ${CLIENT_ID}
+client_secret: ${CLIENT_SECRET}

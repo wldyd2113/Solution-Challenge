@@ -1,5 +1,6 @@
 package com.gdsc.solutionchallenge.jwt;
 
+import com.gdsc.solutionchallenge.domain.Member;
 import com.gdsc.solutionchallenge.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -55,6 +56,22 @@ public class TokenProvider {
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .build();
+    }
+    public TokenDto createToken(Member member) {
+        long nowTime = (new Date()).getTime();
+
+        Date tokenExpiredTime = new Date(nowTime + ACCESS_TOKEN_EXPIRE_TIME);
+
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("auth", member.getRole().name())
+                .setExpiration(tokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return TokenDto.builder()
+                .accessToken(accessToken)
                 .build();
     }
 
