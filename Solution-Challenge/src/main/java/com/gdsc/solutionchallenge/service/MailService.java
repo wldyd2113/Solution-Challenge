@@ -23,7 +23,7 @@ public class MailService {
 
     @Lazy
     @Autowired
-    UserService userService;
+    MemberService memberService;
 
     @Transactional
     public boolean CheckAuthNum(String email, String authNum) {
@@ -78,7 +78,7 @@ public class MailService {
     }
     @Transactional
     public String sendPassword(String email) {
-        String temporaryPassword = userService.makeRandomPassword();
+        String temporaryPassword = memberService.makeRandomPassword();
         String setFrom = "sukwan1106@gmail.com";
         String toMail = email;
         String title = "임시 비밀번호 발급 이메일";

@@ -1,6 +1,6 @@
 package com.gdsc.solutionchallenge.dto.response;
 
-import com.gdsc.solutionchallenge.domain.User;
+import com.gdsc.solutionchallenge.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDto {
+public class MemberResponseDto {
     private String email;
-    public static UserResponseDto of(User user){
-        return new UserResponseDto(user.getEmail());
+    public static MemberResponseDto of(Member member){
+        return new MemberResponseDto(member.getEmail());
     }
 }

@@ -47,19 +47,20 @@ public class Diary {
     private String messageLocation;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
-    private User user;
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
+
 
 
 
     @Builder
-    public Diary(String emotion, String secretDiary, String shareDiary, User user, String date, LocalDateTime createdAt){
+    public Diary(String emotion, String secretDiary, String shareDiary, Member member, String date, LocalDateTime createdAt){
         this.emotion = emotion;
         this.secretDiary = secretDiary;
         this.shareDiary = shareDiary;
         this.createdAt = createdAt;
         this.date = date;
-        this.user = user;
+        this.member = member;
     }
     public DiaryResponseDto toDto(){
         return DiaryResponseDto.builder()
@@ -78,17 +79,17 @@ public class Diary {
                 .id(this.id)
                 .emotion(this.emotion)
                 .shareDiary(this.shareDiary)
-                .location(this.user.getLocation())
+                .location(this.member.getLocation())
                 .build();
     }
 
-    public static Diary create(DiaryRequestDto requestDto, User user){
+    public static Diary create(DiaryRequestDto requestDto, Member member){
         return Diary.builder()
                 .emotion(requestDto.getEmotion())
                 .secretDiary(requestDto.getSecretDiary())
                 .shareDiary(requestDto.getShareDiary())
                 .date(requestDto.getDate())
-                .user(user)
+                .member(member)
                 .build();
     }
 
