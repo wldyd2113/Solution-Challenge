@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class MemberInfoResponseDto {
+public class UserInfoResponseDto {
     String email;
     String name;
     int age;
