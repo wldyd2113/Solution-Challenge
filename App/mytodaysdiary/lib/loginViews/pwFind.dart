@@ -16,6 +16,7 @@ class _PwFindPageState extends State<PwFindPage> {
   String _foundPw = '';
   bool _isVerificationSuccess = false;
   bool _isPasswordSent = false;
+  bool _isTimerRunning = false;
 
   late Timer _countdownTimer;
   int _remainingTime = 180;
@@ -35,6 +36,10 @@ class _PwFindPageState extends State<PwFindPage> {
       );
 
       if (response.statusCode == 200) {
+          setState(() {
+          _isTimerRunning = true; // 타이머 시작
+        });
+
         _showSnackBar('인증 코드가 이메일로 전송되었습니다.');
         _startCountdownTimer();
       } else {
@@ -53,6 +58,9 @@ class _PwFindPageState extends State<PwFindPage> {
           _remainingTime--;
           if (_remainingTime == 0) {
             _countdownTimer.cancel();
+            setState(() {
+              _isTimerRunning = false; // 타이머 중지
+            });
           }
         });
       }
@@ -151,13 +159,13 @@ class _PwFindPageState extends State<PwFindPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF9AD0C2),
       appBar: AppBar(
-        title: Text('Password 찾기'),
+        title: Text('비밀번호 찾기'),
       ),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            width: 500,
-            height: 500,
+            width: 340,
+            height: 360,
             decoration: ShapeDecoration(
               color: const Color(0xFFECF4D6),
               shape: RoundedRectangleBorder(
@@ -176,14 +184,14 @@ class _PwFindPageState extends State<PwFindPage> {
                     labelText: '이메일',
                   ),
                 ),
-                SizedBox(
+                  SizedBox(
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _sendVerificationEmail();
-                    },
+                    onPressed: _isTimerRunning ? null : _sendVerificationEmail,
                     child: Text(
-                      '이메일로 인증 코드 받기',
+                      _isTimerRunning
+                          ? '$_remainingTime 초 후에 재시도'
+                          : '이메일로 인증 코드 받기',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 26,

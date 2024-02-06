@@ -182,16 +182,27 @@ Future<void> sendUserServer(DateTime selectedDate) async {
       backgroundColor: const Color(0xFFECF4D6),
       appBar: AppBar(
         backgroundColor: const Color(0xFFECF4D6),
-        title: const Text("Diary"),
+        title: const Text("나의 일기"),
         actions: <Widget>[],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Container(
+          child:Row(children: [
+            Container(
+              width: 45,
+              height: 635.33,
+              decoration: ShapeDecoration(
+                color: Color(0xFFB9C784B),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                  ),
+                  ),
+                  ),
+            Container(
               alignment: Alignment.center,
               width: 329,
-              height: 575.11,
+              height: 680.11,
               decoration: ShapeDecoration(
                 color: Color(0xFFB19470),
                 shape: RoundedRectangleBorder(
@@ -201,7 +212,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
               child: Container(
                 alignment: Alignment.topLeft,
                 width: 323,
-                height: 545.11,
+                height: 660.11,
                 decoration: ShapeDecoration(
                   color: Color(0xFFD0D4C7),
                   shape: RoundedRectangleBorder(
@@ -209,8 +220,9 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                   ),
                 ),
                 child: Container(
+                  alignment: Alignment.center,
                   width: 317,
-                  height: 530.11,
+                  height: 645.11,
                   decoration: ShapeDecoration(
                     color: Color(0xFFFAFFEC),
                     shape: RoundedRectangleBorder(
@@ -219,8 +231,8 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                   ),
                   child: Container(
                     alignment: Alignment.centerRight,
-                    width: 290,
-                    height: 480,
+                    width: 300,
+                    height: 595,
                     decoration: ShapeDecoration(
                       color: Color(0xFFFFFFEC),
                       shape: RoundedRectangleBorder(
@@ -407,9 +419,8 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                                 );
                               }
                             },
-
                             child: Text(
-                              "Finish",
+                              "완료",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -430,6 +441,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
                 ),
               ),
             ),
+          ],)
           ),
         ),
       ),

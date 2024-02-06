@@ -197,10 +197,21 @@ import 'package:provider/provider.dart';
         body: SafeArea(
           child: SingleChildScrollView(
             child: Center(
-              child: Container(
+              child: Row(children: [
+              Container(
+              width: 45,
+              height: 635.33,
+              decoration: ShapeDecoration(
+                color: Color(0xFFB9C784B),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                  ),
+                  ),
+                  ),
+              Container(
                 alignment: Alignment.center,
                 width: 329,
-                height: 575.11,
+                height: 680.11,
                 decoration: ShapeDecoration(
                   color: Color(0xFFB19470),
                   shape: RoundedRectangleBorder(
@@ -210,9 +221,9 @@ import 'package:provider/provider.dart';
                 child: Container(
                   alignment: Alignment.topLeft,
                   width: 323,
-                  height: 545.11,
+                  height: 650.11,
                   decoration: ShapeDecoration(
-                    color: Color(0xFFD0D4C7),
+                    color: Color(0xFFFFFFEC),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -220,7 +231,7 @@ import 'package:provider/provider.dart';
                   child: Container(
                     alignment: Alignment.center,
                     width: 317,
-                    height: 530.11,
+                    height: 645.11,
                     decoration: ShapeDecoration(
                       color: Color(0xFFFAFFEC),
                       shape: RoundedRectangleBorder(
@@ -230,7 +241,7 @@ import 'package:provider/provider.dart';
                     child: Container(
                       alignment: Alignment.centerRight,
                       width: 290,
-                      height: 480,
+                      height: 595,
                       decoration: ShapeDecoration(
                         color: Color(0xFFFFFFEC),
                         shape: RoundedRectangleBorder(
@@ -294,6 +305,7 @@ import 'package:provider/provider.dart';
                                 children: <Widget>[
                                   Container(
                                     alignment: Alignment.topLeft,
+                                    padding: EdgeInsets.only(left: 10.0),
                                     width: 250,
                                     height: 120,
                                     decoration: ShapeDecoration(
@@ -340,6 +352,7 @@ import 'package:provider/provider.dart';
                                   ),
                                   Container(
                                     alignment: Alignment.topLeft,
+                                    padding: EdgeInsets.only(left: 10.0),
                                     width: 250,
                                     height: 120,
                                     decoration: ShapeDecoration(
@@ -385,6 +398,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Container(
+                                    padding: EdgeInsets.only(left: 10.0),
                                     alignment: Alignment.topLeft,
                                     width: 250,
                                     height: 120,
@@ -462,6 +476,9 @@ import 'package:provider/provider.dart';
                   ),
                 ),
               ),
+              ],
+              ),
+              
             ),
           ),
         ),

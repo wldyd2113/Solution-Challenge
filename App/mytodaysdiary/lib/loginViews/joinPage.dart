@@ -29,54 +29,7 @@ class _JoinPageState extends State<JoinPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-      // 닉네임 중복 확인 다이얼로그
-    void _showNicknameDialog(String message) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Nickname Check'),
-            content: Text(message),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-        void _checkNicknameUniqueness() async {
-      try {
-        final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode({
-            'nickname': _nameController.text,
-          }),
-        );
 
-        if (response.statusCode == 200) {
-          // 성공적으로 응답을 받으면 결과를 변수에 저장
-          String message = response.body;
-
-          // 결과에 따라 경고 다이얼로그 표시
-          _showNicknameDialog(message);
-        } else {
-          // 서버 응답이 실패인 경우 에러 메시지를 출력
-          print('서버 응답 에러: ${response.statusCode}');
-          print('에러 내용: ${response.body}');
-        }
-      } catch (error) {
-        // 예외가 발생한 경우 에러 메시지를 출력
-        print('에러 발생: $error');
-      }
-    }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +54,7 @@ class _JoinPageState extends State<JoinPage> {
           }),
         );
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 100) {
           // 성공적으로 서버에 전송됨
           print('Success: ${response.body}');
           // 여기서 사용자에게 회원가입이 성공했다는 메시지를 보여줄 수 있습니다.
@@ -125,9 +78,8 @@ class _JoinPageState extends State<JoinPage> {
       ),
     );
   }
-
     return Scaffold(
-      backgroundColor: const Color(0xFF9AD0C2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("가입하기"),
         actions: <Widget>[],
@@ -136,53 +88,39 @@ class _JoinPageState extends State<JoinPage> {
         child: Center(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                
                 const Text(
-                  '편지 공유에 필요해요!',
+                  '회원가입',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color(0xFF194062),
+                    color: Colors.black,
                     fontSize: 36,
                     fontFamily: 'Gowun Dodum',
                     fontWeight: FontWeight.w400,
                     height: 0,
                   ),
                 ),
+                SizedBox(height: 40,),
                 Container(
-                  width: 342,
-                  height: 600,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFFECF4D6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
                   child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //crossAxisAlignment: CrossAxisAlignment.start, // 열 내에서 왼쪽 정렬
                         children: [
-                          Container(
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child:const Text("Email",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                           SizedBox(
-                            width: 300,
+                            width: 230,
                             child: TextFormField(
                               controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: 'Email',
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                                
                                 ),
                               ),
                               validator: (value) {
@@ -196,7 +134,8 @@ class _JoinPageState extends State<JoinPage> {
                             ),
                           ),
                           SizedBox(
-                            width: 300,
+                            width: 150,
+                            height: 65,
                             child: ElevatedButton(
                               onPressed: (){
                                 Navigator.pushReplacement(
@@ -213,31 +152,23 @@ class _JoinPageState extends State<JoinPage> {
                               fontFamily: 'Gowun Dodum',
                               fontWeight: FontWeight.w400,),),
                               style: ElevatedButton.styleFrom(
-                              primary:  Color(0xCC2D9596),
+                                shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.0), // 원하는 값으로 조절
+                              ),
+                              primary:  Colors.black,
                               elevation: 4, ),
                             ),
                           ),
+                          ],
+                          ),
+                          SizedBox(height: 10,),
                           Container(
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("닉네임",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
-                          SizedBox(
-                            width: 300,
+                            width: 380,
                             child: TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
                                 hintText: '닉네임',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -245,49 +176,18 @@ class _JoinPageState extends State<JoinPage> {
                                 }
                                 return null;
                               },
+                              
                             ),
                           ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                _checkNicknameUniqueness();
-                              },
-                              child: Text('Check',
-                              style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontFamily: 'Gowun Dodum',
-                              fontWeight: FontWeight.w400,),),
-                              style: ElevatedButton.styleFrom(
-                              primary:  Color(0xCC2D9596),
-                              elevation: 4, ),
-                            ),
-                          ),
-                          
-                          
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("비밀번호",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
-                          SizedBox(
-                            width: 300,
+                            width: 380,
                             child: TextFormField(
                               controller: _passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
                                 hintText: '비밀번호',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               validator: (value) {
                                 if (value == null || value.length <= 9) {
@@ -297,27 +197,14 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("나이",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
+                            width: 380,
                             child: TextFormField(
                               controller: _ageController,
                               decoration: InputDecoration(
                                 hintText: '나이',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -327,26 +214,13 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("성별",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
+                            width: 380,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
                                 labelText: '성별',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               onChanged: (String? gender) {
                                 _sex = gender;
@@ -366,27 +240,14 @@ class _JoinPageState extends State<JoinPage> {
                             ),
 
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("직업",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
+                            width: 380,
                             child: TextFormField(
                               controller: _jobController,
                               decoration: InputDecoration(
                                 hintText: '직업',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -396,26 +257,13 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("나라",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
+                            width: 380,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
                                 labelText: '나라',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               onChanged: (String? country) {
                                 _location = country;
@@ -458,26 +306,13 @@ class _JoinPageState extends State<JoinPage> {
                             ),
 
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: const Text("Language",
-                          style: TextStyle(
-                          color: Color(0xFF194062),
-                          fontSize: 20,
-                          fontFamily: 'Gowun Dodum',
-                          fontWeight: FontWeight.w400,
-                          ),
-                          ),
-                          ),
+                          SizedBox(height: 10,),
                           SizedBox(
-                            width: 300,
+                            width: 380,
                             child: DropdownButtonFormField<String?>(
                                 decoration: InputDecoration(
                                 labelText: '언어',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
+                                border: OutlineInputBorder(),
                               ),
                               onChanged: (String? languages) {
                                 _language = languages;
@@ -527,8 +362,9 @@ class _JoinPageState extends State<JoinPage> {
                     ),
                   ),
                 ),
+                SizedBox(height: 20,),
                 Container(
-                  width: 300,
+                  width: 380,
                   child: ElevatedButton(
                             onPressed: () {
                               if(widget.isEmailVerified){
@@ -570,7 +406,7 @@ class _JoinPageState extends State<JoinPage> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              primary:  Color(0xCC2D9596),
+                              primary:  Colors.black,
                               elevation: 4, // 그림자 설정
                             ),
                             child: const Text("회원가입",

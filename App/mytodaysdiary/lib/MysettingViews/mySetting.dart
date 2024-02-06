@@ -335,7 +335,7 @@ Future<void> fetchData() async {
                       height: 0,
                       ),
                       ),
-                      Text("${diaryCount}",
+                      Text("${diaryCount} days",
                       style: TextStyle(
                       color: Color(0xCC2D9596),
                       fontSize: 20,

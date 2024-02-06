@@ -12,7 +12,7 @@ class _IdFindPageState extends State<IdFindPage> {
 
 
   void _findId() async {
-    final String apiUrl = 'http://localhost:8080/user/check/${_emailController.text}';
+    final String apiUrl = 'http://localhost:8080/user/email/${_emailController.text}';
 
     try {
       var response = await http.get(
@@ -88,7 +88,7 @@ class _IdFindPageState extends State<IdFindPage> {
                 padding: EdgeInsets.only(left: 10.0),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Email",
+                  "이메일",
                   style: TextStyle(
                     color: Color(0xFF194062),
                     fontSize: 20,
@@ -102,7 +102,7 @@ class _IdFindPageState extends State<IdFindPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'email',
+                  labelText: '이메일',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

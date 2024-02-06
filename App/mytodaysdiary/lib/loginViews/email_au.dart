@@ -13,7 +13,7 @@ class EmailAu extends StatefulWidget {
 class _EmailAuState extends State<EmailAu> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _verificationCodeController = TextEditingController();
-
+  bool _isTimerRunning = false;
 
   bool _isVerificationSuccess = false;
   bool _isPasswordSent = false;
@@ -36,6 +36,9 @@ class _EmailAuState extends State<EmailAu> {
       );
 
       if (response.statusCode == 200) {
+        setState(() {
+          _isTimerRunning = true; // 타이머 시작
+        });
         _showSnackBar('인증 코드가 이메일로 전송되었습니다.');
         _startCountdownTimer();
       } else {
@@ -54,6 +57,9 @@ class _EmailAuState extends State<EmailAu> {
           _remainingTime--;
           if (_remainingTime == 0) {
             _countdownTimer.cancel();
+            setState(() {
+              _isTimerRunning = false; // 타이머 중지
+            });
           }
         });
       }
@@ -148,11 +154,11 @@ void dispose() {
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _sendVerificationEmail();
-                    },
+                    onPressed: _isTimerRunning ? null : _sendVerificationEmail,
                     child: Text(
-                      '이메일로 인증 코드 받기',
+                      _isTimerRunning
+                          ? '$_remainingTime 초 후에 재시도'
+                          : '이메일로 인증 코드 받기',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 26,

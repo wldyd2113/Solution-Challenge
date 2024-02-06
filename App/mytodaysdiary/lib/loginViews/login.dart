@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/idFind.dart';
@@ -90,7 +91,7 @@ class _LoginpageState extends State<Loginpage> {
         // 아래의 Navigator 코드는 _handleSignIn 안에서 이미 처리되므로 주석 처리
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
       } catch (e) {
-        print('Auto-login error: $e');
+        print('Auto-login error: $e');_emailController.text = '';
       }
     }
   }
@@ -116,42 +117,47 @@ class _LoginpageState extends State<Loginpage> {
   }
 
 Future<void> _handleGoogleSignIn() async {
-  try {
-    final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-    final UserCredential userCredential = await _auth.signInWithCredential(credential);
-    final User user = userCredential.user!;
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User user = userCredential.user!;
 
-    // Firebase에서 토큰 얻기
-    final IdTokenResult idTokenResult = await user.getIdTokenResult();
-    final String? token = idTokenResult.token;
+      // Firebase에서 토큰 얻기
+      final IdTokenResult idTokenResult = await user.getIdTokenResult();
+      final String? token = idTokenResult.token;
 
-    if (token != null && token.isNotEmpty) {
-      print('Firebase Token: $token');
-      
-      // Firebase 토큰을 저장
-      await TokenStorage.saveToken(token);
+      if (token != null && token.isNotEmpty) {
+        print('Firebase Token: $token');
 
-      // 여기서 바로 TokenStorage.getToken() 호출
-      String? storedToken = await TokenStorage.getToken();
-      print('Stored Token after Google SignIn: $storedToken');
+        // Firebase 토큰을 저장
+        await TokenStorage.saveToken(token);
 
-      // Navigator 코드는 여기에 추가하거나 필요에 따라 수정
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
-    } else {
-      print('Firebase Token이 없습니다.');
+        // JWT 디코딩
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+        // 디코딩된 토큰 정보 출력
+        print('Decoded Token: $decodedToken');
+
+        // 여기서 바로 TokenStorage.getToken() 호출
+        String? storedToken = await TokenStorage.getToken();
+        print('Stored Token after Google SignIn: $storedToken');
+
+        // Navigator 코드는 여기에 추가하거나 필요에 따라 수정
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
+      } else {
+        print('Firebase Token이 없습니다.');
+      }
+    } catch (e) {
+      print('Google 로그인 에러: $e');
     }
-
-  } catch (e) {
-    print('Google 로그인 에러: $e');
   }
-}
 
 
 
@@ -373,7 +379,7 @@ Future<void> _handleGoogleSignIn() async {
                               MaterialPageRoute(builder: (_) => IdFindPage()),
                             );
                           },
-                          child: Text("Email 찾기",
+                          child: Text("이메일 찾기",
                             style: TextStyle(
                               color: Color(0xFF194062),
                               fontSize: 22,

@@ -156,9 +156,21 @@ void _onLeaveTodayPressed() async {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Container(
+                Row(children: [
+                  Container(
+                    width: 45,
+                  height: 635.33,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFB9C784B),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                  ),
+
+                  ),
+                  Container(
                   width: 329,
-                  height: 575.11,
+                  height: 680.11,
                   decoration: ShapeDecoration(
                     color: Color(0xFFB19470),
                     shape: RoundedRectangleBorder(
@@ -169,7 +181,7 @@ void _onLeaveTodayPressed() async {
                   child: Container(
                     alignment: Alignment.topLeft,
                     width: 323,
-                    height: 550.59,
+                    height: 655.59,
                     decoration: ShapeDecoration(
                       color: Color(0xFFD0D4C7),
                       shape: RoundedRectangleBorder(
@@ -178,7 +190,7 @@ void _onLeaveTodayPressed() async {
                     ),
                     child: Container(
                       width: 316,
-                      height: 543.44,
+                      height: 648.44,
                       decoration: ShapeDecoration(
                         color: Color(0xFFFAFFEC),
                         shape: RoundedRectangleBorder(
@@ -188,7 +200,7 @@ void _onLeaveTodayPressed() async {
                       child: Column(
                         children: [
                           TableCalendar(
-                            firstDay: DateTime.utc(2023, 12, 25),
+                            firstDay: DateTime.utc(2022, 12, 25),
                             lastDay: DateTime.utc(2030, 12, 25),
                             focusedDay: DateTime.now(),
                             selectedDayPredicate: (day) {
@@ -199,7 +211,7 @@ void _onLeaveTodayPressed() async {
                               titleTextFormatter: (date, locale) => DateFormat('yyyy\nMM').format(date),
                               formatButtonVisible: false,
                               titleTextStyle: const TextStyle(
-                                fontSize: 20.0,
+                                fontSize: 40.0,
                                 color: Colors.black,
                               ),
                               headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -223,9 +235,9 @@ void _onLeaveTodayPressed() async {
                               todayTextStyle: TextStyle(color: Colors.blue),
                             ),
                           ),
-                          SizedBox(height: 90,),
+                          SizedBox(height: 100,),
                           Container(
-                            width: 296,
+                            width: 396,
                             height: 43,
                             decoration: ShapeDecoration(
                               color: Color(0xCC6B3A2F),
@@ -236,7 +248,7 @@ void _onLeaveTodayPressed() async {
                             ),
                             alignment: Alignment.center,
                             child: SizedBox(
-                              width: 300,
+                              width: 400,
                               child: ElevatedButton(
                                 onPressed: _onLeaveTodayPressed,
                                 child: Text(
@@ -261,6 +273,9 @@ void _onLeaveTodayPressed() async {
                     ),
                   ),
                 ),
+
+                ],),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 50.0),
                 ),

@@ -242,16 +242,27 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
       backgroundColor: const Color(0xFFECF4D6),
       appBar: AppBar(
         backgroundColor: const Color(0xFFECF4D6),
-        title: const Text("Diary"),
+        title: const Text("공유일기"),
         actions: <Widget>[],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Container(
+            child: Row(children: [
+              Container(
+              width: 45,
+              height: 635.33,
+              decoration: ShapeDecoration(
+                color: Color(0xFFB9C784B),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                  ),
+                  ),
+                  ),
+              Container(
               alignment: Alignment.center,
               width: 329,
-              height: 575.11,
+              height: 680.11,
               decoration: ShapeDecoration(
                 color: Color(0xFFB19470),
                 shape: RoundedRectangleBorder(
@@ -261,7 +272,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
               child: Container(
                 alignment: Alignment.topLeft,
                 width: 323,
-                height: 545.11,
+                height: 650.11,
                 decoration: ShapeDecoration(
                   color: Color(0xFFD0D4C7),
                   shape: RoundedRectangleBorder(
@@ -271,7 +282,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                 child: Container(
                   alignment: Alignment.center,
                   width: 317,
-                  height: 530.11,
+                  height: 645.11,
                   decoration: ShapeDecoration(
                     color: Color(0xFFFAFFEC),
                     shape: RoundedRectangleBorder(
@@ -281,7 +292,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                   child: Container(
                     alignment: Alignment.centerRight,
                     width: 290,
-                    height: 480,
+                    height: 595,
                     decoration: ShapeDecoration(
                       color: Color(0xFFFFFFEC),
                       shape: RoundedRectangleBorder(
@@ -470,6 +481,9 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                 ),
               ),
             ),
+            ],
+            ),
+            
           ),
         ),
       ),

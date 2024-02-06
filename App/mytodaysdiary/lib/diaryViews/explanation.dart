@@ -53,10 +53,21 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
         body: SafeArea(
           child: SingleChildScrollView(
             child: Center(
-              child:Container(
+              child:Row(children: [
+              Container(
+              width: 45,
+              height: 635.33,
+              decoration: ShapeDecoration(
+                color: Color(0xFFB9C784B),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                  ),
+                  ),
+                  ),
+                Container(
                 alignment: Alignment.center,
                 width: 329,
-                height: 575.11,
+                height: 680.11,
                 decoration: ShapeDecoration(
                 color: Color(0xFFB19470),
                 shape: RoundedRectangleBorder(
@@ -67,7 +78,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                   alignment: Alignment.topLeft,
                   
                   width: 323,
-                  height: 545.11,
+                  height: 650.11,
                   decoration: ShapeDecoration(
                   color: Color(0xFFD0D4C7),
                   shape: RoundedRectangleBorder(
@@ -77,7 +88,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                   child: Container(
                     alignment: Alignment.center,
                   width: 317,
-                height: 530.11,
+                height: 645.11,
                 decoration: ShapeDecoration(
                 color: Color(0xFFFAFFEC),
                 shape: RoundedRectangleBorder(
@@ -87,7 +98,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                 child :Container(
                   alignment: Alignment.centerRight,
                 width:300,
-                height: 490,
+                height: 595,
                 decoration: ShapeDecoration(
                 color: Color(0xFFFFFFEC),
                 shape: RoundedRectangleBorder(
@@ -152,7 +163,6 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       ],
                       isSelected: isSelected,
                       onPressed: (int index) {
-                        
                       },
                       color: Colors.black,
                       fillColor: isSelected[0]
@@ -173,7 +183,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                     child:Container(
                       alignment: Alignment.center,
                       width: 273,
-                      height: 377,
+                      height: 482,
                       decoration: ShapeDecoration(
                       color: Color(0xFFFFECD6),
                       shape: RoundedRectangleBorder(
@@ -188,10 +198,11 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
+                      fontSize: 18
                       ),
                       ),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(height: 30,),
                       Container(
                         padding: EdgeInsets.only(left: 16.0),
                         alignment: Alignment.centerLeft,
@@ -200,15 +211,17 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
+                      fontSize: 18,
                       ),)
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(height: 10,),
                       Container(
                         child:Text("1.‘누군가에게 들려주고픈 나의 하루’를 작성한다",
                       style: TextStyle(
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
+                      fontSize: 18,
                       ),)
                       ),
                       SizedBox(height: 5,),
@@ -218,6 +231,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
+                      fontSize: 18,
                       ),)
                       ),
                       SizedBox(height: 5,),
@@ -228,9 +242,10 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
+                      fontSize: 18,
                       ),)
                       ),
-                      SizedBox(height: 40,),
+                      SizedBox(height: 20,),
                       ElevatedButton(onPressed: (){
 
                         Navigator.of(context).push(
@@ -250,10 +265,6 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       )
                       ]
                       ),
-                      
-                      
-                    
-                        
                       ),
                     ),
                 ],
@@ -263,6 +274,9 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
           ),
         ),
         ),
+              ],
+              ),
+              
       ),
         ),
         ),
