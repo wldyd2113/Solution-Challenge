@@ -28,8 +28,8 @@ class _LoginpageState extends State<Loginpage> {
   bool remember = false;
   bool switchValue = false;
   String ACCESS_TOKEN_KEY = 'accessToken';
-  String iosip = 'http://localhost:8080/user/login';
-  String androidip = 'http://localhost:8080/user/login';
+  String iosip = 'http://skhugdsc.duckdns.org/user/login';
+  String androidip = 'http://skhugdsc.duckdns.org/user/login';
 
   @override
   void initState() {
@@ -238,7 +238,7 @@ Future<void> _handleGoogleSignIn() async {
                             labelText: '비밀번호',
                           ),
                           validator: (value) {
-                            if (value == null || value.length <= 9) {
+                            if (value == null || value.length <= 8) {
                               return ("비밀번호는 9자 이상이어야 합니다.");
                             }
                             return null;

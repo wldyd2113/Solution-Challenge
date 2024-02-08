@@ -83,7 +83,7 @@ class _CalendarState extends State<Calendar> {
     if (token != null) {
       try {
         final response = await http.get(
-          Uri.parse('http://localhost:8080/diary/$formattedDate'), // 실제 서버의 엔드포인트로 수정
+          Uri.parse('http://skhugdsc.duckdns.org/diary/$formattedDate'), // 실제 서버의 엔드포인트로 수정
           headers: {
             'Authorization': 'Bearer $token',
           },

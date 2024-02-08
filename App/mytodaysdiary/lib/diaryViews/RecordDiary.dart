@@ -27,6 +27,7 @@ import 'package:provider/provider.dart';
     String cheeringMessage = '';
     String date = '';
     late String messageLocation='';
+    Color color = Colors.black;
 
     String selectedLanguage = 'en'; // 기본 언어 설정
 
@@ -86,67 +87,91 @@ import 'package:provider/provider.dart';
           .decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
       print('디코딩된 토큰 페이로드: $decoded');
     }
-
-    //서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
-    Future<void> getDiary(String formattedDate) async {
-      final token = await TokenStorage.getToken();
-
-      if (token != null) {
-        // 토큰 디코딩 및 확인 로직 추가
-        decodeToken(token);
-
-        try {
-          final getResponse = await http.get(
-            Uri.parse('http://localhost:8080/diary/$formattedDate'),
-            headers: {
-              'Authorization': 'Bearer $token',
-            },
-          );
-
-          print('Server Response: ${getResponse.statusCode}');
-          print('Server Response Body: ${getResponse.body}');
-          if (getResponse.statusCode == 200) {
-            // 서버에서 JSON 형식으로 반환된 데이터를 파싱
-            try {
-              final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
-              this.emotion = jsonData['emotion'];
-              this.secretDiary = jsonData['secretDiary'];
-              this.shareDiary = jsonData['shareDiary']??'';
-              this.cheeringMessage =
-                  jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
-              this.date = jsonData['date'];
-              this.messageLocation = jsonData['messageLocation'] ?? '';
-
-              setState(() {
-                this.emotion = emotion;
-                this.secretDiary = secretDiary;
-                this.shareDiary = shareDiary;
-                this.cheeringMessage = cheeringMessage;
-                this.date = date;
-                this.messageLocation = messageLocation;
-              });
-
-              print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage, $messageLocation');
-            } catch (e) {
-              print('데이터 파싱 중 오류 발생: $e');
-            }
-          } else if (getResponse.statusCode == 401) {
-            // 인증 실패 처리
-            print('토큰이 유효하지 않습니다. 또는 권한이 없습니다.');
-          } else if (getResponse.statusCode == 400) {
-            // 서버에서 해당 날짜에 대한 데이터를 찾을 수 없을 때
-            print('해당하는 날짜의 일기를 찾을 수 없습니다.');
-          } else {
-            print('데이터 로드 실패: ${getResponse.statusCode}');
-          }
-        } catch (error, stackTrace) {
-          print('에러: $error');
-          print('스택 트레이스: $stackTrace');
-        }
-      } else {
-        print('토큰이 없습니다.');
+    // 감정에 따른 색상을 설정하는 함수
+    Color getColorByEmotion(String emotion) {
+      switch (emotion) {
+        case '행복':
+          return Colors.yellow;
+        case '슬픔':
+          return Colors.blue;
+        case '화남':
+          return Colors.red;
+        case '그저그럼':
+          return Colors.green;
+        case '외로움':
+          return Colors.grey;
+        case '배고픔':
+          return Colors.purple;
+        default:
+          return Colors.black;
       }
     }
+
+
+//서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
+Future<void> getDiary(String formattedDate) async {
+  final token = await TokenStorage.getToken();
+
+  if (token != null) {
+    // 토큰 디코딩 및 확인 로직 추가
+    decodeToken(token);
+
+    try {
+      final getResponse = await http.get(
+        Uri.parse('http://skhugdsc.duckdns.org/diary/$formattedDate'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('Server Response: ${getResponse.statusCode}');
+      print('Server Response Body: ${getResponse.body}');
+      if (getResponse.statusCode == 200) {
+        // 서버에서 JSON 형식으로 반환된 데이터를 파싱
+        try {
+          final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
+          this.emotion = jsonData['emotion'];
+          this.secretDiary = jsonData['secretDiary'];
+          this.shareDiary = jsonData['shareDiary'] ?? '';
+          this.cheeringMessage = jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
+          this.date = jsonData['date'];
+          this.messageLocation = jsonData['messageLocation'] ?? '';
+
+          getColorByEmotion(emotion);
+
+
+          setState(() {
+            this.emotion = emotion;
+            this.secretDiary = secretDiary;
+            this.shareDiary = shareDiary;
+            this.cheeringMessage = cheeringMessage;
+            this.date = date;
+            this.messageLocation = messageLocation;
+            this.color = color;
+          });
+
+          print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage, $messageLocation');
+        } catch (e) {
+          print('데이터 파싱 중 오류 발생: $e');
+        }
+      } else if (getResponse.statusCode == 401) {
+        // 인증 실패 처리
+        print('토큰이 유효하지 않습니다. 또는 권한이 없습니다.');
+      } else if (getResponse.statusCode == 400) {
+        // 서버에서 해당 날짜에 대한 데이터를 찾을 수 없을 때
+        print('해당하는 날짜의 일기를 찾을 수 없습니다.');
+      } else {
+        print('데이터 로드 실패: ${getResponse.statusCode}');
+      }
+    } catch (error, stackTrace) {
+      print('에러: $error');
+      print('스택 트레이스: $stackTrace');
+    }
+  } else {
+    print('토큰이 없습니다.');
+  }
+}
+
   //번역하는 함수 구글 번역기 API 받아와서 사용
     Future<void> getTranslation_google_cloud_translation(
         String targetLanguage) async {
@@ -262,7 +287,7 @@ import 'package:provider/provider.dart';
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "기록한 날짜: ${date}",
+                              "날짜: ${date}",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 18,
@@ -274,8 +299,11 @@ import 'package:provider/provider.dart';
                             SizedBox(
                               height: 10,
                             ),
-                            Text(
-                              "이전 나의 감정: ${emotion}",
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              Text(
+                              "이날의 감정: ",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 18,
@@ -284,6 +312,21 @@ import 'package:provider/provider.dart';
                                 height: 0,
                               ),
                             ),
+                              Text(
+                              "${emotion}",
+                              style: TextStyle(
+                                color: getColorByEmotion(emotion),
+                                fontSize: 18,
+                                fontFamily: 'Noto Sans',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
+
+                            ],
+                            ),
+
+
                             SizedBox(
                               height: 10,
                             ),
@@ -338,7 +381,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Text(
-                                    "공유 일기",
+                                    "누군가에게 들려준 나의 하루",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,
@@ -385,7 +428,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Text(
-                                    "${messageLocation}에 사는 누군가의 위로의 편지",
+                                  "${messageLocation.isNotEmpty ? messageLocation : '~'}에 사는 누군가의 위로의 편지",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,

@@ -12,7 +12,7 @@ class _IdFindPageState extends State<IdFindPage> {
 
 
   void _findId() async {
-    final String apiUrl = 'http://localhost:8080/user/email/${_emailController.text}';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/user/email/${_emailController.text}';
 
     try {
       var response = await http.get(

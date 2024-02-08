@@ -22,7 +22,7 @@ class _PwFindPageState extends State<PwFindPage> {
   int _remainingTime = 180;
 
   void _sendVerificationEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/auth';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/mail/auth';
 
     String email = _emailController.text;
 
@@ -68,7 +68,7 @@ class _PwFindPageState extends State<PwFindPage> {
   }
 
   void _verifyEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/authCheck';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/mail/authCheck';
 
     String email = _emailController.text;
     String verificationCode = _verificationCodeController.text;
@@ -98,7 +98,7 @@ class _PwFindPageState extends State<PwFindPage> {
   }
 
   void _temporary() async {
-    final apiUrl = "http://localhost:8080/user/password/${_emailController.text}";
+    final apiUrl = "http://skhugdsc.duckdns.org/user/password/${_emailController.text}";
 
     try {
       var response = await http.get(

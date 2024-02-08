@@ -22,7 +22,7 @@ class _EmailAuState extends State<EmailAu> {
   int _remainingTime = 180;
 
   void _sendVerificationEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/auth';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/mail/auth';
 
     String email = _emailController.text;
 
@@ -67,7 +67,7 @@ class _EmailAuState extends State<EmailAu> {
   }
 
 void _verifyEmail() async {
-  final String apiUrl = 'http://localhost:8080/mail/authCheck';
+  final String apiUrl = 'http://skhugdsc.duckdns.org/mail/authCheck';
 
   String email = _emailController.text;
   String verificationCode = _verificationCodeController.text;
@@ -95,6 +95,9 @@ void _verifyEmail() async {
           builder: (context) => JoinPage(isEmailVerified: true),
         ),
       );
+    } else if (response.statusCode == 401) {
+      // 인증번호가 일치하지 않을 때
+      _showSnackBar('인증번호가 일치하지 않습니다.');
     } else {
       print('서버 응답 에러: ${response.statusCode}');
       print('에러 내용: ${response.body}');
@@ -103,6 +106,7 @@ void _verifyEmail() async {
     print('에러 발생: $error');
   }
 }
+
 
 
   void _showSnackBar(String message) {
@@ -125,9 +129,18 @@ void dispose() {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF9AD0C2),
-      appBar: AppBar(
-        title: Text('이메일 인증'),
+    appBar: AppBar(
+      title: Text('이메일 인증'),
+      // 뒤로가기 버튼 추가
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+    builder: (context) => JoinPage(isEmailVerified: false),
+  ));
+        },
       ),
+    ),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -203,30 +216,6 @@ void dispose() {
                   ),
                 ),
                 SizedBox(height: 10),
-
-                SizedBox(
-                            width: 300,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => JoinPage(isEmailVerified: _isVerificationSuccess),
-                                  ),
-                                );
-                              },
-                              child: Text('완료',
-                              style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontFamily: 'Gowun Dodum',
-                              fontWeight: FontWeight.w400,),),
-                              style: ElevatedButton.styleFrom(
-                              primary:  Color(0xCC2D9596),
-                              elevation: 4, ),
-                            ),
-                          ),
-                
               ],
             ),
           ),

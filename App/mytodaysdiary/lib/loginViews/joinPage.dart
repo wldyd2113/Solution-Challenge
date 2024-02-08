@@ -29,8 +29,6 @@ class _JoinPageState extends State<JoinPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -38,7 +36,7 @@ class _JoinPageState extends State<JoinPage> {
     void sendUserServer() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'),
+          Uri.parse('http://skhugdsc.duckdns.org/user/signup'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -69,27 +67,33 @@ class _JoinPageState extends State<JoinPage> {
         // 여기서 사용자에게 오류 메시지를 보여줄 수 있습니다.
       }
     }
-        void _showAlertDialog(String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
+void _showAlertDialog(String title, String content) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              if(!widget.isEmailVerified) { // 이메일 인증 여부 확인
                 Navigator.of(context).pop();
-              },
-              child: Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+                _showAlertDialog('이메일 인증', '이메일 인증을 해주세요');
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Text('확인'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
   void _checkName() async {
-    final String apiUrl = 'http://localhost:8080/user/checkName/${_nameController.text}';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/user/checkName/${_nameController.text}';
     try {
       var response = await http.get(
         Uri.parse(apiUrl),
@@ -102,12 +106,12 @@ class _JoinPageState extends State<JoinPage> {
         String message = response.body;
 
         if (message == '가입된 닉네임') {
-          _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다.');
+          _showAlertDialog('중복검사', '사용할 수 없는 닉네임입니다.');
         } else {
-          _showAlertDialog('중복검사', '가입되어 있지 않은 닉네임입니다');
+          _showAlertDialog('중복검사', '사용할 수 있는 닉네임입니다');
         }
       } else if (response.statusCode == 400) {
-        _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다');
+        _showAlertDialog('중복검사', '사용할 수 없는 닉네임입니다');
       } else {
         print('서버 응답 에러: ${response.statusCode}');
         print('에러 내용: ${response.body}');
@@ -188,6 +192,10 @@ class _JoinPageState extends State<JoinPage> {
                             height: 65,
                             child: ElevatedButton(
                               onPressed: (){
+                                if(!widget.isEmailVerified) { // 이메일 인증 여부 확인
+                                  _showAlertDialog('이메일 인증', '이메일 인증을 해주세요');
+                                  return;
+                                }
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -267,7 +275,7 @@ class _JoinPageState extends State<JoinPage> {
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) {
-                                if (value == null || value.length <= 9) {
+                                if (value == null || value.length <= 8) {
                                   return ("비밀번호는 9자 이상이어야 합니다");
                                 }
                                 return null;
@@ -442,14 +450,13 @@ class _JoinPageState extends State<JoinPage> {
                 SizedBox(height: 20,),
                 Container(
                   width: 380,
-                  child: ElevatedButton(
-                            onPressed: () {
-                              if(widget.isEmailVerified){
+                  child:ElevatedButton(
+                        onPressed: widget.isEmailVerified // 이메일 인증 여부 확인
+                            ? () {
                                 if (_formKey.currentState!.validate()) {
                                   userProvider.email = _emailController.text;
                                   userProvider.name = _nameController.text;
-                                  userProvider.password =
-                                      _passwordController.text;
+                                  userProvider.password = _passwordController.text;
 
                                   String ageText = _ageController.text;
                                   if (ageText.isNotEmpty) {
@@ -465,35 +472,35 @@ class _JoinPageState extends State<JoinPage> {
 
                                   userProvider.sex = _sex ?? "";
                                   userProvider.job = _jobController.text;
-                                  userProvider.location =
-                                      _location ?? "";
-                                  userProvider.language =
-                                      _language ?? "";
+                                  userProvider.location = _location ?? "";
+                                  userProvider.language = _language ?? "";
 
-                                sendUserServer();
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Loginpage(),
-                                  ),
-                                );
+                                  sendUserServer();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Loginpage(),
+                                    ),
+                                  );
+                                }
                               }
-                              }else{
-                                _showSnackBar('이메일 인증을 먼저 완료해주세요.');
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary:  Colors.black,
-                              elevation: 4, // 그림자 설정
-                            ),
-                            child: const Text("회원가입",
-                                style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontFamily: 'Gowun Dodum',
-                                fontWeight: FontWeight.w400,),
+                            : () {
+                                _showAlertDialog('이메일 인증', '이메일 인증을 해주세요');
+                              }, // 이메일 인증이 완료되지 않았으면 버튼 비활성화
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.black,
+                          elevation: 4,
+                        ),
+                        child: const Text(
+                          "회원가입",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontFamily: 'Gowun Dodum',
+                            fontWeight: FontWeight.w400,
                           ),
-                  ),
+                        ),
+                      ),
                 ),
                 
               ],
@@ -504,3 +511,4 @@ class _JoinPageState extends State<JoinPage> {
     );
   }
 }
+
