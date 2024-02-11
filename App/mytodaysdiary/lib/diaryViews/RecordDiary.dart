@@ -108,7 +108,7 @@ import 'package:provider/provider.dart';
     }
 
 
-//서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
+// 서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
 Future<void> getDiary(String formattedDate) async {
   final token = await TokenStorage.getToken();
 
@@ -130,19 +130,23 @@ Future<void> getDiary(String formattedDate) async {
         // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
           final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
-          this.emotion = jsonData['emotion'];
-          this.secretDiary = jsonData['secretDiary'];
-          this.shareDiary = jsonData['shareDiary'] ?? '';
-          this.cheeringMessage = jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
-          this.date = jsonData['date'];
-          this.messageLocation = jsonData['messageLocation'] ?? '';
+          // JSON 데이터에 'emotion' 키가 있는지 확인합니다.
+          if (jsonData.containsKey('emotion')) {
+            // 'emotion' 키가 있으면 해당 값을 'emotion' 변수에 할당합니다.
+            this.emotion = jsonData['emotion'];
+          } else {
+            // 'emotion' 키가 없거나 값이 null인 경우 기본값을 설정합니다.
+            this.emotion = '감정 없음';
+          }
 
-          getColorByEmotion(emotion);
-
+          // shareDiary가 비어 있을 때만 값 할당
+          if (jsonData['shareDiary'] != null && jsonData['shareDiary'].isNotEmpty) {
+            this.shareDiary = jsonData['shareDiary'];
+          }
 
           setState(() {
             this.emotion = emotion;
-            this.secretDiary = secretDiary;
+            this.secretDiary = shareDiary.isEmpty ? jsonData['secretDiary'] : jsonData['shareDiary'];
             this.shareDiary = shareDiary;
             this.cheeringMessage = cheeringMessage;
             this.date = date;
@@ -171,6 +175,8 @@ Future<void> getDiary(String formattedDate) async {
     print('토큰이 없습니다.');
   }
 }
+
+
 
   //번역하는 함수 구글 번역기 API 받아와서 사용
     Future<void> getTranslation_google_cloud_translation(
