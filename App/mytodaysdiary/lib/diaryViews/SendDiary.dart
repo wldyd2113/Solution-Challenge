@@ -80,7 +80,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   }
 
   //서버에서 다른 사용자의 공유일기를 받아옴
-  Future<void> getDiary() async {
+Future<void> getDiary() async {
   final token = await TokenStorage.getToken();
   if (token != null) {
     decodeToken(token);
@@ -100,48 +100,52 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
           final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
-          final emotion = jsonData['emotion']?? '';
+          final emotion = jsonData['emotion'] ?? '';
           final shareDiary = jsonData['shareDiary'] ?? '';
           final location = jsonData['location'] ?? '';
           final id = jsonData['id'] ?? '';
 
-          // 감정에 따라 메시지 설정
-          switch (emotion) {
-            case '행복':
-              message = '응원에 ';
-              break;
-            case '슬픔':
-              message = '위로에 ';
-              break;
-            case '화남':
-              message = '공감의 ';
-              break;
-            case '그저그럼':
-              message = '보통의 ';
-              break;
-            case '외로움':
-              message = '따듯한';
-              break;
-            case '배고픔':
-              message = '맛있는';
-              break;
-            default:
-              message = '알 수 없음';
-              break;
+          // shareDiary가 비어 있지 않은 경우에만 데이터를 설정
+          if (shareDiary.isNotEmpty) {
+            // 감정에 따라 메시지 설정
+            switch (emotion) {
+              case '행복':
+                message = '응원에 ';
+                break;
+              case '슬픔':
+                message = '위로에 ';
+                break;
+              case '화남':
+                message = '공감의 ';
+                break;
+              case '그저그럼':
+                message = '보통의 ';
+                break;
+              case '외로움':
+                message = '따듯한';
+                break;
+              case '배고픔':
+                message = '맛있는';
+                break;
+              default:
+                message = '알 수 없음';
+                break;
+            }
+            getColorByEmotion(emotion);
+
+            setState(() {
+              this.emotion = emotion;
+              this.shareDiary = shareDiary;
+              this.id = id;
+              this.location = location;
+              this.message = message;
+              diaryProvider.id = id;
+            });
+
+            print('데이터 가져오기 성공: $emotion, $shareDiary,$id');
+          } else {
+            print('공유일기가 없습니다.');
           }
-          getColorByEmotion(emotion);
-
-
-          setState(() {
-            this.emotion = emotion;
-            this.shareDiary = shareDiary;
-            this.id = id;
-            this.location = location;
-            this.message = message;
-            diaryProvider.id = id;
-          });
-
-          print('데이터 가져오기 성공: $emotion, $shareDiary,$id');
         } catch (e) {
           print('데이터 파싱 중 오류 발생: $e');
         }
@@ -158,6 +162,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
     print('토큰이 없습니다.');
   }
 }
+
 
 
   //서버에 응원에 메시지를 보내고 보내는 동시에 서버에서 일기의 id값을 보냄

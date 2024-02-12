@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/userProvider.dart';
 import 'package:mytodaysdiary/loginViews/email_au.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; 
 
 class JoinPage extends StatefulWidget {
   final bool isEmailVerified;
@@ -283,6 +284,10 @@ class _JoinPageState extends State<JoinPage> {
                                 hintText: '나이',
                                 border: OutlineInputBorder(),
                               ),
+                              keyboardType: TextInputType.number, // 키보드 타입을 숫자로 설정
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')), // 숫자만 입력되도록 설정
+                              ],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return ("나이를 입력해주세요");
