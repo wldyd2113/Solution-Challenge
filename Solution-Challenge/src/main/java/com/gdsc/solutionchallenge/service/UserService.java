@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -34,11 +35,20 @@ public class UserService {
         if(userRepository.existsByEmail(userRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
+        if(userRepository.existsByName(userRequestDto.getName())){
+            throw new RuntimeException("이미 가입되어 있는 닉네임입니다.");
+        }
         User user = userRequestDto.toUser(passwordEncoder);
         return UserResponseDto.of(userRepository.save(user));
     }
     @Transactional
     public UserResponseDto googleSignup(UserRequestDto userRequestDto){
+        if(userRepository.existsByEmail(userRequestDto.getEmail())){
+            throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
+        }
+        if(userRepository.existsByName(userRequestDto.getName())){
+            throw new RuntimeException("이미 가입되어 있는 닉네임입니다.");
+        }
         User user = userRequestDto.toGoogleUser();
         return UserResponseDto.of(userRepository.save(user));
     }
@@ -103,4 +113,21 @@ public class UserService {
         User existingUser = userRepository.findByName(name);
         return existingUser == null;
     }
+
+//    @Transactional
+//    public User updateProfile(User user, byte[] image){
+//        String blob = "/users/"+user.getUid()+"/profile";
+//        try{
+//            if(bucket.get(blob) != null){
+//                bucket.get(blob).delete();
+//            }
+//            bucket.create(bolb, image);
+//            user.updateProfile("/users/"+user.getUid()+"/profile");
+//            userRepository.save(user);
+//            return user;
+//        } catch (IOException e){
+//            log.error(user.getUid() + " profile upload failed", e);
+//            throw new IllegalArgumentException("");
+//        }
+//    }
 }
