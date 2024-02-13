@@ -1,6 +1,5 @@
 package com.gdsc.solutionchallenge.jwt;
 
-import com.gdsc.solutionchallenge.dto.Token;
 import com.gdsc.solutionchallenge.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -9,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -58,23 +55,6 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
-    public Token createToken(com.gdsc.solutionchallenge.domain.User user) {
-        long nowTime = (new Date()).getTime();
-
-        Date tokenExpiredTime = new Date(nowTime + ACCESS_TOKEN_EXPIRE_TIME);
-
-        String accessToken = Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim("auth", user.getRole().name())
-                .setExpiration(tokenExpiredTime)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-
-        return Token.builder()
-                .accessToken(accessToken)
-                .build();
-    }
-
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
