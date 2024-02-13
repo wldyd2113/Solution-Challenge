@@ -7,7 +7,6 @@ import com.gdsc.solutionchallenge.dto.request.UserRequestDto;
 import com.gdsc.solutionchallenge.dto.response.UserInfoResponseDto;
 import com.gdsc.solutionchallenge.dto.response.UserResponseDto;
 import com.gdsc.solutionchallenge.repository.UserRepository;
-import com.gdsc.solutionchallenge.service.AuthService;
 import com.gdsc.solutionchallenge.service.DiaryService;
 import com.gdsc.solutionchallenge.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,6 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final DiaryService diaryService;
-    private final AuthService authService;
-
     @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.ok(userService.signup(userRequestDto));
@@ -107,30 +104,4 @@ public class UserController {
         }
     }
 
-//    @PostMapping("profile")
-//    public User updateProfile(@RequestParam MultipartFile image, Authentication authentication){
-//        User user = (User)authentication.getPrincipal();
-//        log.info("user: {}", user);
-//        return userService.updateProfile(user, image.getBytes());
-//    }
-//
-//    @GetMapping("/{uid}/profile")
-//    public byte[] downloadProfile(@PathVariable String uid){
-//        return userService.getProfile(uid);
-//    }
-
-    @GetMapping("callback/google")
-    public Token googleCallback(@RequestParam(name = "code") String code) {
-        String googleAccessToken = authService.getGoogleAccessToken(code);
-        return loginOrSignup(googleAccessToken);
-    }
-
-    public Token loginOrSignup(String googleAccessToken) {
-        return authService.loginOrSignUp(googleAccessToken);
-    }
-
-    @GetMapping("/test")
-    public User test(Principal principal) {
-        return authService.test(principal);
-    }
 }
