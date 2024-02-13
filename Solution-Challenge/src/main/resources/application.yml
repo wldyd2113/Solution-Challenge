@@ -21,6 +21,8 @@ spring:
   redis:
     host:localhost
     port:6379
+  client_id: ${CLIENT_ID}
+  client_secret: ${CLIENT_SECRET}
 springdoc:
   swagger-ui:
     groups-order: DESC
@@ -39,5 +41,3 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/v1/**
-client_id: ${CLIENT_ID}
-client_secret: ${CLIENT_SECRET}

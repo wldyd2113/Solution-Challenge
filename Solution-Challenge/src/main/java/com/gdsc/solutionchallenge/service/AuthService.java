@@ -27,7 +27,7 @@ public class AuthService {
 
     @Value("${CLIENT_SECRET}")
     private String GOOGLE_CLIENT_SECRET;
-    private final String GOOGLE_REDIRECT_URI = "http://skhugdsc.duckdns.org/user/callback/google";
+    private final String GOOGLE_REDIRECT_URI = "http://localhost:8080/user/callback/google";
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
