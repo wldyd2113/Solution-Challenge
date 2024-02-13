@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
@@ -44,7 +46,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // 세션 관리 정책을 항상 새로운 세션을 생성하도록 설정
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests   // HTTP 요청에 대한 인가 규칙 설정
-                        .requestMatchers("/login","/signup","/googleSignup","/email/{name}","/password/{email}","/mail/*","/authenticate-firebase","/user/**","/diary/**","/diary").permitAll()    // "/user/**"에 대한 요청은 모두에게 허용
+                        .requestMatchers("/mail/*","/user/**","/diary/**","/diary").permitAll()    // "/user/**"에 대한 요청은 모두에게 허용
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

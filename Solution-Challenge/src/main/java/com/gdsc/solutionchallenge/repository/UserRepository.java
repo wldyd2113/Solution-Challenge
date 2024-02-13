@@ -14,6 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     String findLocationById(Long id);
 
     boolean existsByEmail(String email);
+    boolean existsByName(String name);
 
     @Query("SELECT COUNT(d) FROM User u LEFT JOIN u.diaries d WHERE u.id = :userId")
     Long countDiariesByUserId(@Param("userId") Long userId);

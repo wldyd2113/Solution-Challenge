@@ -1,5 +1,6 @@
 package com.gdsc.solutionchallenge.jwt;
 
+import com.gdsc.solutionchallenge.dto.Token;
 import com.gdsc.solutionchallenge.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -57,6 +58,23 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
+    public Token createToken(com.gdsc.solutionchallenge.domain.User user) {
+        long nowTime = (new Date()).getTime();
+
+        Date tokenExpiredTime = new Date(nowTime + ACCESS_TOKEN_EXPIRE_TIME);
+
+        String accessToken = Jwts.builder()
+                .setSubject(user.getId().toString())
+                .claim("auth", user.getRole().name())
+                .setExpiration(tokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return Token.builder()
+                .accessToken(accessToken)
+                .build();
+    }
+
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
@@ -67,9 +85,8 @@ public class TokenProvider {
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
     public boolean validateToken(String token){
         try {
