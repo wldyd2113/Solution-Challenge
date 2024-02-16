@@ -68,7 +68,7 @@ class _MyDiaryState extends State<MyDiary> {
     });
     switch (value) {
       case 0:
-        diaryProvider.emotion = '행복';
+        diaryProvider.emotion = '기쁨';
         break;
       case 1:
         diaryProvider.emotion = '슬픔';

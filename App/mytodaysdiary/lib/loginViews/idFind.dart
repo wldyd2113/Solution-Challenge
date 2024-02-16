@@ -67,7 +67,7 @@ class _IdFindPageState extends State<IdFindPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF9AD0C2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('이메일 찾기'),
       ),
@@ -76,7 +76,7 @@ class _IdFindPageState extends State<IdFindPage> {
           width: 340,
           height: 360,
           decoration: ShapeDecoration(
-            color: const Color(0xFFECF4D6),
+            color: const Color(0xFFF3EEEA),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -113,7 +113,7 @@ class _IdFindPageState extends State<IdFindPage> {
                   _findId();
                 },
                 child: const Text(
-                  '이메일 확인해보기',
+                  '확인해보기',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 26,
@@ -122,7 +122,7 @@ class _IdFindPageState extends State<IdFindPage> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xCC2D9596),
+                  primary: Color(0xFF776B5D),
                   elevation: 4,
                 ),
               ),

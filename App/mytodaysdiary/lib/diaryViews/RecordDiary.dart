@@ -27,7 +27,6 @@ import 'package:provider/provider.dart';
     String cheeringMessage = '';
     String date = '';
     late String messageLocation='';
-    Color color = Colors.black;
 
     String selectedLanguage = 'en'; // 기본 언어 설정
 
@@ -74,7 +73,7 @@ import 'package:provider/provider.dart';
       return formatter.format(date);
     }
 
-  //토큰 디코딩
+//토큰 디코딩
     void decodeToken(String token) {
       final parts = token.split('.');
       if (parts.length != 3) {
@@ -90,7 +89,7 @@ import 'package:provider/provider.dart';
     // 감정에 따른 색상을 설정하는 함수
     Color getColorByEmotion(String emotion) {
       switch (emotion) {
-        case '행복':
+        case '기쁨':
           return Colors.yellow;
         case '슬픔':
           return Colors.blue;
@@ -108,76 +107,66 @@ import 'package:provider/provider.dart';
     }
 
 
-// 서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
-Future<void> getDiary(String formattedDate) async {
-  final token = await TokenStorage.getToken();
+    //서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
+    Future<void> getDiary(String formattedDate) async {
+      final token = await TokenStorage.getToken();
 
-  if (token != null) {
-    // 토큰 디코딩 및 확인 로직 추가
-    decodeToken(token);
+      if (token != null) {
+        // 토큰 디코딩 및 확인 로직 추가
+        decodeToken(token);
 
-    try {
-      final getResponse = await http.get(
-        Uri.parse('http://skhugdsc.duckdns.org/diary/$formattedDate'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      print('Server Response: ${getResponse.statusCode}');
-      print('Server Response Body: ${getResponse.body}');
-      if (getResponse.statusCode == 200) {
-        // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
-          final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
-          // JSON 데이터에 'emotion' 키가 있는지 확인합니다.
-          if (jsonData.containsKey('emotion')) {
-            // 'emotion' 키가 있으면 해당 값을 'emotion' 변수에 할당합니다.
-            this.emotion = jsonData['emotion'];
+          final getResponse = await http.get(
+            Uri.parse('http://skhugdsc.duckdns.org/diary/$formattedDate'),
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          print('Server Response: ${getResponse.statusCode}');
+          print('Server Response Body: ${getResponse.body}');
+          if (getResponse.statusCode == 200) {
+            // 서버에서 JSON 형식으로 반환된 데이터를 파싱
+            try {
+              final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
+              this.emotion = jsonData['emotion'];
+              this.secretDiary = jsonData['secretDiary'];
+              this.shareDiary = jsonData['shareDiary']??'';
+              this.cheeringMessage =
+                  jsonData['cheeringMessage'] ?? ''; // null일 경우 빈 문자열로 처리
+              this.date = jsonData['date'];
+              this.messageLocation = jsonData['messageLocation'] ?? '';
+
+              setState(() {
+                this.emotion = emotion;
+                this.secretDiary = secretDiary;
+                this.shareDiary = shareDiary;
+                this.cheeringMessage = cheeringMessage;
+                this.date = date;
+                this.messageLocation = messageLocation;
+              });
+
+              print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage, $messageLocation');
+            } catch (e) {
+              print('데이터 파싱 중 오류 발생: $e');
+            }
+          } else if (getResponse.statusCode == 401) {
+            // 인증 실패 처리
+            print('토큰이 유효하지 않습니다. 또는 권한이 없습니다.');
+          } else if (getResponse.statusCode == 400) {
+            // 서버에서 해당 날짜에 대한 데이터를 찾을 수 없을 때
+            print('해당하는 날짜의 일기를 찾을 수 없습니다.');
           } else {
-            // 'emotion' 키가 없거나 값이 null인 경우 기본값을 설정합니다.
-            this.emotion = '감정 없음';
+            print('데이터 로드 실패: ${getResponse.statusCode}');
           }
-
-          // shareDiary가 비어 있을 때만 값 할당
-          if (jsonData['shareDiary'] != null && jsonData['shareDiary'].isNotEmpty) {
-            this.shareDiary = jsonData['shareDiary'];
-          }
-
-          setState(() {
-            this.emotion = emotion;
-            this.secretDiary = shareDiary.isEmpty ? jsonData['secretDiary'] : jsonData['shareDiary'];
-            this.shareDiary = shareDiary;
-            this.cheeringMessage = cheeringMessage;
-            this.date = date;
-            this.messageLocation = messageLocation;
-            this.color = color;
-          });
-
-          print('데이터 가져오기 성공: $emotion, $shareDiary, $cheeringMessage, $messageLocation');
-        } catch (e) {
-          print('데이터 파싱 중 오류 발생: $e');
+        } catch (error, stackTrace) {
+          print('에러: $error');
+          print('스택 트레이스: $stackTrace');
         }
-      } else if (getResponse.statusCode == 401) {
-        // 인증 실패 처리
-        print('토큰이 유효하지 않습니다. 또는 권한이 없습니다.');
-      } else if (getResponse.statusCode == 400) {
-        // 서버에서 해당 날짜에 대한 데이터를 찾을 수 없을 때
-        print('해당하는 날짜의 일기를 찾을 수 없습니다.');
       } else {
-        print('데이터 로드 실패: ${getResponse.statusCode}');
+        print('토큰이 없습니다.');
       }
-    } catch (error, stackTrace) {
-      print('에러: $error');
-      print('스택 트레이스: $stackTrace');
     }
-  } else {
-    print('토큰이 없습니다.');
-  }
-}
-
-
-
   //번역하는 함수 구글 번역기 API 받아와서 사용
     Future<void> getTranslation_google_cloud_translation(
         String targetLanguage) async {
@@ -293,7 +282,7 @@ Future<void> getDiary(String formattedDate) async {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "날짜: ${date}",
+                              "기록한 날짜: ${date}",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 18,
@@ -331,8 +320,6 @@ Future<void> getDiary(String formattedDate) async {
 
                             ],
                             ),
-
-
                             SizedBox(
                               height: 10,
                             ),
@@ -387,7 +374,7 @@ Future<void> getDiary(String formattedDate) async {
                                     height: 10,
                                   ),
                                   Text(
-                                    "누군가에게 들려준 나의 하루",
+                                    "공유 일기",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,
@@ -434,7 +421,7 @@ Future<void> getDiary(String formattedDate) async {
                                     height: 10,
                                   ),
                                   Text(
-                                  "${messageLocation.isNotEmpty ? messageLocation : '~'}에 사는 누군가의 위로의 편지",
+                                    "${messageLocation??''}에 사는 누군가의 위로의 편지",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,

@@ -50,7 +50,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
       // 감정에 따른 색상을 설정하는 함수
     Color getColorByEmotion(String emotion) {
       switch (emotion) {
-        case '행복':
+        case '기쁨':
           return Colors.yellow;
         case '슬픔':
           return Colors.blue;
@@ -109,7 +109,7 @@ Future<void> getDiary() async {
           if (shareDiary.isNotEmpty) {
             // 감정에 따라 메시지 설정
             switch (emotion) {
-              case '행복':
+              case '기쁨':
                 message = '응원에 ';
                 break;
               case '슬픔':
@@ -259,15 +259,12 @@ Future<void> getDiary() async {
     final userProvider = Provider.of<DiaryProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color(0xFFECF4D6),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFECF4D6),
-        title: const Text("공유일기"),
-        actions: <Widget>[],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Row(children: [
+            child: Column(children: [
+              Padding(padding: EdgeInsets.only(bottom:70.0),),
+              Row(children: [
               Container(
               width: 45,
               height: 635.33,
@@ -331,6 +328,9 @@ Future<void> getDiary() async {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          Column(children: [
+                            
+                          ],),
                           Row(mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             RichText(
@@ -366,7 +366,7 @@ Future<void> getDiary() async {
                     Container(
                     alignment: Alignment.topLeft,
                     width: 250,
-                    height: 200,
+                    height: 700,
                     decoration: ShapeDecoration(
                       color: Color(0xFFFFFFEC),
                       shape: RoundedRectangleBorder(
@@ -521,19 +521,9 @@ Future<void> getDiary() async {
             ),
             ],
             ),
-            
+            ],),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF9AD0C2),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
       ),
     );
   }

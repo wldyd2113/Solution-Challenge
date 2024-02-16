@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/userProvider.dart';
-import 'package:mytodaysdiary/loginViews/email_au.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
 import 'package:provider/provider.dart'; 
 
 class JoinPage extends StatefulWidget {
-  final bool isEmailVerified;
 
-  JoinPage({required this.isEmailVerified});
   @override
   _JoinPageState createState() => _JoinPageState();
 }
@@ -165,13 +162,12 @@ class _JoinPageState extends State<JoinPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                           SizedBox(
-                            width: 230,
+                            width: 380,
                             child: TextFormField(
                               controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: 'Email',
                                 border: OutlineInputBorder(
-                                
                                 ),
                               ),
                               validator: (value) {
@@ -182,32 +178,6 @@ class _JoinPageState extends State<JoinPage> {
                                 }
                                 return null;
                               },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 150,
-                            height: 65,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EmailAu(),
-                                  ),
-                                );
-                              },
-                              child: Text('이메일 인증',
-                              style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Gowun Dodum',
-                              fontWeight: FontWeight.w400,),),
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0.0), // 원하는 값으로 조절
-                              ),
-                              primary:  Colors.black,
-                              elevation: 4, ),
                             ),
                           ),
                           ],
@@ -268,7 +238,7 @@ class _JoinPageState extends State<JoinPage> {
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) {
-                                if (value == null || value.length <= 9) {
+                                if (value == null || value.length <= 8) {
                                   return ("비밀번호는 9자 이상이어야 합니다");
                                 }
                                 return null;
@@ -449,7 +419,6 @@ class _JoinPageState extends State<JoinPage> {
                   width: 380,
                   child: ElevatedButton(
                             onPressed: () {
-                              if(widget.isEmailVerified){
                                 if (_formKey.currentState!.validate()) {
                                   userProvider.email = _emailController.text;
                                   userProvider.name = _nameController.text;
@@ -483,9 +452,7 @@ class _JoinPageState extends State<JoinPage> {
                                   ),
                                 );
                               }
-                              }else{
-                                _showSnackBar('이메일 인증을 먼저 완료해주세요.');
-                              }
+                              
                             },
                             style: ElevatedButton.styleFrom(
                               primary:  Colors.black,
