@@ -1,16 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytodaysdiary/DB/userProvider.dart';
-import 'package:mytodaysdiary/loginViews/email_au.dart';
 import 'package:mytodaysdiary/loginViews/login.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; 
 
 class JoinPage extends StatefulWidget {
-  final bool isEmailVerified;
 
-  JoinPage({required this.isEmailVerified});
   @override
   _JoinPageState createState() => _JoinPageState();
 }
@@ -38,7 +36,7 @@ class _JoinPageState extends State<JoinPage> {
     void sendUserServer() async {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/signup'),
+          Uri.parse('http://skhugdsc.duckdns.org/user/signup'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -69,6 +67,56 @@ class _JoinPageState extends State<JoinPage> {
         // 여기서 사용자에게 오류 메시지를 보여줄 수 있습니다.
       }
     }
+        void _showAlertDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _checkName() async {
+    final String apiUrl = 'http://skhugdsc.duckdns.org/user/checkName/${_nameController.text}';
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        String message = response.body;
+
+        if (message == '가입된 닉네임') {
+          _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다.');
+        } else {
+          _showAlertDialog('중복검사', '가입되어 있지 않은 닉네임입니다');
+        }
+      } else if (response.statusCode == 400) {
+        _showAlertDialog('중복검사', '이미 존재하는 닉네임 입니다');
+      } else {
+        print('서버 응답 에러: ${response.statusCode}');
+        print('에러 내용: ${response.body}');
+        _showAlertDialog('에러 발생', '서버 응답 에러: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('에러 발생: $error');
+      _showAlertDialog('에러 발생', '에러 발생: $error');
+    }
+  }
+
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -108,19 +156,18 @@ class _JoinPageState extends State<JoinPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        //crossAxisAlignment: CrossAxisAlignment.start, // 열 내에서 왼쪽 정렬
+                        
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                           SizedBox(
-                            width: 230,
+                            width: 380,
                             child: TextFormField(
                               controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: 'Email',
                                 border: OutlineInputBorder(
-                                
                                 ),
                               ),
                               validator: (value) {
@@ -133,37 +180,14 @@ class _JoinPageState extends State<JoinPage> {
                               },
                             ),
                           ),
-                          SizedBox(
-                            width: 150,
-                            height: 65,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EmailAu(),
-                                  ),
-                                );
-                              },
-                              child: Text('이메일 인증',
-                              style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Gowun Dodum',
-                              fontWeight: FontWeight.w400,),),
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0.0), // 원하는 값으로 조절
-                              ),
-                              primary:  Colors.black,
-                              elevation: 4, ),
-                            ),
-                          ),
                           ],
                           ),
                           SizedBox(height: 10,),
-                          Container(
-                            width: 380,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                            Container(
+                            width: 230,
                             child: TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
@@ -176,9 +200,33 @@ class _JoinPageState extends State<JoinPage> {
                                 }
                                 return null;
                               },
-                              
                             ),
                           ),
+                            SizedBox(
+                            width: 150,
+                            height: 65,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                _checkName();
+                              },
+                              child: Text('닉네임 중복검사',
+                              style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontFamily: 'Gowun Dodum',
+                              fontWeight: FontWeight.w400,),),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.0), // 원하는 값으로 조절
+                              ),
+                              primary:  Colors.black,
+                              elevation: 4, ),
+                            ),
+                          ),
+                          
+                          ],
+                          ),
+                          
                           SizedBox(height: 10,),
                           SizedBox(
                             width: 380,
@@ -190,7 +238,7 @@ class _JoinPageState extends State<JoinPage> {
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) {
-                                if (value == null || value.length <= 9) {
+                                if (value == null || value.length <= 8) {
                                   return ("비밀번호는 9자 이상이어야 합니다");
                                 }
                                 return null;
@@ -206,6 +254,10 @@ class _JoinPageState extends State<JoinPage> {
                                 hintText: '나이',
                                 border: OutlineInputBorder(),
                               ),
+                              keyboardType: TextInputType.number, // 키보드 타입을 숫자로 설정
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')), // 숫자만 입력되도록 설정
+                              ],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return ("나이를 입력해주세요");
@@ -367,7 +419,6 @@ class _JoinPageState extends State<JoinPage> {
                   width: 380,
                   child: ElevatedButton(
                             onPressed: () {
-                              if(widget.isEmailVerified){
                                 if (_formKey.currentState!.validate()) {
                                   userProvider.email = _emailController.text;
                                   userProvider.name = _nameController.text;
@@ -401,9 +452,7 @@ class _JoinPageState extends State<JoinPage> {
                                   ),
                                 );
                               }
-                              }else{
-                                _showSnackBar('이메일 인증을 먼저 완료해주세요.');
-                              }
+                              
                             },
                             style: ElevatedButton.styleFrom(
                               primary:  Colors.black,

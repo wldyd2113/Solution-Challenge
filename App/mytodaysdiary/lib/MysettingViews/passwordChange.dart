@@ -42,7 +42,7 @@ class _PasswordChangeDialogState extends State<PasswordChangeDialog> {
     if (token != null) {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/user/password'),
+          Uri.parse('http://skhugdsc.duckdns.org/user/password'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',

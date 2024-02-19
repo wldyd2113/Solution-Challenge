@@ -47,7 +47,7 @@ Future<void> fetchData() async {
 
     try {
       final getResponse = await http.get(
-        Uri.parse('http://localhost:8080/user/info'),
+        Uri.parse('http://skhugdsc.duckdns.org/user/info'),
         headers: {
           'Authorization': 'Bearer $token',
         },

@@ -191,7 +191,8 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       borderRadius: BorderRadius.circular(10),
                       ),
                       ),
-                      child:Column(children:[
+                      child:SingleChildScrollView(child:
+                      Column(children:[
                       Container(
                       child: Text("‘누군가에게 들려주고픈 나의 하루’ 기능은 일기를 공유할 수 있는 기능입니다. 작성하실 경우, 익명성이 유지된 채 다른 사용자들과 일기를 1:1로 공유할 수 있습니다.’나의 하루’에 작성하는 일기는 공유되지 않으며, ‘누군가에게 들려주고픈 나의 하루’에 작성한 내용만 공유됩니다.",
                       style: TextStyle(
@@ -237,14 +238,41 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       SizedBox(height: 5,),
                       Container(
                         alignment: Alignment.centerLeft,
-                        child:Text("3.메시지를 남겨준 경우, 자신의 일기도 다",
+                        child:Text("3.메시지를 남겨준 경우, 자신의 일기도 다른 사용자에게 전달된다",
                       style: TextStyle(
                       fontFamily: 'Noto Sans',
                       fontWeight: FontWeight.w400,
                       height: 0,
                       fontSize: 18,
-                      ),)
                       ),
+                      ),
+                      ),
+                      SizedBox(height: 5,),
+                          Container(
+                        alignment: Alignment.centerLeft,
+                        child:Text("4.다른 사용자가 메시지를 작성하면 그 메시지가 전달된다.",
+                      style: TextStyle(
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                      fontSize: 18,
+                      ),
+                      ),
+                      ),
+                      SizedBox(height: 10,),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child:Text("바르고 고운 말만 사용해주세요.\n만일 상대에게 상처가 될 수 있는 메시지를 남기면 추후 서비스 이용에 제약이 있을 수 있습니다.",
+                      style: TextStyle(
+                      fontFamily: 'Noto Sans',
+                      fontWeight: FontWeight.w400,
+                      color: Colors.red,
+                      height: 0,
+                      fontSize: 20,
+                      ),
+                      ),
+                      ),
+
                       SizedBox(height: 20,),
                       ElevatedButton(onPressed: (){
 
@@ -266,6 +294,7 @@ import 'package:mytodaysdiary/diaryViews/calendar.dart';
                       ]
                       ),
                       ),
+                    ),
                     ),
                 ],
               ),

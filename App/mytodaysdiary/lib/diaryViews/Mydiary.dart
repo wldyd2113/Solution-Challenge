@@ -68,7 +68,7 @@ class _MyDiaryState extends State<MyDiary> {
     });
     switch (value) {
       case 0:
-        diaryProvider.emotion = '행복';
+        diaryProvider.emotion = '기쁨';
         break;
       case 1:
         diaryProvider.emotion = '슬픔';
@@ -117,7 +117,7 @@ Future<void> sendUserServer(DateTime selectedDate) async {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
 
       final response = await http.post(
-        Uri.parse('http://localhost:8080/diary/save'),
+        Uri.parse('http://skhugdsc.duckdns.org/diary/save'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',

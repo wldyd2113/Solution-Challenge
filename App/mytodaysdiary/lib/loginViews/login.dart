@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mytodaysdiary/DB/TokenSave.dart';
 import 'package:mytodaysdiary/diaryViews/calendar.dart';
 import 'package:mytodaysdiary/loginViews/idFind.dart';
@@ -28,8 +27,8 @@ class _LoginpageState extends State<Loginpage> {
   bool remember = false;
   bool switchValue = false;
   String ACCESS_TOKEN_KEY = 'accessToken';
-  String iosip = 'http://localhost:8080/user/login';
-  String androidip = 'http://localhost:8080/user/login';
+  String iosip = 'http://skhugdsc.duckdns.org/user/login';
+  String androidip = 'http://skhugdsc.duckdns.org/user/login';
 
   @override
   void initState() {
@@ -116,53 +115,6 @@ class _LoginpageState extends State<Loginpage> {
     });
   }
 
-Future<void> _handleGoogleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      final User user = userCredential.user!;
-
-      // Firebase에서 토큰 얻기
-      final IdTokenResult idTokenResult = await user.getIdTokenResult();
-      final String? token = idTokenResult.token;
-
-      if (token != null && token.isNotEmpty) {
-        print('Firebase Token: $token');
-
-        // Firebase 토큰을 저장
-        await TokenStorage.saveToken(token);
-
-        // JWT 디코딩
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-
-        // 디코딩된 토큰 정보 출력
-        print('Decoded Token: $decodedToken');
-
-        // 여기서 바로 TokenStorage.getToken() 호출
-        String? storedToken = await TokenStorage.getToken();
-        print('Stored Token after Google SignIn: $storedToken');
-
-        // Navigator 코드는 여기에 추가하거나 필요에 따라 수정
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => Calendar()));
-      } else {
-        print('Firebase Token이 없습니다.');
-      }
-    } catch (e) {
-      print('Google 로그인 에러: $e');
-    }
-  }
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -238,7 +190,7 @@ Future<void> _handleGoogleSignIn() async {
                             labelText: '비밀번호',
                           ),
                           validator: (value) {
-                            if (value == null || value.length <= 9) {
+                            if (value == null || value.length <= 8) {
                               return ("비밀번호는 9자 이상이어야 합니다.");
                             }
                             return null;
@@ -271,21 +223,6 @@ Future<void> _handleGoogleSignIn() async {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        _handleGoogleSignIn();
-                      },
-
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/google_logo.png', width: 370,),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                        ],
                       ),
                     ),
 
@@ -349,7 +286,7 @@ Future<void> _handleGoogleSignIn() async {
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => JoinPage(isEmailVerified: true)),
+                                MaterialPageRoute(builder: (_) => JoinPage()),
                               );
                             },
                             child: Text(

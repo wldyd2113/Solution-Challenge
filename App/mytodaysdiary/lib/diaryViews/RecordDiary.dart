@@ -73,7 +73,7 @@ import 'package:provider/provider.dart';
       return formatter.format(date);
     }
 
-  //토큰 디코딩
+//토큰 디코딩
     void decodeToken(String token) {
       final parts = token.split('.');
       if (parts.length != 3) {
@@ -86,6 +86,26 @@ import 'package:provider/provider.dart';
           .decode(utf8.decode(base64Url.decode(base64Url.normalize(payload))));
       print('디코딩된 토큰 페이로드: $decoded');
     }
+    // 감정에 따른 색상을 설정하는 함수
+    Color getColorByEmotion(String emotion) {
+      switch (emotion) {
+        case '기쁨':
+          return Colors.yellow;
+        case '슬픔':
+          return Colors.blue;
+        case '화남':
+          return Colors.red;
+        case '그저그럼':
+          return Colors.green;
+        case '외로움':
+          return Colors.grey;
+        case '배고픔':
+          return Colors.purple;
+        default:
+          return Colors.black;
+      }
+    }
+
 
     //서버에서 나의 일기, 공유일기, 응원에 메시지를 받아오는 함수
     Future<void> getDiary(String formattedDate) async {
@@ -97,7 +117,7 @@ import 'package:provider/provider.dart';
 
         try {
           final getResponse = await http.get(
-            Uri.parse('http://localhost:8080/diary/$formattedDate'),
+            Uri.parse('http://skhugdsc.duckdns.org/diary/$formattedDate'),
             headers: {
               'Authorization': 'Bearer $token',
             },
@@ -274,8 +294,11 @@ import 'package:provider/provider.dart';
                             SizedBox(
                               height: 10,
                             ),
-                            Text(
-                              "이전 나의 감정: ${emotion}",
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              Text(
+                              "이날의 감정: ",
                               style: TextStyle(
                                 color: Color(0xFF76453B),
                                 fontSize: 18,
@@ -283,6 +306,19 @@ import 'package:provider/provider.dart';
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
+                            ),
+                              Text(
+                              "${emotion}",
+                              style: TextStyle(
+                                color: getColorByEmotion(emotion),
+                                fontSize: 18,
+                                fontFamily: 'Noto Sans',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
+
+                            ],
                             ),
                             SizedBox(
                               height: 10,
@@ -385,7 +421,7 @@ import 'package:provider/provider.dart';
                                     height: 10,
                                   ),
                                   Text(
-                                    "${messageLocation}에 사는 누군가의 위로의 편지",
+                                    "${messageLocation??''}에 사는 누군가의 위로의 편지",
                                     style: TextStyle(
                                       color: Color(0xFF76453B),
                                       fontSize: 20,

@@ -22,7 +22,7 @@ class _PwFindPageState extends State<PwFindPage> {
   int _remainingTime = 180;
 
   void _sendVerificationEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/auth';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/mail/auth';
 
     String email = _emailController.text;
 
@@ -68,7 +68,7 @@ class _PwFindPageState extends State<PwFindPage> {
   }
 
   void _verifyEmail() async {
-    final String apiUrl = 'http://localhost:8080/mail/authCheck';
+    final String apiUrl = 'http://skhugdsc.duckdns.org/mail/authCheck';
 
     String email = _emailController.text;
     String verificationCode = _verificationCodeController.text;
@@ -98,7 +98,7 @@ class _PwFindPageState extends State<PwFindPage> {
   }
 
   void _temporary() async {
-    final apiUrl = "http://localhost:8080/user/password/${_emailController.text}";
+    final apiUrl = "http://skhugdsc.duckdns.org/user/password/${_emailController.text}";
 
     try {
       var response = await http.get(
@@ -157,7 +157,7 @@ class _PwFindPageState extends State<PwFindPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF9AD0C2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('비밀번호 찾기'),
       ),
@@ -167,7 +167,7 @@ class _PwFindPageState extends State<PwFindPage> {
             width: 340,
             height: 360,
             decoration: ShapeDecoration(
-              color: const Color(0xFFECF4D6),
+              color: const Color(0xFFF3EEEA),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -200,7 +200,7 @@ class _PwFindPageState extends State<PwFindPage> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xCC2D9596),
+                      primary: Color(0xFF776B5D),
                       elevation: 4,
                     ),
                   ),
@@ -230,7 +230,7 @@ class _PwFindPageState extends State<PwFindPage> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xCC2D9596),
+                      primary: Color(0xFF776B5D),
                       elevation: 4,
                     ),
                   ),
@@ -250,7 +250,7 @@ class _PwFindPageState extends State<PwFindPage> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xCC2D9596),
+                      primary: Color(0xFF776B5D),
                       elevation: 4,
                     ),
                   ),

@@ -46,6 +46,27 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
     );
   }
 
+
+      // 감정에 따른 색상을 설정하는 함수
+    Color getColorByEmotion(String emotion) {
+      switch (emotion) {
+        case '기쁨':
+          return Colors.yellow;
+        case '슬픔':
+          return Colors.blue;
+        case '화남':
+          return Colors.red;
+        case '그저그럼':
+          return Colors.green;
+        case '외로움':
+          return Colors.grey;
+        case '배고픔':
+          return Colors.purple;
+        default:
+          return Colors.black;
+      }
+    }
+
   void decodeToken(String token) {
     final parts = token.split('.');
     if (parts.length != 3) {
@@ -59,14 +80,14 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
   }
 
   //서버에서 다른 사용자의 공유일기를 받아옴
-  Future<void> getDiary() async {
+Future<void> getDiary() async {
   final token = await TokenStorage.getToken();
   if (token != null) {
     decodeToken(token);
 
     try {
       final getResponse = await http.get(
-        Uri.parse('http://localhost:8080/diary/oldest/${diaryProvider.emotion}'),
+        Uri.parse('http://skhugdsc.duckdns.org/diary/oldest/${diaryProvider.emotion}'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -79,55 +100,52 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
         // 서버에서 JSON 형식으로 반환된 데이터를 파싱
         try {
           final dynamic jsonData = jsonDecode(utf8.decode(getResponse.bodyBytes));
-          final emotion = jsonData['emotion']?? '';
+          final emotion = jsonData['emotion'] ?? '';
           final shareDiary = jsonData['shareDiary'] ?? '';
           final location = jsonData['location'] ?? '';
           final id = jsonData['id'] ?? '';
 
-          // 감정에 따라 메시지와 색상 설정
-          switch (emotion) {
-            case '행복':
-              message = '응원에 ';
-              color = Colors.yellow;
-              break;
-            case '슬픔':
-              message = '위로에 ';
-              color = Colors.blue;
-              break;
-            case '화남':
-              message = '공감의 ';
-              color = Colors.red;
-              break;
-            case '그저그럼':
-              message = '보통의 ';
-              color = Colors.green;
-              break;
-            case '외로움':
-              message = '따듯한';
-              color = Colors.grey;
-              break;
-            case '배고픔':
-              message = '맛있는';
-              color = Colors.purple;
-              break;
-            default:
-              message = '알 수 없음';
-              color = Colors.black;
-              break;
+          // shareDiary가 비어 있지 않은 경우에만 데이터를 설정
+          if (shareDiary.isNotEmpty) {
+            // 감정에 따라 메시지 설정
+            switch (emotion) {
+              case '기쁨':
+                message = '응원에 ';
+                break;
+              case '슬픔':
+                message = '위로에 ';
+                break;
+              case '화남':
+                message = '공감의 ';
+                break;
+              case '그저그럼':
+                message = '보통의 ';
+                break;
+              case '외로움':
+                message = '따듯한';
+                break;
+              case '배고픔':
+                message = '맛있는';
+                break;
+              default:
+                message = '알 수 없음';
+                break;
+            }
+            getColorByEmotion(emotion);
+
+            setState(() {
+              this.emotion = emotion;
+              this.shareDiary = shareDiary;
+              this.id = id;
+              this.location = location;
+              this.message = message;
+              diaryProvider.id = id;
+            });
+
+            print('데이터 가져오기 성공: $emotion, $shareDiary,$id');
+          } else {
+            print('공유일기가 없습니다.');
           }
-
-
-          setState(() {
-            this.emotion = emotion;
-            this.shareDiary = shareDiary;
-            this.id = id;
-            this.location = location;
-            this.message = message;
-            this.color = color;
-            diaryProvider.id = id;
-          });
-
-          print('데이터 가져오기 성공: $emotion, $shareDiary,$id');
         } catch (e) {
           print('데이터 파싱 중 오류 발생: $e');
         }
@@ -146,6 +164,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
 }
 
 
+
   //서버에 응원에 메시지를 보내고 보내는 동시에 서버에서 일기의 id값을 보냄
   Future<void> sendCheerServer() async {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
@@ -156,7 +175,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8080/diary/writeMessage/${diaryProvider.id}'),
+          Uri.parse('http://skhugdsc.duckdns.org/diary/writeMessage/${diaryProvider.id}'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             'Authorization': 'Bearer $token',
@@ -240,15 +259,12 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
     final userProvider = Provider.of<DiaryProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color(0xFFECF4D6),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFECF4D6),
-        title: const Text("공유일기"),
-        actions: <Widget>[],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Row(children: [
+            child: Column(children: [
+              Padding(padding: EdgeInsets.only(bottom:70.0),),
+              Row(children: [
               Container(
               width: 45,
               height: 635.33,
@@ -312,6 +328,9 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          Column(children: [
+                            
+                          ],),
                           Row(mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             RichText(
@@ -347,7 +366,7 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                     Container(
                     alignment: Alignment.topLeft,
                     width: 250,
-                    height: 200,
+                    height: 700,
                     decoration: ShapeDecoration(
                       color: Color(0xFFFFFFEC),
                       shape: RoundedRectangleBorder(
@@ -364,7 +383,26 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                       ],
                     ),
                     padding:  const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Text('emotion : ${emotion} \n\n'
+                      child:Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                                              Row(children: [
+                            Text('emotion : ',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                            Text(' ${emotion} ',
+                            style: TextStyle(
+                              color: getColorByEmotion(emotion),
+                              fontSize: 16,
+                            ),
+                          ),
+                      ],
+                      ),
+                      SizedBox(
+                            child:Text(
                             '${shareDiary}',
                             style: TextStyle(
                               color: Colors.black,
@@ -372,11 +410,11 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
                             ),
                           ),
                           ),
-                          // TextField에 서버에서 받아온 sendDiary를 설정
-                          SizedBox(
-                          
-
+                      ],
+                      )
                           ),
+                          // TextField에 서버에서 받아온 sendDiary를 설정
+                            
                           // 번역 언어 선택 드롭다운
                           DropdownButton<String>(
                             value: selectedLanguage,
@@ -483,19 +521,9 @@ class _SendDiaryScreenState extends State<SendDiaryScreen> {
             ),
             ],
             ),
-            
+            ],),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF9AD0C2),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'My'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
       ),
     );
   }
