@@ -50,6 +50,9 @@ public class Diary {
     @JoinColumn(name = "USER_ID")
     private User user;
 
+    @Column(name = "VIEWED_AT")
+    private LocalDateTime viewedAt;
+
 
 
     @Builder
