@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +44,18 @@ public class DiaryService {
     }
     @Transactional
     public OldestDiaryResponseDto getOldestDiary(Long userId, String emotion){
+        diaryRepository.findUncheeredDiaries(LocalDateTime.now().minusMinutes(30))
+                .forEach(diary ->{
+                        diary.setViewed(false);
+                        diary.setViewedAt(null);
+                });
+
         User loggedInUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Diary oldestDiary = diaryRepository.findOldestDiary(loggedInUser, emotion)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 일기를 찾을 수 없습니다."));
         oldestDiary.setViewed(true);
+        oldestDiary.setViewedAt(LocalDateTime.now());
         diaryRepository.save(oldestDiary);
         return oldestDiary.toOldestDto();
     }
