@@ -33,6 +33,7 @@ We chose ‘Good Health & Wellbeing’, the third goal of UN-SDGs. When people t
 1. Clicking on a date on the calendar transitions to the diary retrieval or writing screen.
 2.If you don't want to share your diary, simply write about the day and it will be saved immediately (first space). This will take you back to the main screen.
 3. If you want to share your diary(Both the first and second spaces), by writing about both your day and the day you want to share with someone, the other person's day will be retrieved, and you can leave messages of encouragement.
+
 ---
 ### Future add-ons
 ---
