@@ -36,7 +36,7 @@ We chose ‘Good Health & Wellbeing’, the third goal of UN-SDGs. When people t
 ---
 ### Future add-ons
 ---
-1. Enable the ability to view shared letters categorized by emotion and country for a given day:
+1. Ability to view letters shared by different users throughout the day by category (emotion, country)
 2. Implement AI to prevent the creation of inappropriate content
 3. Community function Development
 
